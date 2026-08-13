@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbwjQtmvPrgQ1pBRFCgcQDbdE2wXBpBIDodtQTYtTOIkMWW24a8D61Bi0wtgw-YOjKAs/exec";
+const API = "https://script.google.com/macros/s/AKfycbyFS_UOtNzOPLfnmw9L8KVl2Gdq1BebK4gtRGWWsbcsSx0P1ZuvgD6hNtWeidJQCc_T/exec";
 const waIcon = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
 
 const qs = id => document.getElementById(id);
@@ -148,6 +148,7 @@ function renderTransactions(transactions){
     const clientName = client.name || "";
     const clientMobile = client.mobile || "";
     const clientSmsMobile = client.mobile_sms || "";
+    
     transactions.forEach(t => {
     const row = table.insertRow();
     row.onclick = () => openTransModal(t.trans_id);
@@ -200,15 +201,13 @@ waBtn.onclick = e => {
 📝 *البيان:* ${t.note}
 ---------------
 📊 *رصيدك بعد هذه العملية:*
-       ${totalText} ريال
-`;
+       ${totalText} ريال`;
 
     const url = `https://wa.me/${clientMobile}?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank");
 };
 groupDiv.appendChild(waBtn);
 
-// زر SMS
 // زر SMS
 const smsBtn = document.createElement("button");
 smsBtn.className = "sms-btn";
@@ -246,8 +245,7 @@ smsBtn.onclick = e => {
     const msg =
 `الاخ: ${clientName}
 قيد ${typeText}: ${Math.abs(t.amount)}
-الاجمالي: ${totalText}
-`;
+الاجمالي: ${totalText}`;
 
     const url = `sms:${smsNumber}?body=${encodeURIComponent(msg)}`;
 
@@ -260,6 +258,7 @@ waSmsCell.appendChild(groupDiv);
 
 });
 }
+
 // تعديل وحذف العملية
 function openTransModal(id){ currentTransId=id; const t=clientTransactions.find(x=>x.trans_id==id); if(!t) return; qs("modal_amount").value=Math.abs(t.amount); qs("modal_type").value=t.type; qs("modal_note").value=t.note; openModal("transModal"); }
 async function saveTransModal(){ if(!currentTransId) return; let amount=Number(qs("modal_amount").value); const type=qs("modal_type").value; const note=qs("modal_note").value; amount=type==="credit"?-Math.abs(amount):Math.abs(amount);
