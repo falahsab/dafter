@@ -432,3 +432,83 @@ table{
     cursor:pointer;
     user-select:none;
 }
+/* زر Mango Users */
+.mango-users-btn {
+    background: #f59e0b;
+    color: white;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.mango-users-btn:hover {
+    opacity: 0.9;
+}
+
+/* مودال Mango */
+.mango-modal-content {
+    max-width: 650px;
+    width: 95%;
+}
+
+.mango-search-box {
+    margin: 15px 0;
+}
+
+.mango-search-box input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    outline: none;
+}
+
+.mango-table-wrapper {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+#mangoUsersTable {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#mangoUsersTable th,
+#mangoUsersTable td {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+    text-align: center;
+}
+
+#mangoUsersTable th {
+    background: #f59e0b;
+    color: white;
+}
+
+.mango-user-value {
+    direction: ltr;
+    font-weight: bold;
+    font-family: monospace;
+}
+
+.copy-mango-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.copy-mango-btn.copied {
+    background: #16a34a;
+}
+
+.mango-copy-msg {
+    text-align: center;
+    color: #16a34a;
+    font-weight: bold;
+}
