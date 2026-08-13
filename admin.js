@@ -1,4 +1,4 @@
-const API = "https://script.google.com/macros/s/AKfycbylf9SdrybqNMjSbukTl2V6oFb2sE5Rdqh9l8tH8hpUDpsisUkXqi5S5f_yVj2pJxVG/exec";
+const API = "https://script.google.com/macros/s/AKfycbwzckwPQQorzUyjULji6IAtYOzq-u3o0vJQvC8qRz6lt9tBe6Ow9kNUkmAVmGsb77Im/exec";
 const waIcon = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
 
 const qs = id => document.getElementById(id);
