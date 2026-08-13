@@ -84,17 +84,63 @@ function filterClientSelect(){
 
 // إضافة عميل
 async function addClient(){
-    const name=qs("new_name").value.trim();
-    const mobile=qs("new_mobile").value.trim();
-    const username=qs("new_username").value.trim();
-    const password=qs("new_password").value.trim();
-    const msg=qs("clientMsg");
-    if(!name||!mobile||!username||!password){ msg.textContent="يرجى تعبئة كل الحقول"; msg.style.color="red"; return; }
-    const res=await fetch(API,{method:"POST",body:JSON.stringify({action:"addClient",name,mobile,username,password})});
-    const data=await res.json();
-    if(data.status==="success"){ msg.textContent="تمت الإضافة بنجاح"; msg.style.color="green"; loadClients();
-loadGlobalSummary(); setTimeout(()=>closeModal("addClientModal"),800);}
-    else{ msg.textContent="حدث خطأ أثناء الإضافة"; msg.style.color="red"; }
+    const name = qs("new_name").value.trim();
+    const mobile = qs("new_mobile").value.trim();
+    const mobile_sms = qs("new_mobile_sms").value.trim();
+    const username = qs("new_username").value.trim();
+    const password = qs("new_password").value.trim();
+    const msg = qs("clientMsg");
+
+    if(!name || !mobile || !mobile_sms || !username || !password){
+        msg.textContent = "يرجى تعبئة كل الحقول";
+        msg.style.color = "red";
+        return;
+    }
+
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "addClient",
+                name,
+                mobile,
+                mobile_sms,
+                username,
+                password
+            })
+        });
+
+        const data = await res.json();
+
+        if(data.status === "success"){
+            msg.textContent = "تمت إضافة العميل بنجاح";
+            msg.style.color = "green";
+
+            // تنظيف الحقول
+            qs("new_name").value = "";
+            qs("new_mobile").value = "";
+            qs("new_mobile_sms").value = "";
+            qs("new_username").value = "";
+            qs("new_password").value = "";
+
+            await loadClients();
+            await loadGlobalSummary();
+
+            setTimeout(() => {
+                closeModal("addClientModal");
+                msg.textContent = "";
+            }, 800);
+
+        } else {
+            msg.textContent = data.message || "حدث خطأ أثناء الإضافة";
+            msg.style.color = "red";
+        }
+
+    } catch(error) {
+        console.error(error);
+        msg.textContent = "تعذر الاتصال بالخادم";
+        msg.style.color = "red";
+    }
 }
 
 // إضافة عملية مالية
