@@ -767,3 +767,137 @@ function saveNoteSuggestion(){
         refreshNotes();
     }
 }
+// عرض Mango Users
+function showMangoUsers(){
+
+    const tbody = document.getElementById("mangoUsersBody");
+
+    if(!tbody) return;
+
+    tbody.innerHTML = "";
+
+    const clients = [...allClients]
+        .filter(c => c.mango_user && String(c.mango_user).trim())
+        .sort((a,b) =>
+            String(a.name || "").localeCompare(
+                String(b.name || ""),
+                "ar"
+            )
+        );
+
+    if(!clients.length){
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="3" style="text-align:center;">
+                    لا يوجد Mango User مسجل
+                </td>
+            </tr>
+        `;
+
+    }else{
+
+        clients.forEach(client => {
+
+            const tr = document.createElement("tr");
+
+            const nameTd = document.createElement("td");
+            nameTd.textContent = client.name || "";
+
+            const mangoTd = document.createElement("td");
+            mangoTd.textContent = client.mango_user || "";
+            mangoTd.className = "mango-user-value";
+
+            const actionTd = document.createElement("td");
+
+            const copyBtn = document.createElement("button");
+            copyBtn.className = "copy-mango-btn";
+            copyBtn.textContent = "📋 نسخ";
+
+            copyBtn.onclick = e => {
+                e.stopPropagation();
+                copyMangoUser(client.mango_user, copyBtn);
+            };
+
+            actionTd.appendChild(copyBtn);
+
+            tr.appendChild(nameTd);
+            tr.appendChild(mangoTd);
+            tr.appendChild(actionTd);
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    document.getElementById("mangoSearch").value = "";
+
+    openModal("mangoUsersModal");
+}
+
+
+// نسخ Mango User
+async function copyMangoUser(value, button){
+
+    if(!value) return;
+
+    try{
+
+        await navigator.clipboard.writeText(String(value));
+
+        const oldText = button.textContent;
+
+        button.textContent = "✅ تم النسخ";
+        button.classList.add("copied");
+
+        setTimeout(() => {
+            button.textContent = oldText;
+            button.classList.remove("copied");
+        }, 1200);
+
+    }catch(error){
+
+        // بديل للمتصفحات التي لا تسمح بـ clipboard
+        const textarea = document.createElement("textarea");
+
+        textarea.value = value;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+
+        document.body.appendChild(textarea);
+
+        textarea.select();
+        document.execCommand("copy");
+
+        textarea.remove();
+
+        button.textContent = "✅ تم النسخ";
+
+        setTimeout(() => {
+            button.textContent = "📋 نسخ";
+        }, 1200);
+    }
+}
+
+
+// البحث داخل Mango Users
+function filterMangoUsers(){
+
+    const q = document
+        .getElementById("mangoSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+    document
+        .querySelectorAll("#mangoUsersBody tr")
+        .forEach(row => {
+
+            const name = row.children[0]?.textContent.toLowerCase() || "";
+            const mango = row.children[1]?.textContent.toLowerCase() || "";
+
+            row.style.display =
+                name.includes(q) || mango.includes(q)
+                ? ""
+                : "none";
+        });
+}
