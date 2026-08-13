@@ -245,7 +245,8 @@ smsBtn.onclick = e => {
     const msg =
 `الاخ: ${clientName}
 قيد ${typeText}: ${Math.abs(t.amount)}
-الاجمالي: ${totalText}`;
+الاجمالي: ${totalText}
+`;
 
     const url = `sms:${smsNumber}?body=${encodeURIComponent(msg)}`;
 
