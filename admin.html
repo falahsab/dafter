@@ -24,7 +24,11 @@ if(localStorage.getItem("role")!=="admin"){ alert("يجب تسجيل الدخو�
 </div>
 
 <div id="sideMenu" class="side-menu">
-    <a href="#" onclick="openModal('addClientModal'); closeMenu(); return false;">
+ <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">
+    👤 أسماء Mango Users
+</a>
+
+<a href="#" onclick="openModal('addClientModal'); closeMenu(); return false;">
     ➕ إضافة عميل
 </a>
 
@@ -279,6 +283,41 @@ if(localStorage.getItem("role")!=="admin"){ alert("يجب تسجيل الدخو�
     <button onclick="closePopup()" style="margin-top:10px;padding:6px 10px;">إلغاء</button>
 </div>
 <script src="admin.js"></script>
+  <!-- مودال Mango Users -->
+<div id="mangoUsersModal" class="modal">
+    <div class="modal-content mango-modal-content">
+
+        <span class="close" onclick="closeModal('mangoUsersModal')">&times;</span>
+
+        <h3>👤 أسماء Mango Users</h3>
+
+        <div class="mango-search-box">
+            <input
+                id="mangoSearch"
+                type="text"
+                placeholder="🔍 بحث باسم العميل أو Mango User..."
+                oninput="filterMangoUsers()"
+            >
+        </div>
+
+        <div class="mango-table-wrapper">
+            <table id="mangoUsersTable">
+                <thead>
+                    <tr>
+                        <th>اسم العميل</th>
+                        <th>Mango User</th>
+                        <th>نسخ</th>
+                    </tr>
+                </thead>
+
+                <tbody id="mangoUsersBody"></tbody>
+            </table>
+        </div>
+
+        <p id="mangoCopyMsg" class="mango-copy-msg"></p>
+
+    </div>
+</div>
 </body>
 </html>
 
