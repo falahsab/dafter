@@ -4,8 +4,6 @@ let allData = [];
 let filteredData = [];
 
 
-
-
 /* ==========================================
    الأشهر
    ========================================== */
@@ -26,15 +24,6 @@ const arabicMonths = [
 ];
 
 let selectedMonthSheet = "";
-
-
-/* ==========================================
-   التحقق من تسجيل الدخول
-   ========================================== */
-
-if (!dealer) {
-    window.location.href = "index.html";
-}
 
 
 /* ==========================================
@@ -178,7 +167,6 @@ async function changeMonth() {
         }
     }
 
-
     await loadData();
 }
 
@@ -190,6 +178,11 @@ async function changeMonth() {
 async function loadData() {
 
     try {
+
+        /*
+         * إرسال اسم الشيت فقط
+         * بدون dealer أو تسجيل دخول
+         */
 
         const res = await fetch(API_URL, {
 
@@ -221,7 +214,7 @@ async function loadData() {
 
 
         /* =========================
-           بيانات الشهر المختار
+           بيانات الشهر المختار فقط
            ========================= */
 
         allData = json.data || [];
@@ -775,8 +768,6 @@ function renderTable(data) {
 
 function logout() {
 
-    sessionStorage.clear();
-
     window.location.href =
         "login.html";
 }
@@ -806,10 +797,14 @@ function toggleLanguage() {
             "ltr";
 
 
-        document.getElementById(
-            "dealerName1"
-        ).textContent =
-            "Hi, ";
+        const dealerName1 =
+            document.getElementById(
+                "dealerName1"
+            );
+
+        if (dealerName1)
+            dealerName1.textContent =
+                "Hi, ";
 
 
         document.getElementById(
@@ -901,10 +896,14 @@ function toggleLanguage() {
             "rtl";
 
 
-        document.getElementById(
-            "dealerName1"
-        ).textContent =
-            "مرحبا, ";
+        const dealerName1 =
+            document.getElementById(
+                "dealerName1"
+            );
+
+        if (dealerName1)
+            dealerName1.textContent =
+                "مرحبا, ";
 
 
         document.getElementById(
