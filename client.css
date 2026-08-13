@@ -1,0 +1,51 @@
+body {font-family:"Tajawal",sans-serif;background:#F2F4F7;margin:0;padding-bottom:60px;}
+*{box-sizing:border-box;}
+h2,h3,h4,h5{margin:0;padding:0;}
+.header{background:linear-gradient(135deg,#000,#1a1a1a,#2a2a2a);padding:40px 20px 60px;color:white;border-bottom-left-radius:30px;border-bottom-right-radius:30px;text-align:center;}
+.client-info img{width:75px;height:75px;border-radius:50%;border:3px solid #fff;object-fit:cover;}
+.client-info h2{margin-top:12px;font-size:clamp(18px,2.5vw,22px);font-weight:600;color:#f1f1f1;}
+.balance-card{width:92%;max-width:450px;background:white;padding:15px 20px;border-radius:15px;box-shadow:0 6px 20px rgba(0,0,0,0.12);display:flex;align-items:center;justify-content:space-between;margin:-40px auto 20px auto;position:relative;}
+.balance-label{font-size:clamp(15px,2vw,18px);font-weight:bold;color:#444;}
+.balance-value{font-size:clamp(18px,2.8vw,22px);font-weight:bold;}
+#refreshBtn{background:#333;border:none;padding:8px 12px;border-radius:50%;color:white;cursor:pointer;font-size:15px;margin-right:10px;transition:.2s;}
+#refreshBtn:hover{background:#444;transform:scale(1.1);}
+.container{padding:20px;}
+.last-ops-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.last-ops h3{color:#003575;font-size:clamp(16px,2vw,20px);}
+.op-card{background:#fff;padding:10px 15px;border-radius:12px;margin-bottom:10px;display:flex;justify-content:space-between;box-shadow:0 3px 12px rgba(0,0,0,0.08);font-size:clamp(13px,1.8vw,15px);}
+.op-card .op-note{color:#6b7280;font-size:clamp(12px,1.6vw,14px);}
+.credit{color:#0FA958;font-weight:bold;}
+.debit{color:#D13A3A;font-weight:bold;}
+.btn{width:100%;padding:15px;font-size:clamp(16px,2vw,18px);border-radius:12px;margin-top:10px;margin-bottom:10px;cursor:pointer;font-weight:600;border:none;}
+#showStatementBtn{background:linear-gradient(135deg,#111,#1a1a1a,#222);color:white;padding:10px 18px;border-radius:12px;cursor:pointer;width:100%;font-weight:bold;font-size:clamp(14px,2vw,16px);transition:.3s;box-shadow:0 4px 12px rgba(0,0,0,0.35);}
+#showStatementBtn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,0.45);background:linear-gradient(135deg,#1a1a1a,#222,#2a2a2a);}
+table{width:100%;border-collapse:collapse;margin-top:15px;background:white;border-radius:12px;overflow:hidden;box-shadow:0 5px 20px rgba(0,0,0,0.1);font-size:clamp(14px,2vw,16px);}
+th{background:#F1F5F9;padding:14px;color:#003575;font-weight:700;}
+td{padding:12px;text-align:center;border-bottom:1px solid #e5e7eb;}
+.op-amount{font-weight:bold;font-size:clamp(14px,2vw,16px);padding:4px 8px;border-radius:8px;}
+.op-amount.credit{color:#0FA958;background:#E6F6EC;}
+.op-amount.debit{color:#D13A3A;background:#FDEAEA;}
+
+.logout-btn{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 15px rgba(0,0,0,0.2);cursor:pointer;transition:.3s;}
+.logout-btn:hover{transform:scale(1.1);box-shadow:0 6px 20px rgba(0,0,0,0.3);}
+
+#statementModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.3);z-index:1000;overflow-y:auto;}
+#statementContent{background:white;width:95%;max-width:900px;margin:40px auto;border-radius:12px;padding:20px;position:relative;box-shadow:0 6px 25px rgba(0,0,0,0.3);}
+#statementContent h3{text-align:center;margin-bottom:15px;color:#000000;}
+#printClientName {text-align:center; font-weight:bold; margin-bottom: 15px;}
+#closeStatement{position:absolute;top:15px;right:15px;background:linear-gradient(135deg,#333,#444,#555);color:#f1f1f1;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-weight:bold;}
+.filter-dates{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:15px;}
+.filter-dates label input{padding:5px 8px;border-radius:6px;border:1px solid #ccc;}
+
+#totalsBox{background:#fff;padding:10px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);margin:10px 0;text-align:center;font-size:15px;}
+
+.footer{text-align:center;padding:15px 10px;background:linear-gradient(135deg,#111,#1a1a1a,#222);color:#f1f1f1;font-size:clamp(13px,1.5vw,14px);position:fixed;bottom:0;width:100%;z-index:1000;}
+
+#toTop{position:fixed;bottom:80px;right:20px;width:45px;height:45px;background:#222;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;display:none;box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+#toTop:hover{background:#000;}
+#modalBalanceValue {
+    display: block;
+    text-align: center;
+    font-size: 22px;
+    margin-bottom: 15px;
+}

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة | يمن ستلايت</title>
+
+<link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<script>
+if(localStorage.getItem("role")!=="admin"){ alert("يجب تسجيل الدخول كأدمن"); window.location.href="index.html"; }
+</script>
+
+
+
+<div class="card">
+
+  <div class="card-header">
+  <div class="logout-icon" onclick="toggleMenu()">
+    ☰
+</div>
+
+<div id="sideMenu" class="side-menu">
+    <a href="#" onclick="openModal('addClientModal'); closeMenu(); return false;">
+    ➕ إضافة عميل
+</a>
+
+<a href="#" onclick="showClientsBalances(); closeMenu(); return false;">
+    👥 حسابات العملاء
+</a>
+
+<a href="#" onclick="logout(); closeMenu(); return false;">
+    🚪 تسجيل الخروج
+</a>
+</div>
+
+<div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
+
+    <h2>لوحة الإدارة | يمن ستلايت</h2>
+
+    <span class="logout-icon" onclick="logout()" title="خروج">
+     ⍈
+    </span>
+  </div>
+  
+<div class="actions" style="display:none;">
+
+  <button class="btn add-btn" onclick="openModal('addClientModal')">
+    <span class="icon">➕</span>
+    <span class="text0">إضافة عميل</span>
+  </button>
+
+  <button class="btn balance-btn" onclick="showClientsBalances()">
+    <span class="icon">📊</span>
+    <span class="text0">حسابات العملاء</span>
+  </button>
+</div>
+<div class="account-summary">
+
+    <div class="summary-item">
+        <span class="label credit-label">إجمالي ما لكم</span>
+        <span class="value credit-value" id="totalDebit">0 ر.ي</span>
+    </div>
+
+    <div class="divider">|</div>
+
+    <div class="summary-item">
+        <span class="label debit-label">إجمالي ما عليكم</span>
+        <span class="value debit-value" id="totalCredit">0 ر.ي</span>
+    </div>
+
+    <div class="divider">|</div>
+
+    <div class="summary-item">
+        <span class="label balance-label">الصافي</span>
+        <span class="value balance-value" id="netBalance">0 ر.ي</span>
+    </div>
+
+</div>
+
+
+<select id="client_select">
+    <option value="">اختر العميل</option>
+</select>
+
+
+<input id="amount" type="number" placeholder="المبلغ">
+<select id="type" style="display:none;">
+    <option value="debit">عليه</option>
+    <option value="credit">له</option>
+</select>
+<input type="text" style="display:none" autocomplete="username">
+<input type="password" style="display:none" autocomplete="new-password">
+
+<div class="note-wrapper">
+    <input id="note" list="notesList" placeholder="البيان">
+
+    <span class="paste-btn" onclick="pasteFromClipboard()">📋</span>
+
+    <datalist id="notesList"></datalist>
+</div>
+<div class="action-buttons">
+
+    <button type="button"
+            class="trans-btn credit-btn"
+            onclick="addTransType('credit')">
+
+        <span class="btn-icon">⬇</span>
+        <span>إضافة له (دائن)</span>
+
+    </button>
+
+    <button type="button"
+            class="trans-btn debit-btn"
+            onclick="addTransType('debit')">
+
+        <span class="btn-icon">⬆</span>
+        <span>إضافة عليه (مدين)</span>
+
+    </button>
+
+</div>
+
+<p id="msg"></p>
+<p id="loading"></p>
+<p id="total_info" style="display:none;"></p>
+<div class="account-summary">
+
+    <div class="summary-item">
+        <span class="label credit-label">العملاء</span>
+        <span class="value credit-value" id="stat_clients"></span>
+    </div>
+
+    <div class="divider">|</div>
+
+    <div class="summary-item">
+        <span class="label debit-label">حساب العميل</span>
+        <span class="value debit-value" id="stat_total">0 ر.ي</span>
+    </div>
+
+    <div class="divider">|</div>
+
+    <div class="summary-item">
+        <span class="label balance-label">اخر عملية</span>
+        <span class="value balance-value" id="stat_last">0 ر.ي</span>
+    </div>
+
+</div>
+<div class="action-buttons">
+
+    <button type="button" style="background:#c0bbbb;"
+            class="trans-btn credit-btn"
+            onclick="showAllTransactions()">
+
+        <span class="btn-icon">📋</span>
+        <span>عرض العمليات</span>
+
+    </button>
+
+    <button type="button"
+            class="trans-btn debit-btn" style="background:#b69f79;"
+            onclick="printTransactions()">
+
+        <span class="btn-icon">🖨️</span>
+        <span>طباعة PDF</span>
+
+    </button>
+
+</div>
+
+
+<div class="table-responsive">
+    <table>
+        <table id="transTable"></table>
+    </table>
+</div>
+
+
+
+
+</div>
+
+<!-- مودال إضافة العميل -->
+<div id="addClientModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('addClientModal')">&times;</span>
+    <h3>إضافة عميل جديد</h3>
+    <input id="new_name" placeholder="الاسم">
+ <div class="input-group">
+    <input id="new_mobile" type="tel" placeholder="رقم الجوال">
+
+    <button class="pick-btn" id="pickContact">📱</button>
+</div>
+
+    <input id="new_username" placeholder="اسم المستخدم">
+    <input id="new_password" type="password" placeholder="كلمة المرور">
+    <button onclick="addClient()">إضافة العميل</button>
+    <p id="clientMsg"></p>
+  </div>
+</div>
+
+<!-- مودال تعديل العملية -->
+<div id="transModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal('transModal')">&times;</span>
+    <h3>تعديل العملية</h3>
+    <input id="modal_amount" type="number" placeholder="المبلغ">
+    <select id="modal_type">
+        <option value="debit">عليه</option>
+        <option value="credit">له</option>
+    </select>
+    <input id="modal_note" placeholder="البيان">
+    <div style="display:flex;gap:10px;margin-top:10px;">
+        <button onclick="saveTransModal()">حفظ</button>
+        <button onclick="deleteTransModal()" style="background:#EF4444">حذف</button>
+        <button onclick="closeModal('transModal')" style="background:#888">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال العملاء -->
+<div id="clientsModal" class="modal">
+  <div class="modal-body"> 
+      <div style="display:flex;justify-content:space-between">
+        <h3>قائمة العملاء وصافي الحساب</h3>
+        <button class="close-btn" onclick="closeModal('clientsModal')" style="background:#EF4444;padding:6px 12px">إغلاق</button>
+      </div>
+      <input id="search_client" placeholder="ابحث بالاسم أو رقم الجوال" oninput="filterClientsTable()" style="margin-top:10px;margin-bottom: 10px">
+      
+      <table id="clientsBalanceTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>العميل</th>
+                <th>الجوال</th>
+                <th>صافي الحساب</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button onclick="printClientsList()" style="background:#0b74de; color:white; margin-top:10px;">طباعة قائمة العملاء</button>
+<div id="clientsTotals" style="padding:10px;font-size:18px;font-weight:bold;color:#00693B"></div>
+
+  </div>
+  
+</div>
+
+<div id="numberPopup" style="
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    display: none;
+    z-index: 9999;
+    width: 250px;
+    text-align: center;
+">
+    <h3 style="margin:0 0 10px;">اختر الرقم</h3>
+    <div id="numbersList"></div>
+    <button onclick="closePopup()" style="margin-top:10px;padding:6px 10px;">إلغاء</button>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

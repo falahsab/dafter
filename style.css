@@ -1,0 +1,77 @@
+ body {
+        font-family: "Tajawal", sans-serif;
+        background: #f1f5f9;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        height: 100vh;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card {
+        width: 80%;
+        max-width: 300px;
+        background: white;
+        padding: 30px 20px 40px 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px #0001;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    .logo {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 20px auto;
+        display: block;
+        object-fit: contain;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+        color: #0f172a;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        font-size: 17px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+    }
+
+    #msg {
+        margin-top: 15px;
+        color: red;
+        font-weight: bold;
+    }
+
+    @media (max-width: 500px){
+        .card {
+            padding: 20px 15px 30px 15px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+        }
+    }
