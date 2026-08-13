@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لوحة الموزع</title>
+
+    <link rel="stylesheet" href="css/styledash1.css">
+</head>
+<body>
+<div class="header">
+   </div>
+<div class="month-selector">
+
+    <label for="monthSelect">
+        📅 الشهر:
+    </label>
+
+   <select id="monthSelect" onchange="changeMonth()"></select>
+
+</div>
+  <button class="logout-btn" onclick="window.location.href='/index.html'">
+    الرئيسية
+</button>
+</div>
+<div class="month-selector">
+
+    <label for="monthSelect">
+        📅 الشهر:
+    </label>
+
+   <select id="monthSelect" onchange="changeMonth()"></select>
+
+</div>
+<div class="summary1">
+
+<span id="lblUser">👤 المستخدم:</span>
+<span id="selectedUser">All</span><br>
+
+   
+<span id="lblProfit">💰 إجمالي الربح:</span>
+<span id="totalProfit">0</span>
+<span class="currency">مانجو</span><br>
+
+<div class="salesRow">    
+<span id="lblSales">🛒 إجمالي المبيعات:</span>
+<span id="totalAmount">0</span>
+<span class="currency">مانجو</span><br>
+</div>
+
+<div class="salesRow" style="display: none;">
+<span id="lblOperations">🔢 إجمالي العمليات:</span>
+<span id="totalCodes">0</span><br>
+</div>
+    
+<div class="salesRow" style="display: none;">
+<span id="lblCancelled">❌ عدد الأكواد الملغية:</span>
+<span id="cancelledCodes">0</span><br>
+</div>
+    
+<div class="salesRow" style="display: none;">
+<span id="lblNet">✅ صافي الأكواد المباعة:</span>
+<span id="netCodes">0</span><br>
+</div>
+         
+<div class="salesRow" style="display: none;">
+<span id="lblSubDealer">👤 عمولة الوكيل الفرعي (25%):</span>
+<span id="subDealerCommission">0</span>
+<span class="currency">مانجو</span><br>
+</div>
+    
+<div class="salesRow" style="display: none;">
+<span id="lblMainDealer">👑 عمولة الوكيل الرئيسي (</span><span id="mainDealerRate">0</span>%):
+<span id="mainDealerCommission">0</span>
+<span class="currency">مانجو</span><br>
+</div>
+      
+<div class="salesRow" style="display: none;">        
+<span id="lblTotalCommission">💰 إجمالي العمولتين:</span>
+<span id="totalCommission">0</span>
+<span class="currency">مانجو</span>
+</div>
+    
+</div>
+
+<div class="product-summary">
+ 
+<div class="filters">
+  <select id="filterUser"><option value="">اختر المستخدم</option></select>
+</div>
+
+  <div class="table-container">
+    <table id="productSummaryTable">
+      <thead>
+        <tr>
+          <th>المنتج</th>
+          <th>عدد المبيعات</th>
+          <th>عدد الملغي</th>
+          <th>الصافي</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+    
+    
+<button id="langBtn" onclick="toggleLanguage()" style="display: none;">English</button>
+<div class="filters">
+
+    <div class="date-filters">
+        <input type="date" id="startDate">
+        <input type="date" id="endDate">
+    </div>
+
+    <div class="filter-buttons">
+        <button onclick="applyFilters()">تطبيق الفلترة</button>
+        <button onclick="resetFilters()">إلغاء الفلترة</button>
+    </div>
+
+</div>
+    
+<div class="table-container">
+<table id="dataTable">
+<thead>
+<tr>
+<th>التاريخ</th><th>المنتج</th><th>المبلغ</th>
+<th>المستخدم</th><th>SN</th><th>Profit</th><th>Status</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+<script src="js/jsdash1.js"></script>
+</body>
+</html>
