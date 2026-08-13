@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>دفتر يمن ستلايت</title>
+ <!-- وصف الموقع -->
+  <meta name="description" content="دفتر عملاء يمن ستلايت">
+
+  <!-- Open Graph tags -->
+  <meta property="og:title" content="دفتر يمن ستلايت" />
+  <meta property="og:description" content="دفتر يمن ستلايت السحابي يمكن لعملائنا رؤية ومتابعة حساباتهم اون لاين في اي وقت" />
+  <meta property="og:image" content="yemen-sat.png" />
+  <meta property="og:url" content="https://jedwal.yemensat.com/" />
+  <meta property="og:type" content="website" />
+ <link rel="manifest" href="manifest.json">
+<!-- =======================  CSS  ======================= -->
+<link rel="stylesheet" href="style.css">
+</head>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const user = localStorage.getItem("user_type"); // client | admin | null
+
+    if (user === "client") {
+        window.location.href = "client.html";
+    } 
+    else if (user === "admin") {
+        window.location.href = "admin.html";
+    }
+});
+</script>
+
+<body>
+
+<!-- =======================  HTML  ======================= -->
+<div class="card">
+    <!-- شعار الصفحة -->
+    <img src="yemen-sat.png" alt="يمن ستلايت" class="logo">
+
+    <h2>دفتر يمن ستلايت</h2>
+<form id="loginForm" onsubmit="login(); return false;">
+    <input id="username" name="username" placeholder="اسم المستخدم" autocomplete="username">
+    <input id="password" name="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+    <button type="submit">دخول</button>
+</form>
+    <p id="msg"></p>
+</div>
+<!-- سكربت الرئيسي -->
+<script src="script.js"></script>
+ <script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+    .then(reg => console.log("Service Worker Registered", reg))
+    .catch(err => console.error("SW Registration Failed", err));
+}
+</script>
+
+</body>
+</html>
+
+
