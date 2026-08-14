@@ -5,6 +5,9 @@ const urlsToCache = [
     "admin.html",
     "style.css",
     "script.js",
+    "reseller.html",
+    "reseller.css",
+    "reseller.js",
     "دفتر-يمن-ستلايت-192.png",
     "دفتر-يمن-ستلايت-512.png"
 ];
