@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">لوحة الموزع المعتمد</title>
+  
+  <!-- استدعاء خط Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="reseller.css">
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- شريط التنقل العلوي -->
+    <header class="header">
+      <div class="month-selector">
+        <label for="monthSelect" data-i18n="monthLabel">📅 الشهر:</label>
+        <select id="monthSelect" onchange="changeMonth()"></select>
+      </div>
+
+      <div class="header-actions">
+        <button id="langBtn" type="button" class="lang-btn" onclick="toggleLanguage()">English</button>
+        <button type="button" class="logout-btn" onclick="window.location.href='/admin.html'" data-i18n="homeBtn">الرئيسية</button>
+      </div>
+    </header>
+
+    <main>
+      
+      <!-- شبكة المؤشرات الإحصائية الرئيسية (KPIs) -->
+      <section class="summary-grid">
+        <div class="card user-card">
+          <span class="card-title" data-i18n="lblUser">👤 المستخدم الحالي</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="selectedUser">الكل</span>
+          </div>
+        </div>
+
+        <!-- بطاقة إجمالي الربح (تظهر بالعربية فقط) -->
+        <div class="card profit-card" id="cardTotalProfit">
+          <span class="card-title" data-i18n="lblProfit">💰 إجمالي الربح</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="totalProfit">0.00</span>
+            <span class="currency" data-i18n="currency">مانجو</span>
+          </div>
+        </div>
+
+        <!-- بطاقة نصف إجمالي الربح (تظهر بالإنجليزية فقط) -->
+        <div class="card half-profit-card" id="cardHalfProfit" style="display: none;">
+          <span class="card-title" data-i18n="lblHalfProfit">💰Total Profit (50%)</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="halfProfit" style="color: #0284c7;">0.00</span>
+            <span class="currency" data-i18n="currency">Mango</span>
+          </div>
+        </div>
+
+        <div class="card sales-card">
+          <span class="card-title" data-i18n="lblSales">🛒 إجمالي المبيعات</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="totalAmount">0.00</span>
+            <span class="currency" data-i18n="currency">مانجو</span>
+          </div>
+        </div>
+
+        <!-- لإظهار بطاقة إجمالي العمليات احذف: style="display: none;" -->
+        <div class="card" id="cardTotalCodes" style="display: none;">
+          <span class="card-title" data-i18n="lblOperations">🔢 إجمالي العمليات</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="totalCodes">0</span>
+          </div>
+        </div>
+
+        <!-- لإظهار بطاقة العمليات الملغية احذف: style="display: none;" -->
+        <div class="card" id="cardCancelledCodes" style="display: none;">
+          <span class="card-title" data-i18n="lblCancelled">❌ العمليات الملغية</span>
+          <div class="card-value-wrap">
+            <span class="card-value text-danger" id="cancelledCodes">0</span>
+          </div>
+        </div>
+
+        <!-- لإظهار بطاقة صافي الأكواد المباعة احذف: style="display: none;" -->
+        <div class="card" id="cardNetCodes" style="display: none;">
+          <span class="card-title" data-i18n="lblNet">✅ صافي الأكواد المباعة</span>
+          <div class="card-value-wrap">
+            <span class="card-value text-success" id="netCodes">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- لإظهار صندوق العمولات كاملاً احذف: style="display: none;" -->
+      <section class="commission-box" id="commissionBox" style="display: none;">
+        <h4 data-i18n="lblCommissionHeading">👑 تفاصيل العمولات للمستخدم المختار:</h4>
+        <div class="commission-grid">
+          <div class="comm-item">
+            <span data-i18n="lblSubDealer">👤 الوكيل الفرعي (25%):</span>
+            <strong id="subDealerCommission">-</strong>
+          </div>
+          <div class="comm-item">
+            <span><span data-i18n="lblMainDealer">👑 الوكيل الرئيسي</span> (<span id="mainDealerRate">-</span>%):</span>
+            <strong id="mainDealerCommission">-</strong>
+          </div>
+          <div class="comm-item">
+            <span data-i18n="lblTotalCommission">💰 إجمالي العمولتين:</span>
+            <strong id="totalCommission" style="color: var(--success);">-</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- لوحة الفلاتر -->
+      <section class="filter-panel">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="filterUser" data-i18n="lblFilterUser">👤 فلترة بالمستخدم:</label>
+            <select id="filterUser">
+              <option value="" data-i18n="optAllUsers">جميع المستخدمين</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="startDate" data-i18n="lblStartDate">📅 من تاريخ:</label>
+            <input type="date" id="startDate">
+          </div>
+
+          <div class="filter-group">
+            <label for="endDate" data-i18n="lblEndDate">📅 إلى تاريخ:</label>
+            <input type="date" id="endDate">
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" class="btn-apply" onclick="applyFilters()" data-i18n="btnApply">تطبيق الفلترة</button>
+            <button type="button" class="btn-reset" onclick="resetFilters()" data-i18n="btnReset">إلغاء الفلترة</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ملخص المنتجات المباعة -->
+      <h3 class="section-title" data-i18n="titleProductSummary">📦 إحصائيات المنتجات المباعة</h3>
+      <section class="table-container">
+        <table id="productSummaryTable">
+          <thead>
+            <tr>
+              <th data-i18n="thProduct">المنتج</th>
+              <th data-i18n="thSales">المبيعات</th>
+              <th data-i18n="thCancelled">الملغي</th>
+              <th data-i18n="thNet">الصافي</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- جدول تفاصيل جميع العمليات -->
+      <h3 class="section-title" data-i18n="titleDataTable">📋 تفاصيل جميع العمليات</h3>
+      <section class="table-container">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-i18n="thDate">التاريخ</th>
+              <th data-i18n="thProduct">المنتج</th>
+              <th data-i18n="thAmount">المبلغ</th>
+              <th data-i18n="thUser">المستخدم</th>
+              <th data-i18n="thSN">الرقم التسلسلي (SN)</th>
+              <th data-i18n="thProfit">الربح</th>
+              <th data-i18n="thStatus">الحالة</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+<script src="reseller.js"></script>
+</body>
+</html>
