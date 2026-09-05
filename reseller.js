@@ -131,7 +131,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxpeDYcW_paPqoDR-Zikaap
         }
       });
 
-      document.getElementById("langBtn").textContent = isAr ? "English" : "العربية";
+      document.getElementById("langBtn").textContent = isAr ? "EN" : "AR";
       updateMonthSelectorLabels();
 
       // التبديل بين بطاقة إجمالي الربح (عربي) ونصف الربح (إنجليزي)
