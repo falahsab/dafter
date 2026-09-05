@@ -443,3 +443,16 @@
     @media (max-width: 480px) {
       .summary-grid { grid-template-columns: 1fr; }
     }
+    /* تضليل الرقم وحماية الخصوصية */
+.blur-val.revealed {
+  filter: blur(7px);          /* درجة التشويش/التضليل */
+  cursor: pointer;             /* شكل مؤشر الفأرة كيد قابلة للضغط */
+  user-select: none;          /* منع تحديد النص بالخطأ */
+  transition: filter 0.25s ease; /* انتقال ناعم عند الإظهار */
+}
+
+/* عند النقر: إزالة التضليل وإظهار القيمة */
+.blur-val {
+  filter: blur(0);
+  user-select: auto;
+}
