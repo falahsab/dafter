@@ -1,0 +1,445 @@
+    /* ==============================
+       المتغيرات والتصميم العام
+       ============================== */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --success-light: #dcfce7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: "Tajawal", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      transition: direction 0.3s;
+    }
+
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ==============================
+       الهيدر (Header)
+       ============================== */
+    .header {
+      background: var(--card-bg);
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .month-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .month-selector label {
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+
+    .month-selector select {
+      min-width: 170px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .month-selector select:focus {
+      border-color: var(--primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .lang-btn {
+      background: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid var(--border);
+      padding: 9px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: #ffffff;
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .logout-btn:hover { background: #dc2626; }
+    .logout-btn:active { transform: scale(0.97); }
+
+    /* ==============================
+       شبكة الإحصائيات (KPI Cards)
+       ============================== */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      background: transparent;
+    }
+
+    .card.profit-card::before { background: var(--primary); }
+    .card.half-profit-card::before { background: #0ea5e9; }
+    .card.sales-card::before { background: var(--success); }
+    .card.user-card::before { background: #8b5cf6; }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-value-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .currency {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* ==============================
+       صندوق العمولات
+       ============================== */
+    .commission-box {
+      background: #fdfdfd;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .commission-box h4 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .commission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .comm-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comm-item span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .comm-item strong {
+      font-size: 15px;
+      color: var(--primary-dark);
+    }
+
+    /* ==============================
+       لوحة الفلاتر
+       ============================== */
+    .filter-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-group label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .filter-group input[type="date"],
+    input[type="date"] {
+      direction: ltr !important;
+      text-align: center !important;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      border-color: var(--primary);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .filter-actions button {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-apply {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-apply:hover { background: var(--primary-dark); }
+
+    .btn-reset {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border) !important;
+    }
+    .btn-reset:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* ==============================
+       الجداول وتنسيقها
+       ============================== */
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 25px 0 12px 0;
+    }
+
+    .table-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      padding: 12px 14px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-Completed { background: var(--success-light); color: #15803d; }
+    .status-Refund { background: var(--danger-light); color: #b91c1c; }
+    .status-Pending { background: var(--warning-light); color: #b45309; }
+
+    .text-danger { color: var(--danger); font-weight: 700; }
+    .text-success { color: var(--success); font-weight: 700; }
+
+    /* ==============================
+       جدول إحصائيات المنتجات المدمج
+       ============================== */
+    #productSummaryTable th:first-child,
+    #productSummaryTable td:first-child {
+      text-align: start;
+    }
+
+    #productSummaryTable th:not(:first-child),
+    #productSummaryTable td:not(:first-child) {
+      width: 1%;
+      white-space: nowrap;
+      padding: 10px 18px;
+    }
+
+    #productSummaryTable .product-total-row {
+      background: #f8fafc !important;
+      font-weight: 800;
+      border-top: 2px solid var(--border);
+    }
+
+    #productSummaryTable .product-total-row td {
+      color: var(--primary-dark);
+    }
+
+    @media (max-width: 650px) {
+      #productSummaryTable th, 
+      #productSummaryTable td {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      #productSummaryTable th:not(:first-child),
+      #productSummaryTable td:not(:first-child) {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      #productSummaryTable td:first-child {
+        font-weight: 600;
+        white-space: normal;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .header { flex-direction: column; align-items: stretch; }
+      .month-selector { justify-content: space-between; }
+      .month-selector select { flex: 1; }
+      .header-actions { justify-content: space-between; }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .summary-grid { grid-template-columns: 1fr; }
+    }
