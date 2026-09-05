@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة | يمن ستلايت</title>
+
+<!-- استدعاء خط Tajawal من Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="admin.css"></head>
+
+<body>
+
+<script>
+// التحقق من صلاحيات المدير
+if (localStorage.getItem("role") !== "admin") {
+    alert("يجب تسجيل الدخول كأدمن أولاً");
+    window.location.href = "index.html";
+}
+</script>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="main-wrapper">
+    <div class="card">
+        <!-- ترويسة الصفحة -->
+        <div class="card-header">
+            <button class="icon-btn" onclick="toggleMenu()" title="القائمة">☰</button>
+
+            <div class="card-title">
+                <h2>لوحة الإدارة | يمن ستلايت</h2>
+            </div>
+
+            <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
+        </div>
+
+        <!-- القائمة الجانبية -->
+        <div id="sideMenu" class="side-menu">
+            <div class="side-menu-header">
+                <h3>القائمة الرئيسية</h3>
+                <button class="icon-btn" onclick="closeMenu()">✕</button>
+            </div>
+            <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
+            <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
+            <a href="#" onclick="showClientsBalances(); closeMenu(); return false;">👥 حسابات العملاء</a>
+            <a href="/reseller.html">📊 إحصائيات التجديد</a>
+            <a href="#" onclick="logout(); closeMenu(); return false;" style="color: var(--danger);">🚪 تسجيل الخروج</a>
+        </div>
+        <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
+
+        <!-- ملخص الحسابات الإجمالي العام -->
+        <div class="account-summary">
+            <div class="summary-item">
+                <span class="label">إجمالي ما لكم (مدين)</span>
+                <span class="value debit-value" id="totalDebit">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">إجمالي ما عليكم (دائن)</span>
+                <span class="value credit-value" id="totalCredit">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">الصافي الكلي</span>
+                <span class="value balance-value" id="netBalance">0 ر.ي</span>
+            </div>
+        </div>
+
+        <!-- اختيار العميل والبحث السريع مع زر التعديل المباشر -->
+        <div class="search-select-box">
+            <input id="client_search" class="search-input" type="text" placeholder="🔍 ابحث عن عميل بالاسم أو الهاتف..." oninput="filterClientSelect()">
+            <div style="display: flex; gap: 8px;">
+                <select id="client_select" style="flex: 1;">
+                    <option value="">-- اختر العميل --</option>
+                </select>
+                <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
+            </div>
+        </div>
+
+        <!-- مدخلات العملية المالية -->
+        <div class="form-group">
+            <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any">
+        </div>
+        <input type="hidden" id="type" value="debit">
+
+        <div class="form-group note-wrapper">
+            <input id="note" list="notesList" placeholder="البيان (تفاصيل العملية)">
+            <span class="paste-btn" onclick="pasteFromClipboard()" title="لصق من الحافظة">📋</span>
+            <datalist id="notesList"></datalist>
+        </div>
+
+        <!-- أزرار الإضافة السريعة -->
+        <div class="action-buttons">
+            <button type="button" class="trans-btn credit-btn" onclick="addTransType('credit')">
+                <span>⬇</span>
+                <span>إضافة له (دائن)</span>
+            </button>
+            <button type="button" class="trans-btn debit-btn" onclick="addTransType('debit')">
+                <span>⬆</span>
+                <span>إضافة عليه (مدين)</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
+
+        <!-- ملخص رصيد العميل المختار -->
+        <div class="account-summary" style="margin-top: 20px;">
+            <div class="summary-item">
+                <span class="label">إجمالي العملاء</span>
+                <span class="value" id="stat_clients" style="color: var(--text-main);">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">رصيد العميل الحالي</span>
+                <span class="value" id="stat_total">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">آخر عملية</span>
+                <span class="value" id="stat_last" style="font-size: 0.9rem; color: var(--text-muted);">-</span>
+            </div>
+        </div>
+
+        <!-- أزرار العمليات -->
+        <div class="action-buttons">
+            <button type="button" class="trans-btn btn-secondary" onclick="showAllTransactions()">
+                <span>📋</span>
+                <span>عرض كل العمليات</span>
+            </button>
+            <button type="button" class="trans-btn btn-accent" onclick="printTransactions()">
+                <span>🖨️</span>
+                <span>طباعة كشف حساب</span>
+            </button>
+        </div>
+
+        <!-- جدول العمليات المالية (تم تصحيح الجدول المتداخل) -->
+        <div class="table-responsive">
+            <table id="transTable">
+                <thead>
+                    <tr>
+                        <th>المبلغ</th>
+                        <th>النوع</th>
+                        <th>البيان</th>
+                        <th>التاريخ</th>
+                        <th>إشعار</th>
+                    </tr>
+                </thead>
+                <tbody id="transBody">
+                    <tr><td colspan="5" style="color: var(--text-muted); padding: 20px;">اختر عميلاً لعرض عملياته</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- مودال [إضافة عميل جديد / تعديل عميل سابق] -->
+<div id="addClientModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h3 id="clientModalTitle">➕ إدارة بيانات العميل</h3>
+        <button class="modal-close" onclick="closeModal('addClientModal')">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+        <!-- شريط التبديل بين وضع الإضافة والتعديل -->
+        <div class="mode-tabs">
+            <button type="button" id="tabNewClient" class="mode-tab-btn active" onclick="setClientModalMode('new')">
+                ➕ عميل جديد
+            </button>
+            <button type="button" id="tabEditClient" class="mode-tab-btn" onclick="setClientModalMode('edit')">
+                ✏️ تعديل عميل سابق
+            </button>
+        </div>
+
+        <!-- قائمة اختيار العميل للتعديل (تظهر عند اختيار وضع التعديل) -->
+        <div id="selectClientToEditBox" class="form-group" style="display: none;">
+            <label class="input-label" style="color: var(--primary); font-weight: bold;">اختر العميل المراد تعديل بياناته:</label>
+            <select id="modal_client_select" onchange="onSelectClientToEdit()">
+                <option value="">-- اختر عميلاً للتعديل --</option>
+            </select>
+        </div>
+
+        <input type="hidden" id="edit_client_id" value="">
+
+        <div class="form-group">
+            <label class="input-label">الاسم</label>
+            <input id="new_name" placeholder="اسم العميل الكامل">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">رقم الواتساب</label>
+            <div style="display: flex; gap: 6px;">
+                <input id="new_mobile" type="tel" placeholder="رقم الواتساب (مثال: 770000000)">
+                <button class="icon-btn" id="pickContact" type="button" title="استيراد من جهات الاتصال">📱</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">رقم الرسائل (SMS)</label>
+            <input id="new_mobile_sms" type="tel" placeholder="رقم SMS">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">اسم المستخدم</label>
+            <input id="new_username" placeholder="اسم المستخدم">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">كلمة المرور</label>
+            <input id="new_password" type="text" placeholder="كلمة المرور">
+        </div>
+        
+        <button class="trans-btn credit-btn" style="width:100%" id="saveClientBtn" onclick="saveClientData()">إضافة العميل</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال تعديل عملية مالية -->
+<div id="transModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h3>✏️ تعديل العملية المالية</h3>
+        <button class="modal-close" onclick="closeModal('transModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="input-label">المبلغ</label>
+            <input id="modal_amount" type="number" placeholder="المبلغ">
+        </div>
+        <div class="form-group">
+            <label class="input-label">النوع</label>
+            <select id="modal_type">
+                <option value="debit">عليه (مدين)</option>
+                <option value="credit">له (دائن)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="input-label">البيان</label>
+            <input id="modal_note" placeholder="البيان">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="trans-btn credit-btn" onclick="saveTransModal()">حفظ التعديل</button>
+        <button class="trans-btn debit-btn" onclick="deleteTransModal()">حذف</button>
+        <button class="trans-btn btn-secondary" onclick="closeModal('transModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال حسابات العملاء -->
+<div id="clientsModal" class="modal">
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+        <h3>👥 حسابات العملاء وصافي الأرصدة</h3>
+        <button class="modal-close" onclick="closeModal('clientsModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+        <input id="search_client_list" class="search-input" placeholder="🔍 ابحث بالاسم أو رقم الهاتف..." oninput="filterClientsTable()">
+        
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table id="clientsBalanceTable">
+                <thead>
+                    <tr>
+                        <th>الرقم</th>
+                        <th>العميل</th>
+                        <th>الجوال</th>
+                        <th>الرصيد الصافي</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsBalanceBody"></tbody>
+            </table>
+        </div>
+
+        <div id="clientsTotals" class="account-summary" style="margin-top: 15px;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="trans-btn btn-accent" onclick="printClientsList()">🖨️ طباعة القائمة</button>
+        <button class="trans-btn btn-secondary" onclick="closeModal('clientsModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال Mango Users -->
+<div id="mangoUsersModal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3>👤 أسماء Mango Users</h3>
+            <button class="modal-close" onclick="closeModal('mangoUsersModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input id="mangoSearch" class="search-input" type="text" placeholder="🔍 بحث باسم العميل أو Mango User..." oninput="filterMangoUsers()">
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 10px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم العميل</th>
+                            <th>Mango User</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mangoUsersBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة اختيار الرقم المنبثقة للاتصال -->
+<div id="numberPopup" class="modal">
+    <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
+        <h4 style="margin-bottom: 12px; color: var(--primary);">اختر الرقم المناسب</h4>
+        <div id="numbersList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        <button class="trans-btn btn-secondary" onclick="closePopup()" style="margin-top: 12px; width: 100%;">إلغاء</button>
+    </div>
+</div>
+
+<script src="admin.js"></script>
+</body>
+</html>
