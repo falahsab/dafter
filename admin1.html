@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة الإدارة | يمن ستلايت</title>
 
-<!-- استدعاء خط Tajawal من Google Fonts لضمان مظهر احترافي -->
+<!-- استدعاء خط Tajawal من Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@ body {
     border: 1px solid var(--border-color);
 }
 
-/* Header */
+/* الترويسة */
 .card-header {
     display: flex;
     justify-content: space-between;
@@ -109,7 +109,7 @@ body {
     background: var(--danger-bg);
 }
 
-/* Side Menu */
+/* القائمة الجانبية */
 .side-menu {
     position: fixed;
     top: 0;
@@ -175,7 +175,7 @@ body {
     display: block;
 }
 
-/* Summary Cards */
+/* ملخص الحسابات الإجمالي */
 .account-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -215,7 +215,7 @@ body {
 .debit-value { color: #dc2626; }
 .balance-value { color: var(--info); }
 
-/* Form Fields */
+/* الحقول والمدخلات */
 .form-group {
     margin-bottom: 14px;
 }
@@ -288,7 +288,7 @@ input:focus, select:focus {
     background: #e2e8f0;
 }
 
-/* Action Buttons */
+/* الأزرار */
 .action-buttons {
     display: flex;
     gap: 10px;
@@ -336,7 +336,7 @@ input:focus, select:focus {
     background: #0284c7;
 }
 
-/* Tables */
+/* الجداول */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -387,20 +387,13 @@ tbody tr:hover {
     font-weight: 700;
 }
 
-.badge-debit {
-    background: #fee2e2;
-    color: #b91c1c;
-}
-
-.badge-credit {
-    background: #dcfce7;
-    color: #15803d;
-}
+.badge-debit { background: #fee2e2; color: #b91c1c; }
+.badge-credit { background: #dcfce7; color: #15803d; }
 
 .debit-text { color: #dc2626; font-weight: 700; }
 .credit-text { color: #16a34a; font-weight: 700; }
 
-/* Communication Group */
+/* أزرار الإشعارات */
 .wa-sms-group {
     display: flex;
     gap: 6px;
@@ -426,7 +419,7 @@ tbody tr:hover {
 .sms-btn { background: #3b82f6; }
 .sms-btn:hover { background: #2563eb; }
 
-/* Modals */
+/* النوافذ المنبثقة (Modals) */
 .modal {
     display: none;
     position: fixed;
@@ -499,6 +492,35 @@ tbody tr:hover {
     border-top: 1px solid var(--border-color);
 }
 
+/* تبويبات نمط الإضافة / التعديل */
+.mode-tabs {
+    display: flex;
+    gap: 6px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 15px;
+}
+
+.mode-tab-btn {
+    flex: 1;
+    border: none;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.mode-tab-btn.active {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: var(--shadow-sm);
+}
+
 /* Toast Notification */
 .toast-container {
     position: fixed;
@@ -536,7 +558,6 @@ tbody tr:hover {
 .toast.success { background: #059669; }
 .toast.error { background: #dc2626; }
 
-/* Responsive adjustments */
 @media (max-width: 640px) {
     body { padding: 8px; }
     .card { padding: 16px 12px; }
@@ -561,7 +582,7 @@ tbody tr:hover {
 <body>
 
 <script>
-// التحقق من صلاحيات الأدمن
+// التحقق من صلاحيات المدير
 if (localStorage.getItem("role") !== "admin") {
     alert("يجب تسجيل الدخول كأدمن أولاً");
     window.location.href = "index.html";
@@ -572,7 +593,7 @@ if (localStorage.getItem("role") !== "admin") {
 
 <div class="main-wrapper">
     <div class="card">
-        <!-- ترويسة اللوحة -->
+        <!-- ترويسة الصفحة -->
         <div class="card-header">
             <button class="icon-btn" onclick="toggleMenu()" title="القائمة">☰</button>
 
@@ -590,14 +611,14 @@ if (localStorage.getItem("role") !== "admin") {
                 <button class="icon-btn" onclick="closeMenu()">✕</button>
             </div>
             <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
-            <a href="#" onclick="openModal('addClientModal'); closeMenu(); return false;">➕ إضافة عميل</a>
+            <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
             <a href="#" onclick="showClientsBalances(); closeMenu(); return false;">👥 حسابات العملاء</a>
             <a href="/reseller.html">📊 إحصائيات التجديد</a>
             <a href="#" onclick="logout(); closeMenu(); return false;" style="color: var(--danger);">🚪 تسجيل الخروج</a>
         </div>
         <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
 
-        <!-- ملخص الحسابات العام -->
+        <!-- ملخص الحسابات الإجمالي العام -->
         <div class="account-summary">
             <div class="summary-item">
                 <span class="label">إجمالي ما لكم (مدين)</span>
@@ -613,15 +634,18 @@ if (localStorage.getItem("role") !== "admin") {
             </div>
         </div>
 
-        <!-- صندوق اختيار وبحث العميل -->
+        <!-- اختيار العميل والبحث السريع مع زر التعديل المباشر -->
         <div class="search-select-box">
             <input id="client_search" class="search-input" type="text" placeholder="🔍 ابحث عن عميل بالاسم أو الهاتف..." oninput="filterClientSelect()">
-            <select id="client_select">
-                <option value="">-- اختر العميل --</option>
-            </select>
+            <div style="display: flex; gap: 8px;">
+                <select id="client_select" style="flex: 1;">
+                    <option value="">-- اختر العميل --</option>
+                </select>
+                <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
+            </div>
         </div>
 
-        <!-- إدخال تفاصيل العملية المالية -->
+        <!-- مدخلات العملية المالية -->
         <div class="form-group">
             <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any">
         </div>
@@ -647,7 +671,7 @@ if (localStorage.getItem("role") !== "admin") {
 
         <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
 
-        <!-- ملخص حساب العميل المختار -->
+        <!-- ملخص رصيد العميل المختار -->
         <div class="account-summary" style="margin-top: 20px;">
             <div class="summary-item">
                 <span class="label">إجمالي العملاء</span>
@@ -663,7 +687,7 @@ if (localStorage.getItem("role") !== "admin") {
             </div>
         </div>
 
-        <!-- أزرار العمليات الإضافية -->
+        <!-- أزرار العمليات -->
         <div class="action-buttons">
             <button type="button" class="trans-btn btn-secondary" onclick="showAllTransactions()">
                 <span>📋</span>
@@ -675,7 +699,7 @@ if (localStorage.getItem("role") !== "admin") {
             </button>
         </div>
 
-        <!-- جدول العمليات المالية (تم تصحيح وسم الجدول المتداخل) -->
+        <!-- جدول العمليات المالية (تم تصحيح الجدول المتداخل) -->
         <div class="table-responsive">
             <table id="transTable">
                 <thead>
@@ -695,36 +719,69 @@ if (localStorage.getItem("role") !== "admin") {
     </div>
 </div>
 
-<!-- مودال إضافة عميل جديد -->
+<!-- مودال [إضافة عميل جديد / تعديل عميل سابق] -->
 <div id="addClientModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-        <h3>➕ إضافة عميل جديد</h3>
+        <h3 id="clientModalTitle">➕ إدارة بيانات العميل</h3>
         <button class="modal-close" onclick="closeModal('addClientModal')">&times;</button>
     </div>
+    
     <div class="modal-body">
+        <!-- شريط التبديل بين وضع الإضافة والتعديل -->
+        <div class="mode-tabs">
+            <button type="button" id="tabNewClient" class="mode-tab-btn active" onclick="setClientModalMode('new')">
+                ➕ عميل جديد
+            </button>
+            <button type="button" id="tabEditClient" class="mode-tab-btn" onclick="setClientModalMode('edit')">
+                ✏️ تعديل عميل سابق
+            </button>
+        </div>
+
+        <!-- قائمة اختيار العميل للتعديل (تظهر عند اختيار وضع التعديل) -->
+        <div id="selectClientToEditBox" class="form-group" style="display: none;">
+            <label class="input-label" style="color: var(--primary); font-weight: bold;">اختر العميل المراد تعديل بياناته:</label>
+            <select id="modal_client_select" onchange="onSelectClientToEdit()">
+                <option value="">-- اختر عميلاً للتعديل --</option>
+            </select>
+        </div>
+
+        <input type="hidden" id="edit_client_id" value="">
+
         <div class="form-group">
+            <label class="input-label">الاسم</label>
             <input id="new_name" placeholder="اسم العميل الكامل">
         </div>
-        <div class="form-group" style="display: flex; gap: 6px;">
-            <input id="new_mobile" type="tel" placeholder="رقم الواتساب (مثال: 770000000)">
-            <button class="icon-btn" id="pickContact" type="button" title="استيراد من جهات الاتصال">📱</button>
-        </div>
+        
         <div class="form-group">
-            <input id="new_mobile_sms" type="tel" placeholder="رقم الرسائل SMS">
+            <label class="input-label">رقم الواتساب</label>
+            <div style="display: flex; gap: 6px;">
+                <input id="new_mobile" type="tel" placeholder="رقم الواتساب (مثال: 770000000)">
+                <button class="icon-btn" id="pickContact" type="button" title="استيراد من جهات الاتصال">📱</button>
+            </div>
         </div>
+        
         <div class="form-group">
+            <label class="input-label">رقم الرسائل (SMS)</label>
+            <input id="new_mobile_sms" type="tel" placeholder="رقم SMS">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">اسم المستخدم</label>
             <input id="new_username" placeholder="اسم المستخدم">
         </div>
+        
         <div class="form-group">
-            <input id="new_password" type="password" placeholder="كلمة المرور">
+            <label class="input-label">كلمة المرور</label>
+            <input id="new_password" type="text" placeholder="كلمة المرور">
         </div>
-        <button class="trans-btn credit-btn" style="width:100%" id="saveClientBtn" onclick="addClient()">حفظ العميل</button>
+        
+        <button class="trans-btn credit-btn" style="width:100%" id="saveClientBtn" onclick="saveClientData()">إضافة العميل</button>
     </div>
   </div>
 </div>
 
-<!-- مودال تعديل عملية -->
+<!-- مودال تعديل عملية مالية -->
 <div id="transModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -756,7 +813,7 @@ if (localStorage.getItem("role") !== "admin") {
   </div>
 </div>
 
-<!-- مودال كشف حسابات العملاء -->
+<!-- مودال حسابات العملاء -->
 <div id="clientsModal" class="modal">
   <div class="modal-content modal-large">
     <div class="modal-header">
@@ -815,7 +872,7 @@ if (localStorage.getItem("role") !== "admin") {
     </div>
 </div>
 
-<!-- نافذة اختيار الرقم المنبثقة -->
+<!-- نافذة اختيار الرقم المنبثقة للاتصال -->
 <div id="numberPopup" class="modal">
     <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
         <h4 style="margin-bottom: 12px; color: var(--primary);">اختر الرقم المناسب</h4>
@@ -827,13 +884,14 @@ if (localStorage.getItem("role") !== "admin") {
 <script>
 const API = "https://script.google.com/macros/s/AKfycbwzckwPQQorzUyjULji6IAtYOzq-u3o0vJQvC8qRz6lt9tBe6Ow9kNUkmAVmGsb77Im/exec";
 
-// SVG مدمج لشعار الواتساب لتفادي أي بطء أو فشل تحميل خارجي
+// أيقونة واتساب SVG مدمجة فائقة السرعة
 const waSvgIcon = `<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.698c.983.54 1.81.826 2.806.826 3.182 0 5.768-2.587 5.768-5.766-.001-3.187-2.575-5.77-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.115-.526-1.815-.752-2.983-2.59-3.074-2.711-.09-.12-1.229-1.636-1.229-3.12 0-1.485.765-2.217 1.036-2.518.271-.301.591-.376.787-.376.196 0 .393.002.564.01.181.01.425-.069.664.506.248.595.845 2.062.919 2.213.074.151.123.327.024.524-.098.197-.148.32-.294.493-.146.173-.308.386-.44.518-.146.146-.299.306-.129.598.17.292.755 1.246 1.62 2.015 1.111.989 2.049 1.296 2.341 1.442.292.146.463.123.634-.073.171-.196.732-.853.928-1.146.196-.293.391-.244.659-.146.268.098 1.708.805 2.001.951.293.146.488.22.561.342.073.122.073.708-.071 1.113z"/></svg>`;
 
 const qs = id => document.getElementById(id);
 let allClients = [], clientTransactions = [], currentClientId = "", currentTransId = null;
+let currentClientModalMode = 'new'; // 'new' أو 'edit'
 
-// نظام الإشعارات المنبثقة الناعم (Toast)
+// نظام الإشعارات Toast
 function showToast(message, type = "success") {
     const container = qs("toastContainer");
     const toast = document.createElement("div");
@@ -848,7 +906,7 @@ function showToast(message, type = "success") {
     }, 2800);
 }
 
-// التحكم بالنوافذ المنبثقة
+// فتح وإغلاق النوافذ
 function openModal(id) { qs(id).style.display = "flex"; }
 function closeModal(id) { qs(id).style.display = "none"; }
 window.onclick = e => { if (e.target.classList.contains("modal")) e.target.style.display = "none"; }
@@ -869,7 +927,7 @@ function closeMenu() {
     qs("menuOverlay").classList.remove("show");
 }
 
-// تحميل الإجماليات العامة
+// تحميل الإجماليات المالية الكلية
 async function loadGlobalSummary() {
     try {
         const res = await fetch(API, {
@@ -909,6 +967,7 @@ async function loadClients() {
         allClients = Array.isArray(data) ? data : [];
 
         const select = qs("client_select");
+        const prevSelected = select.value;
         select.innerHTML = `<option value="">-- اختر العميل --</option>`;
 
         const frag = document.createDocumentFragment();
@@ -919,6 +978,9 @@ async function loadClients() {
             frag.appendChild(op);
         });
         select.appendChild(frag);
+
+        if (prevSelected) select.value = prevSelected;
+        toggleEditSelectedBtn();
         updateStats();
     } catch (e) {
         showToast("فشل تحميل قائمة العملاء", "error");
@@ -927,7 +989,20 @@ async function loadClients() {
     }
 }
 
-// بحث سريع في قائمة اختيار العميل
+// إظهار زر التعديل المباشر عند تحديد عميل
+function toggleEditSelectedBtn() {
+    const hasClient = !!qs("client_select").value;
+    qs("editCurrentClientBtn").style.display = hasClient ? "flex" : "none";
+}
+
+function editCurrentlySelectedClient() {
+    const clientId = qs("client_select").value;
+    if (clientId) {
+        openEditClientModal(clientId);
+    }
+}
+
+// بحث سريع في القائمة المنسدلة للعملاء
 function filterClientSelect() {
     const q = qs("client_search").value.trim().toLowerCase();
     const select = qs("client_select");
@@ -943,11 +1018,86 @@ function filterClientSelect() {
         }
     });
 
+    toggleEditSelectedBtn();
     if (foundFirst) loadTransactions();
 }
 
-// إضافة عميل جديد
-async function addClient() {
+// -------------------------------------------------------------
+// إدارة نافذة العميل (إضافة جديد / تعديل حالي)
+// -------------------------------------------------------------
+function openNewClientModal() {
+    setClientModalMode('new');
+    openModal('addClientModal');
+}
+
+function openEditClientModal(clientId) {
+    setClientModalMode('edit', clientId);
+    openModal('addClientModal');
+}
+
+function setClientModalMode(mode, clientId = null) {
+    currentClientModalMode = mode;
+    const isEdit = (mode === 'edit');
+
+    qs("selectClientToEditBox").style.display = isEdit ? "block" : "none";
+    qs("clientModalTitle").textContent = isEdit ? "✏️ تعديل بيانات العميل" : "➕ إضافة عميل جديد";
+    qs("saveClientBtn").textContent = isEdit ? "حفظ التعديلات" : "إضافة العميل";
+
+    if (isEdit) {
+        qs("tabEditClient").classList.add("active");
+        qs("tabNewClient").classList.remove("active");
+    } else {
+        qs("tabNewClient").classList.add("active");
+        qs("tabEditClient").classList.remove("active");
+        clearClientForm();
+    }
+
+    // تعبئة القائمة المنسدلة للعملاء داخل المودال
+    const modalSelect = qs("modal_client_select");
+    modalSelect.innerHTML = `<option value="">-- اختر عميلاً للتعديل --</option>`;
+    allClients.forEach(c => {
+        const op = document.createElement("option");
+        op.value = c.client_id;
+        op.textContent = `${c.name} (${c.mobile || '-'})`;
+        modalSelect.appendChild(op);
+    });
+
+    if (clientId) {
+        modalSelect.value = clientId;
+        onSelectClientToEdit();
+    }
+}
+
+function clearClientForm() {
+    qs("edit_client_id").value = "";
+    qs("new_name").value = "";
+    qs("new_mobile").value = "";
+    qs("new_mobile_sms").value = "";
+    qs("new_username").value = "";
+    qs("new_password").value = "";
+}
+
+function onSelectClientToEdit() {
+    const clientId = qs("modal_client_select").value;
+    if (!clientId) {
+        clearClientForm();
+        return;
+    }
+
+    const client = allClients.find(c => c.client_id == clientId);
+    if (!client) return;
+
+    qs("edit_client_id").value = client.client_id;
+    qs("new_name").value = client.name || "";
+    qs("new_mobile").value = client.mobile || "";
+    qs("new_mobile_sms").value = client.mobile_sms || "";
+    qs("new_username").value = client.username || "";
+    qs("new_password").value = client.password || "";
+}
+
+// حفظ العميل (إضافة أو تعديل تلقائياً)
+async function saveClientData() {
+    const clientId = qs("edit_client_id").value;
     const name = qs("new_name").value.trim();
     const mobile = qs("new_mobile").value.trim();
     const mobile_sms = qs("new_mobile_sms").value.trim();
@@ -955,43 +1105,57 @@ async function addClient() {
     const password = qs("new_password").value.trim();
     const btn = qs("saveClientBtn");
 
-    if (!name || !mobile || !mobile_sms || !username || !password) {
-        showToast("يرجى تعبئة كافة الحقول المطلوبة", "error");
+    if (!name || !mobile || !username || !password) {
+        showToast("يرجى تعبئة كافة الحقول الأساسية", "error");
         return;
     }
 
+    const isEdit = (currentClientModalMode === 'edit' && clientId);
+    const action = isEdit ? "updateClient" : "addClient";
+
     btn.disabled = true;
+    const originalText = btn.textContent;
     btn.textContent = "جاري الحفظ...";
+
+    const payload = {
+        action: action,
+        name,
+        mobile,
+        mobile_sms,
+        username,
+        password
+    };
+
+    if (isEdit) {
+        payload.client_id = clientId;
+    }
 
     try {
         const res = await fetch(API, {
             method: "POST",
-            body: JSON.stringify({ action: "addClient", name, mobile, mobile_sms, username, password })
+            body: JSON.stringify(payload)
         });
         const data = await res.json();
 
         if (data.status === "success") {
-            showToast("تمت إضافة العميل بنجاح");
-            qs("new_name").value = "";
-            qs("new_mobile").value = "";
-            qs("new_mobile_sms").value = "";
-            qs("new_username").value = "";
-            qs("new_password").value = "";
+            showToast(isEdit ? "تم تحديث بيانات العميل بنجاح" : "تمت إضافة العميل بنجاح");
             closeModal("addClientModal");
-
+            clearClientForm();
             await Promise.all([loadClients(), loadGlobalSummary()]);
         } else {
-            showToast(data.message || "فشلت إضافة العميل", "error");
+            showToast(data.message || "حدث خطأ أثناء حفظ البيانات", "error");
         }
     } catch (err) {
-        showToast("خطأ في الاتصال بالخادم", "error");
+        showToast("تعذر الاتصال بالخادم", "error");
     } finally {
         btn.disabled = false;
-        btn.textContent = "حفظ العميل";
+        btn.textContent = originalText;
     }
 }
 
-// إضافة عملية مالية
+// -------------------------------------------------------------
+// العمليات المالية
+// -------------------------------------------------------------
 async function addTrans() {
     const client_id = qs("client_select").value;
     let amount = Number(qs("amount").value);
@@ -1036,6 +1200,8 @@ function addTransType(type) {
 // تحميل وعرض العمليات
 async function loadTransactions() {
     currentClientId = qs("client_select").value;
+    toggleEditSelectedBtn();
+
     if (!currentClientId) {
         qs("transBody").innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">اختر عميلاً لعرض عملياته</td></tr>`;
         return;
@@ -1104,7 +1270,6 @@ function renderTransactions(transactions) {
             </td>
         `;
 
-        // أحداث أزرار الواتساب والـ SMS
         const waBtn = tr.querySelector(".wa-btn");
         const smsBtn = tr.querySelector(".sms-btn");
 
@@ -1154,7 +1319,7 @@ function sendSmsMsg(t, clientName, smsNumber) {
     window.open(`sms:${smsNumber}?body=${encodeURIComponent(msg)}`, "_blank");
 }
 
-// تعديل وحذف العملية
+// تعديل وحذف العملية المالية
 function openTransModal(id) {
     currentTransId = id;
     const t = clientTransactions.find(x => x.trans_id == id);
@@ -1194,7 +1359,7 @@ async function deleteTransModal() {
     }
 }
 
-// طباعة كشف حساب عميل احترافي
+// طباعة كشف حساب عميل
 function printTransactions() {
     if (!clientTransactions.length) {
         showToast("لا توجد عمليات لطباعتها", "error");
@@ -1299,7 +1464,7 @@ function printTransactions() {
     setTimeout(() => win.print(), 350);
 }
 
-// عرض جميع أرصدة العملاء
+// عرض نافذة حسابات وأرصدة العملاء (مع زر التعديل المباشر)
 async function showClientsBalances() {
     try {
         const res = await fetch(API, { method: "POST", body: JSON.stringify({ action: "getClientsBalance" }) });
@@ -1327,11 +1492,21 @@ async function showClientsBalances() {
                     ${tot >= 0 ? `عليه ${tot.toLocaleString()}` : `له ${Math.abs(tot).toLocaleString()}`}
                 </td>
                 <td>
-                    <button class="trans-btn debit-btn" style="padding: 4px 8px; font-size: 0.75rem;">حذف</button>
+                    <div style="display: flex; gap: 4px; justify-content: center;">
+                        <button class="trans-btn btn-accent edit-btn" style="padding: 4px 8px; font-size: 0.75rem;">تعديل</button>
+                        <button class="trans-btn debit-btn del-btn" style="padding: 4px 8px; font-size: 0.75rem;">حذف</button>
+                    </div>
                 </td>
             `;
 
-            tr.querySelector("button").onclick = async () => {
+            // زر التعديل
+            tr.querySelector(".edit-btn").onclick = () => {
+                closeModal("clientsModal");
+                openEditClientModal(c.client_id);
+            };
+
+            // زر الحذف
+            tr.querySelector(".del-btn").onclick = async () => {
                 if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته بشكل نهائي؟`)) {
                     await fetch(API, { method: "POST", body: JSON.stringify({ action: "deleteClient", client_id: c.client_id }) });
                     showToast("تم حذف العميل بنجاح");
@@ -1378,7 +1553,7 @@ function filterClientsTable() {
     });
 }
 
-// تحديث لوحة الإحصائيات
+// تحديث الإحصائيات في الشاشة الرئيسية
 function updateStats(explicitTotal = null) {
     qs("stat_clients").textContent = allClients.length;
     if (clientTransactions.length) {
@@ -1398,7 +1573,7 @@ function updateStats(explicitTotal = null) {
     }
 }
 
-// استيراد جهات الاتصال من الموبايل
+// جهات الاتصال من الموبايل
 function closePopup() { qs("numberPopup").style.display = "none"; }
 
 qs("pickContact").addEventListener("click", async () => {
@@ -1616,7 +1791,7 @@ function printClientsList() {
     setTimeout(() => win.print(), 350);
 }
 
-// بدء تحميل البيانات بالتوازي عند فتح الصفحة
+// بدء التشغيل
 Promise.all([loadClients(), loadGlobalSummary()]);
 qs("client_select").addEventListener("change", loadTransactions);
 </script>
