@@ -501,3 +501,7 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxpeDYcW_paPqoDR-Zikaap
       applyLanguage(currentLang);
       loadData();
     });
+// دالة إظهار وإخفاء التضليل عند النقر
+function toggleBlur(el) {
+  el.classList.toggle("revealed");
+}
