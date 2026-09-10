@@ -5,1015 +5,315 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة الإدارة | يمن ستلايت</title>
 
-<style>
-:root {
-    --primary: #00693B; 
-    --secondary: #00A651; 
-    --bg: #F5F5F5;
-    --card-bg: #FFFFFF;
-    --text: #0F172A;
-    --accent: #FFD700;
-}
+<!-- استدعاء خط Tajawal من Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-body { font-family: "Tajawal", sans-serif; background: var(--bg); margin:0; padding:20px; }
-
-.card { max-width: 1000px; margin:auto; background: var(--card-bg); padding:25px; border-radius:15px; box-shadow:0 4px 12px #0002; }
-
-h2,h3{ margin:12px 0; color: var(--primary); }
-
-input, select, button { width: 100%; padding:12px; margin-top:10px; border:1px solid #d1d5db; border-radius:8px; font-size:1rem; box-sizing:border-box; }
-
-button { background: var(--primary); color:white; border:none; cursor:pointer; transition:0.3s; }
-button:hover { background: var(--secondary); }
-
-.logout-btn { background:#EF4444; width:auto; padding:10px 20px; }
-.logout-btn:hover { background:#DC2626; }
-
-.refresh-btn { background:#3b82f6; width:auto; padding:8px 15px; font-size:0.9rem; float:left; margin-bottom:10px; }
-.refresh-btn:hover { background:#2563eb; }
-
-.table-container { overflow-x:auto; margin-top:20px; }
-
-table { width:100%; border-collapse:collapse; font-size:0.95rem; }
-
-th, td { border-bottom:1px solid #e5e7eb; padding:8px; text-align:center; }
-
-th { background: var(--secondary); color:white; }
-.debit { color:red; font-weight:bold; }
-.credit { color:green; font-weight:bold; }
-
-.modal { display:none; position:fixed; z-index:200; left:0; top:0; width:100%; height:100%; background-color:rgba(0,0,0,0.4); justify-content:center; align-items:center; }
-
-.modal-content { background:#fff; margin:auto; padding:20px; border-radius:10px; width:90%; max-width:440px; animation:fadeIn 0.25s ease; max-height:90vh; overflow-y:auto; }
-@keyframes fadeIn { from{ opacity:0; transform:scale(.9); } to{ opacity:1; } }
-
-.close { color:#555; font-size:28px; cursor:pointer; float:left; }
-.close:hover{ color:#000; }
-
-#clientsModal .modal-body { background:#fff; padding:18px; border-radius:10px; width:90%; max-width:920px; max-height:85vh; overflow:auto; }
-
-.stat-box { background:white; padding:15px; border-radius:10px; box-shadow:0 2px 5px #0001; text-align:center; flex:1; font-weight:bold; }
-
-.wa-btn { background:#25D366;color:white;border:none;padding:6px 12px;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:4px; }
-.wa-btn img { width:16px; height:16px; vertical-align:middle; }
-.input-group { display: flex; align-items: center; gap: 6px; }
-.input-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 6px; }
-
-.pick-btn {
-    width:50px;
-    border: none;
-    background: #28a745;
-    color: white;
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 18px;
-}
-
-@media (max-width: 768px) {
-  .card { margin: 5px; padding: 10px; width: auto; border-radius: 8px; }
-  body { padding: 5px; }
-}
-
-.wa-sms-group { display: flex; gap: 6px; justify-content: center; }
-.wa-sms-group button {
-    flex: 1; padding: 6px 8px; border: none; border-radius: 6px; color: white; cursor: pointer;
-    font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 4px; transition: 0.2s;
-}
-.wa-sms-group .wa-btn { background: #25D366; }
-.wa-sms-group .wa-btn:hover { background: #1ebe57; }
-.wa-sms-group .sms-btn { background: #3b82f6; }
-.wa-sms-group .sms-btn:hover { background: #2563eb; }
-</style>
-</head>
+<link rel="stylesheet" href="admin.css"></head>
 
 <body>
 
 <script>
-if(localStorage.getItem("role")!=="admin"){ alert("يجب تسجيل الدخول كأدمن"); window.location.href="index.html"; }
+// التحقق من صلاحيات المدير
+if (localStorage.getItem("role") !== "admin") {
+    alert("يجب تسجيل الدخول كأدمن أولاً");
+    window.location.href = "index.html";
+}
 </script>
 
-<div class="card">
+<div class="toast-container" id="toastContainer"></div>
 
-<div style="display:flex;justify-content:space-between;align-items:center;">
-    <h2>لوحة الإدارة | يمن ستلايت</h2>
-    <div>
-        <button class="refresh-btn" onclick="syncData(true, true)">🔄 تحديث البيانات</button>
-        <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+<div class="main-wrapper">
+    <div class="card">
+        <!-- ترويسة الصفحة -->
+        <div class="card-header">
+            <button class="icon-btn" onclick="toggleMenu()" title="القائمة">☰</button>
+
+            <div class="card-title">
+                <h2>لوحة الإدارة | يمن ستلايت</h2>
+            </div>
+
+            <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
+        </div>
+
+        <!-- القائمة الجانبية -->
+        <div id="sideMenu" class="side-menu">
+            <div class="side-menu-header">
+                <h3>القائمة الرئيسية</h3>
+                <button class="icon-btn" onclick="closeMenu()">✕</button>
+            </div>
+            <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
+            <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
+            <a href="#" onclick="showClientsBalances(); closeMenu(); return false;">👥 حسابات العملاء</a>
+            <a href="/reseller.html">📊 إحصائيات التجديد</a>
+            <a href="#" onclick="logout(); closeMenu(); return false;" style="color: var(--danger);">🚪 تسجيل الخروج</a>
+        </div>
+        <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
+
+        <!-- ملخص الحسابات الإجمالي العام -->
+        <div class="account-summary">
+            <div class="summary-item">
+                <span class="label">إجمالي ما لكم (مدين)</span>
+                <span class="value debit-value" id="totalDebit">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">إجمالي ما عليكم (دائن)</span>
+                <span class="value credit-value" id="totalCredit">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">الصافي الكلي</span>
+                <span class="value balance-value" id="netBalance">0 ر.ي</span>
+            </div>
+        </div>
+
+        <!-- اختيار العميل والبحث السريع مع زر التعديل المباشر -->
+        <div class="search-select-box">
+            <input id="client_search" class="search-input" type="text" placeholder="🔍 ابحث عن عميل بالاسم أو الهاتف..." oninput="filterClientSelect()">
+            <div style="display: flex; gap: 8px;">
+                <select id="client_select" style="flex: 1;">
+                    <option value="">-- اختر العميل --</option>
+                </select>
+                <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
+            </div>
+        </div>
+
+        <!-- مدخلات العملية المالية -->
+        <div class="form-group">
+            <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any">
+        </div>
+        <input type="hidden" id="type" value="debit">
+
+        <div class="form-group note-wrapper">
+            <input id="note" list="notesList" placeholder="البيان (تفاصيل العملية)">
+            <span class="paste-btn" onclick="pasteFromClipboard()" title="لصق من الحافظة">📋</span>
+            <datalist id="notesList"></datalist>
+        </div>
+
+        <!-- أزرار الإضافة السريعة -->
+        <div class="action-buttons">
+            <button type="button" class="trans-btn credit-btn" onclick="addTransType('credit')">
+                <span>⬇</span>
+                <span>إضافة له (دائن)</span>
+            </button>
+            <button type="button" class="trans-btn debit-btn" onclick="addTransType('debit')">
+                <span>⬆</span>
+                <span>إضافة عليه (مدين)</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
+
+        <!-- ملخص رصيد العميل المختار -->
+        <div class="account-summary" style="margin-top: 20px;">
+            <div class="summary-item">
+                <span class="label">إجمالي العملاء</span>
+                <span class="value" id="stat_clients" style="color: var(--text-main);">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">رصيد العميل الحالي</span>
+                <span class="value" id="stat_total">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">آخر عملية</span>
+                <span class="value" id="stat_last" style="font-size: 0.9rem; color: var(--text-muted);">-</span>
+            </div>
+        </div>
+
+        <!-- أزرار العمليات -->
+        <div class="action-buttons">
+            <button type="button" class="trans-btn btn-secondary" onclick="showAllTransactions()">
+                <span>📋</span>
+                <span>عرض كل العمليات</span>
+            </button>
+            <button type="button" class="trans-btn btn-accent" onclick="printTransactions()">
+                <span>🖨️</span>
+                <span>طباعة كشف حساب</span>
+            </button>
+        </div>
+
+        <!-- جدول العمليات المالية (تم تصحيح الجدول المتداخل) -->
+        <div class="table-responsive">
+            <table id="transTable">
+                <thead>
+                    <tr>
+                        <th>المبلغ</th>
+                        <th>النوع</th>
+                        <th>البيان</th>
+                        <th>التاريخ</th>
+                        <th>إشعار</th>
+                    </tr>
+                </thead>
+                <tbody id="transBody">
+                    <tr><td colspan="5" style="color: var(--text-muted); padding: 20px;">اختر عميلاً لعرض عملياته</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
-<div style="display:flex;gap:10px;margin:15px 0;">
-    <div class="stat-box" id="stat_clients">👥 العملاء: ---</div>
-    <div class="stat-box" id="stat_total">💰 صافي الحساب: ---</div>
-    <div class="stat-box" id="stat_last">⏱️ آخر عملية: ---</div>
-</div>
-<button type="button" onclick="openModal('addClientModal')">إضافة عميل جديد</button>
-<h3>إضافة عملية مالية</h3>
-
-<select id="client_select">
-    <option value="">اختر العميل</option>
-</select>
-
-<div style="display:flex;gap:8px;">
-    <button type="button" id="editCurrentClientBtn" onclick="openEditCurrentClient()" style="background:#0284c7;display:none;padding:6px;font-size:0.9rem;">✏️ تعديل بيانات العميل الحالي</button>
-</div>
-
-<input id="amount" type="number" placeholder="المبلغ">
-<select id="type">
-    <option value="debit">عليه</option>
-    <option value="credit">له</option>
-</select>
-<input type="text" style="display:none" autocomplete="username">
-<input type="password" style="display:none" autocomplete="new-password">
-
-<input id="note" name="field987" placeholder="البيان" autocomplete="off" autofill="off" data-lpignore="true" autocapitalize="off" spellcheck="false">
-<button id="addTransBtn" type="button" onclick="addTrans()">إضافة العملية</button>
-
-<p id="msg"></p>
-<p id="loading" style="color:#00693B;font-weight:bold;"></p>
-
-<h3>آخر 3 عمليات للعميل</h3>
-<p id="total_info"></p>
-
-<button type="button" onclick="showAllTransactions()">عرض كل العمليات</button>
-<button type="button" onclick="printTransactions()" style="background:#7a39ff;">طباعة PDF</button>
-
-<div class="table-container">
-    <table id="transTable"></table>
-</div>
-
-<button onclick="showClientsBalances()" style="background:#0b74de">عرض جميع العملاء وصافي حساباتهم</button>
-
-</div>
-
-<!-- مودال إضافة العميل (مع mango_user) -->
+<!-- مودال [إضافة عميل جديد / تعديل عميل سابق] -->
 <div id="addClientModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('addClientModal')">&times;</span>
-    <h3>إضافة عميل جديد</h3>
-    <input id="new_name" placeholder="الاسم">
-    <div class="input-group">
-        <input id="new_mobile" type="tel" placeholder="رقم الجوال">
-        <button class="pick-btn" id="pickContact">📱</button>
+    <div class="modal-header">
+        <h3 id="clientModalTitle">➕ إدارة بيانات العميل</h3>
+        <button class="modal-close" onclick="closeModal('addClientModal')">&times;</button>
     </div>
-    <input id="new_username" placeholder="اسم المستخدم">
-    <input id="new_password" type="password" placeholder="كلمة المرور">
-    <input id="new_mango_user" placeholder="حساب مانجو (mango_user)">
-    <button onclick="addClient()">إضافة العميل</button>
-    <p id="clientMsg"></p>
+    
+    <div class="modal-body">
+        <!-- شريط التبديل بين وضع الإضافة والتعديل -->
+        <div class="mode-tabs">
+            <button type="button" id="tabNewClient" class="mode-tab-btn active" onclick="setClientModalMode('new')">
+                ➕ عميل جديد
+            </button>
+            <button type="button" id="tabEditClient" class="mode-tab-btn" onclick="setClientModalMode('edit')">
+                ✏️ تعديل عميل سابق
+            </button>
+        </div>
+
+        <!-- قائمة اختيار العميل للتعديل (تظهر عند اختيار وضع التعديل) -->
+        <div id="selectClientToEditBox" class="form-group" style="display: none;">
+            <label class="input-label" style="color: var(--primary); font-weight: bold;">اختر العميل المراد تعديل بياناته:</label>
+            <select id="modal_client_select" onchange="onSelectClientToEdit()">
+                <option value="">-- اختر عميلاً للتعديل --</option>
+            </select>
+        </div>
+
+        <input type="hidden" id="edit_client_id" value="">
+
+        <div class="form-group">
+            <label class="input-label">الاسم</label>
+            <input id="new_name" placeholder="اسم العميل الكامل">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">رقم الواتساب</label>
+            <div style="display: flex; gap: 6px;">
+                <input id="new_mobile" type="tel" placeholder="رقم الواتساب (مثال: 770000000)">
+                <button class="icon-btn" id="pickContact" type="button" title="استيراد من جهات الاتصال">📱</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">رقم الرسائل (SMS)</label>
+            <input id="new_mobile_sms" type="tel" placeholder="رقم SMS">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">اسم المستخدم</label>
+            <input id="new_username" placeholder="اسم المستخدم">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">كلمة المرور</label>
+            <input id="new_password" type="text" placeholder="كلمة المرور">
+        </div>
+        
+        <button class="trans-btn credit-btn" style="width:100%" id="saveClientBtn" onclick="saveClientData()">إضافة العميل</button>
+    </div>
   </div>
 </div>
 
-<!-- مودال تعديل بيانات العميل (مع mango_user) -->
-<div id="editClientModal" class="modal">
-  <div class="modal-content">
-    <span class="close" onclick="closeModal('editClientModal')">&times;</span>
-    <h3>تعديل بيانات العميل</h3>
-    <input id="edit_client_id" type="hidden">
-    
-    <label style="font-size:0.85rem;color:#555;font-weight:bold;">الاسم:</label>
-    <input id="edit_name" placeholder="الاسم">
-    
-    <label style="font-size:0.85rem;color:#555;font-weight:bold;">رقم الجوال:</label>
-    <input id="edit_mobile" type="tel" placeholder="رقم الجوال">
-    
-    <label style="font-size:0.85rem;color:#555;font-weight:bold;">اسم المستخدم:</label>
-    <input id="edit_username" placeholder="اسم المستخدم">
-    
-    <label style="font-size:0.85rem;color:#555;font-weight:bold;">كلمة المرور:</label>
-    <input id="edit_password" type="text" placeholder="كلمة المرور">
-    
-    <label style="font-size:0.85rem;color:#555;font-weight:bold;">حساب مانجو (mango_user):</label>
-    <input id="edit_mango_user" placeholder="حساب مانجو (mango_user)">
-    
-    <button onclick="saveClientModal()" style="margin-top:15px;background:#0284c7;">حفظ التعديلات</button>
-    <p id="editClientMsg"></p>
-  </div>
-</div>
-
-<!-- مودال تعديل العملية -->
+<!-- مودال تعديل عملية مالية -->
 <div id="transModal" class="modal">
   <div class="modal-content">
-    <span class="close" onclick="closeModal('transModal')">&times;</span>
-    <h3>تعديل العملية</h3>
-    <input id="modal_amount" type="number" placeholder="المبلغ">
-    <select id="modal_type">
-        <option value="debit">عليه</option>
-        <option value="credit">له</option>
-    </select>
-    <input id="modal_note" placeholder="البيان">
-    <div style="display:flex;gap:10px;margin-top:10px;">
-        <button onclick="saveTransModal()">حفظ</button>
-        <button onclick="deleteTransModal()" style="background:#EF4444">حذف</button>
-        <button onclick="closeModal('transModal')" style="background:#888">إلغاء</button>
+    <div class="modal-header">
+        <h3>✏️ تعديل العملية المالية</h3>
+        <button class="modal-close" onclick="closeModal('transModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="input-label">المبلغ</label>
+            <input id="modal_amount" type="number" placeholder="المبلغ">
+        </div>
+        <div class="form-group">
+            <label class="input-label">النوع</label>
+            <select id="modal_type">
+                <option value="debit">عليه (مدين)</option>
+                <option value="credit">له (دائن)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="input-label">البيان</label>
+            <input id="modal_note" placeholder="البيان">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="trans-btn credit-btn" onclick="saveTransModal()">حفظ التعديل</button>
+        <button class="trans-btn debit-btn" onclick="deleteTransModal()">حذف</button>
+        <button class="trans-btn btn-secondary" onclick="closeModal('transModal')">إلغاء</button>
     </div>
   </div>
 </div>
 
-<!-- مودال قائمة العملاء -->
+<!-- مودال حسابات العملاء -->
 <div id="clientsModal" class="modal">
-  <div class="modal-body"> 
-      <div style="display:flex;justify-content:space-between">
-        <h3>قائمة العملاء وصافي الحساب</h3>
-        <button class="close-btn" onclick="closeModal('clientsModal')" style="background:#EF4444;padding:6px 12px">إغلاق</button>
-      </div>
-      <input id="search_client" placeholder="ابحث بالاسم أو رقم الجوال أو حساب مانجو" oninput="filterClientsTable()" style="margin-top:10px;margin-bottom: 10px">
-      
-      <table id="clientsBalanceTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>العميل</th>
-                <th>الجوال</th>
-                <th>مانجو</th>
-                <th>صافي الحساب</th>
-                <th>إجراءات</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button onclick="printClientsList()" style="background:#0b74de; color:white; margin-top:10px;">طباعة قائمة العملاء</button>
-      <div id="clientsTotals" style="padding:10px;font-size:18px;font-weight:bold;color:#00693B"></div>
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+        <h3>👥 حسابات العملاء وصافي الأرصدة</h3>
+        <button class="modal-close" onclick="closeModal('clientsModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+        <input id="search_client_list" class="search-input" placeholder="🔍 ابحث بالاسم أو رقم الهاتف..." oninput="filterClientsTable()">
+        
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table id="clientsBalanceTable">
+                <thead>
+                    <tr>
+                        <th>الرقم</th>
+                        <th>العميل</th>
+                        <th>الجوال</th>
+                        <th>الرصيد الصافي</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsBalanceBody"></tbody>
+            </table>
+        </div>
+
+        <div id="clientsTotals" class="account-summary" style="margin-top: 15px;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="trans-btn btn-accent" onclick="printClientsList()">🖨️ طباعة القائمة</button>
+        <button class="trans-btn btn-secondary" onclick="closeModal('clientsModal')">إغلاق</button>
+    </div>
   </div>
 </div>
 
-<div id="numberPopup" style="
-    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%);
-    background: white; padding: 15px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    display: none; z-index: 9999; width: 250px; text-align: center;
-">
-    <h3 style="margin:0 0 10px;">اختر الرقم</h3>
-    <div id="numbersList"></div>
-    <button onclick="closePopup()" style="margin-top:10px;padding:6px 10px;">إلغاء</button>
+<!-- مودال Mango Users -->
+<div id="mangoUsersModal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3>👤 أسماء Mango Users</h3>
+            <button class="modal-close" onclick="closeModal('mangoUsersModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input id="mangoSearch" class="search-input" type="text" placeholder="🔍 بحث باسم العميل أو Mango User..." oninput="filterMangoUsers()">
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 10px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم العميل</th>
+                            <th>Mango User</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mangoUsersBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
-<script>
-const API = "https://script.google.com/macros/s/AKfycbyb_XLsiYWY2v-2-ifH0_sepB8S3MXOwflRR-NYQA_nTZ44ZiTlxU331CB091dcMqsw/exec";
-const waIcon = "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg";
-
-const qs = id => document.getElementById(id);
-
-let allClients = [];
-let allBalances = [];
-let clientRecentMap = {};
-let currentDisplayedTrans = [];
-let currentClientId = "";
-let currentTransId = null;
-
-let isSyncing = false;
-let lastSyncTime = 0;
-
-function openModal(id){ qs(id).style.display = "flex"; }
-function closeModal(id){ qs(id).style.display = "none"; }
-window.onclick = e => { if(e.target.classList.contains("modal")) e.target.style.display = "none"; };
-function logout(){ localStorage.clear(); window.location.href = "index.html"; }
-
-// ============================================================
-// 1. التشغيل والتحميل اللحظي
-// ============================================================
-document.addEventListener("DOMContentLoaded", () => {
-    const cached = localStorage.getItem("yemen_sat_cache_v5");
-    if (cached) {
-        try {
-            renderDashboard(JSON.parse(cached));
-        } catch(e){}
-    }
-
-    setTimeout(() => {
-        syncData(!cached, false);
-    }, 600);
-});
-
-async function syncData(showIndicator = true, force = false) {
-    const now = Date.now();
-    if (isSyncing) return;
-    if (!force && (now - lastSyncTime < 15000)) return;
-
-    isSyncing = true;
-    if (showIndicator) qs("loading").textContent = "جاري التحديث...";
-
-    try {
-        const url = `${API}?action=getDashboardData${force ? "&forceRefresh=true" : ""}&_t=${now}`;
-        const res = await fetch(url);
-        const data = await res.json();
-
-        if (data && data.status === "success" && data.clients && data.balances) {
-            lastSyncTime = Date.now();
-            localStorage.setItem("yemen_sat_cache_v5", JSON.stringify(data));
-            renderDashboard(data);
-            if (showIndicator) {
-                qs("loading").textContent = "تم التحديث بنجاح ✔";
-                setTimeout(() => qs("loading").textContent = "", 1200);
-            }
-        }
-    } catch(err) {
-        console.warn("Sync error:", err);
-        if (showIndicator) {
-            qs("loading").textContent = "الاتصال بطيء، تم استخدام البيانات المحلية";
-            setTimeout(() => qs("loading").textContent = "", 2500);
-        }
-    } finally {
-        isSyncing = false;
-        if (!showIndicator) qs("loading").textContent = "";
-    }
-}
-
-function renderDashboard(data) {
-    allClients = data.clients || [];
-    allBalances = data.balances || [];
-    clientRecentMap = data.recentMap || {};
-
-    const select = qs("client_select");
-    const currentVal = select.value;
-    select.innerHTML = `<option value="">اختر العميل</option>`;
-
-    allClients.forEach(c => {
-        const op = document.createElement("option");
-        op.value = c.client_id;
-        const mangoTag = c.mango_user ? ` [${c.mango_user}]` : "";
-        op.textContent = `${c.name} (${c.mobile || "بدون جوال"})${mangoTag}`;
-        select.appendChild(op);
-    });
-
-    if (currentVal && allClients.some(c => String(c.client_id) === String(currentVal))) {
-        select.value = currentVal;
-    }
-
-    qs("stat_clients").textContent = `👥 العملاء: ${allClients.length}`;
-
-    let totalDebit = 0;
-    let totalCredit = 0;
-
-    allBalances.forEach(c => {
-        const amt = Number(c.total) || 0;
-        if (amt >= 0) totalDebit += amt;
-        else totalCredit += Math.abs(amt);
-    });
-
-    const net = totalDebit - totalCredit;
-    const color = net >= 0 ? "red" : "green";
-    const label = net >= 0 ? `عليه ${net.toLocaleString()}` : `له ${Math.abs(net).toLocaleString()}`;
-    qs("stat_total").innerHTML = `💰 صافي الحساب: <span style="color:${color}">${label}</span>`;
-
-    if (data.lastTrans && data.lastTrans.date) {
-        const d = new Date(data.lastTrans.date);
-        qs("stat_last").textContent = `⏱️ آخر عملية: ${d.toLocaleDateString('ar-YE')}`;
-    } else {
-        qs("stat_last").textContent = "جاهز";
-    }
-
-    if (select.value) {
-        onClientChange();
-    }
-}
-
-// ============================================================
-// 2. اختيار العميل
-// ============================================================
-qs("client_select").addEventListener("change", onClientChange);
-
-function onClientChange() {
-    currentClientId = qs("client_select").value;
-    const editBtn = qs("editCurrentClientBtn");
-
-    if (!currentClientId) {
-        qs("total_info").textContent = "";
-        qs("transTable").innerHTML = "";
-        if (editBtn) editBtn.style.display = "none";
-        return;
-    }
-
-    if (editBtn) editBtn.style.display = "block";
-
-    const balObj = allBalances.find(b => String(b.client_id) === String(currentClientId));
-    const total = balObj ? balObj.total : 0;
-
-    qs("total_info").innerHTML = total >= 0 
-        ? `<b style="color:red;font-size:1.1rem;">إجمالي الرصيد: عليه ${total.toLocaleString()} ريال</b>`
-        : `<b style="color:green;font-size:1.1rem;">إجمالي الرصيد: له ${Math.abs(total).toLocaleString()} ريال</b>`;
-
-    const recent = clientRecentMap[String(currentClientId)] || [];
-    currentDisplayedTrans = recent;
-    renderTransactions(recent);
-}
-
-// ============================================================
-// 3. إضافة وتعديل العميل (مع mango_user)
-// ============================================================
-async function addClient() {
-    const name = qs("new_name").value.trim();
-    const mobile = qs("new_mobile").value.trim();
-    const username = qs("new_username").value.trim();
-    const password = qs("new_password").value.trim();
-    const mango_user = qs("new_mango_user").value.trim();
-    const msg = qs("clientMsg");
-
-    if(!name || !mobile || !username || !password){ 
-        msg.textContent = "يرجى تعبئة الحقول الأساسية"; 
-        msg.style.color = "red"; 
-        return; 
-    }
-
-    msg.textContent = "جاري الإضافة...";
-    msg.style.color = "blue";
-
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "addClient", name, mobile, username, password, mango_user })
-        });
-        const data = await res.json();
-        if(data.status === "success"){
-            msg.textContent = "تمت الإضافة بنجاح";
-            msg.style.color = "green";
-            qs("new_name").value = "";
-            qs("new_mobile").value = "";
-            qs("new_username").value = "";
-            qs("new_password").value = "";
-            qs("new_mango_user").value = "";
-            await syncData(false, true);
-            setTimeout(() => closeModal("addClientModal"), 600);
-        } else {
-            msg.textContent = "حدث خطأ أثناء الإضافة";
-            msg.style.color = "red";
-        }
-    } catch(e) {
-        msg.textContent = "خطأ في الاتصال";
-        msg.style.color = "red";
-    }
-}
-
-// فتح مودال تعديل العميل
-function openEditCurrentClient() {
-    if (!currentClientId) return;
-    openEditClientModal(currentClientId);
-}
-
-function openEditClientModal(clientId) {
-    const client = allClients.find(c => String(c.client_id) === String(clientId));
-    if (!client) return alert("العميل غير موجود");
-
-    qs("edit_client_id").value = client.client_id;
-    qs("edit_name").value = client.name || "";
-    qs("edit_mobile").value = client.mobile || "";
-    qs("edit_username").value = client.username || "";
-    qs("edit_password").value = client.password || "";
-    qs("edit_mango_user").value = client.mango_user || "";
-    qs("editClientMsg").textContent = "";
-
-    openModal("editClientModal");
-}
-
-async function saveClientModal() {
-    const client_id = qs("edit_client_id").value;
-    const name = qs("edit_name").value.trim();
-    const mobile = qs("edit_mobile").value.trim();
-    const username = qs("edit_username").value.trim();
-    const password = qs("edit_password").value.trim();
-    const mango_user = qs("edit_mango_user").value.trim();
-    const msg = qs("editClientMsg");
-
-    if (!name || !client_id) {
-        msg.textContent = "الاسم مطلوب";
-        msg.style.color = "red";
-        return;
-    }
-
-    msg.textContent = "جاري حفظ التعديلات...";
-    msg.style.color = "blue";
-
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({
-                action: "updateClient",
-                client_id,
-                name,
-                mobile,
-                username,
-                password,
-                mango_user
-            })
-        });
-
-        const data = await res.json();
-        if (data.status === "success") {
-            msg.textContent = "تم التعديل بنجاح ✔";
-            msg.style.color = "green";
-            await syncData(false, true);
-            showClientsBalances();
-            setTimeout(() => closeModal("editClientModal"), 800);
-        } else {
-            msg.textContent = data.message || "تعذر التعديل";
-            msg.style.color = "red";
-        }
-    } catch (e) {
-        msg.textContent = "خطأ في الاتصال بالسيرفر";
-        msg.style.color = "red";
-    }
-}
-
-// ============================================================
-// 4. العمليات المالية
-// ============================================================
-async function addTrans() {
-    const client_id = qs("client_select").value;
-    let amount = Number(qs("amount").value);
-    const type = qs("type").value;
-    const note = qs("note").value;
-    const msg = qs("msg");
-    const btn = qs("addTransBtn");
-
-    if(!client_id || !amount || !note){ msg.textContent="يرجى تعبئة كل الحقول"; msg.style.color="red"; return;}
-
-    btn.disabled = true;
-    msg.textContent = "جاري الحفظ...";
-    msg.style.color = "blue";
-
-    amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
-
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ action: "addTransaction", client_id, amount, type, note })
-        });
-        const data = await res.json();
-
-        if(data.status === "success"){
-            msg.textContent = "تمت الإضافة بنجاح";
-            msg.style.color = "green";
-            qs("amount").value = "";
-            qs("note").value = "";
-            await syncData(false, true);
-            onClientChange();
-            setTimeout(() => msg.textContent="", 2000);
-        } else {
-            msg.textContent = "حدث خطأ أثناء الإضافة";
-            msg.style.color = "red";
-        }
-    } catch(e) {
-        msg.textContent = "خطأ في الاتصال بالسيرفر";
-        msg.style.color = "red";
-    } finally {
-        btn.disabled = false;
-    }
-}
-
-async function showAllTransactions() {
-    if (!currentClientId) return alert("يرجى اختيار العميل أولاً");
-    
-    qs("loading").textContent = "جاري جلب كامل العمليات للعميل...";
-    try {
-        const res = await fetch(`${API}?action=getClientAllTransactions&client_id=${currentClientId}&_t=${Date.now()}`);
-        const data = await res.json();
-        if (data && data.list) {
-            currentDisplayedTrans = data.list;
-            renderTransactions(data.list);
-        }
-    } catch(e) {
-        alert("تعذر جلب العمليات، تحقق من الاتصال");
-    } finally {
-        qs("loading").textContent = "";
-    }
-}
-
-function renderTransactions(transactions) {
-    const table = qs("transTable");
-    table.innerHTML = "";
-
-    const header = ["المبلغ", "النوع", "البيان", "التاريخ", "واتساب"];
-    const trH = document.createElement("tr");
-    header.forEach(h => {
-        const th = document.createElement("th");
-        th.textContent = h;
-        trH.appendChild(th);
-    });
-    table.appendChild(trH);
-
-    const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
-    const clientName = client.name || "";
-    const clientMobile = client.mobile || "";
-
-    const balObj = allBalances.find(b => String(b.client_id) === String(currentClientId));
-    const total = balObj ? balObj.total : 0;
-
-    transactions.forEach(t => {
-        const row = table.insertRow();
-        row.onclick = () => openTransModal(t.trans_id);
-
-        const cells = [
-            Math.abs(t.amount).toLocaleString(),
-            t.type === "debit" ? "عليه" : "له",
-            t.note || "---",
-            t.date ? new Date(t.date).toLocaleDateString('ar-YE') : "---"
-        ];
-
-        cells.forEach((c, i) => {
-            const td = row.insertCell();
-            td.textContent = c;
-            if (i === 0) td.className = t.type === "debit" ? "debit" : "credit";
-        });
-
-        const waSmsCell = row.insertCell();
-        const groupDiv = document.createElement("div");
-        groupDiv.className = "wa-sms-group";
-
-        const waBtn = document.createElement("button");
-        waBtn.className = "wa-btn";
-        waBtn.innerHTML = `<img src="${waIcon}"> واتساب`;
-        waBtn.onclick = e => {
-            e.stopPropagation();
-            const typeText = t.type === "debit" ? "عليك" : "لك";
-            const totalText = total >= 0 ? "عليك " + total.toLocaleString() : "لك " + Math.abs(total).toLocaleString();
-            const msg = `👤 *الاخ:* ${clientName}
-💰 *قيد ${typeText} مبلغ:* ${Math.abs(t.amount).toLocaleString()} ريال
-📝 *البيان:* ${t.note}
----------------
-📊 *صافي حسابك:*
-       ${totalText} ريال
-
-⭐ #يمن-ستلايت`;
-            window.open(`https://wa.me/${clientMobile}?text=${encodeURIComponent(msg)}`, "_blank");
-        };
-        groupDiv.appendChild(waBtn);
-
-        const smsBtn = document.createElement("button");
-        smsBtn.className = "sms-btn";
-        smsBtn.textContent = "SMS";
-        smsBtn.onclick = e => {
-            e.stopPropagation();
-            const totalText = total >= 0 ? "عليك " + total.toLocaleString() : "لك " + Math.abs(total).toLocaleString();
-            const typeText = t.type === "debit" ? "عليك" : "لك";
-            const msg = `الاخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount).toLocaleString()} \nصافي حسابك: ${totalText}\n #يمن_ستلايت`;
-            window.open(`sms:${clientMobile}?body=${encodeURIComponent(msg)}`, "_blank");
-        };
-        groupDiv.appendChild(smsBtn);
-
-        waSmsCell.appendChild(groupDiv);
-    });
-}
-
-function openTransModal(id) {
-    currentTransId = id;
-    const t = currentDisplayedTrans.find(x => String(x.trans_id) === String(id));
-    if(!t) return;
-    qs("modal_amount").value = Math.abs(t.amount);
-    qs("modal_type").value = t.type;
-    qs("modal_note").value = t.note;
-    openModal("transModal");
-}
-
-async function saveTransModal() {
-    if(!currentTransId) return;
-    let amount = Number(qs("modal_amount").value);
-    const type = qs("modal_type").value;
-    const note = qs("modal_note").value;
-    amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
-
-    closeModal("transModal");
-    await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "updateTransaction", trans_id: currentTransId, amount, type, note })
-    });
-    await syncData(false, true);
-    onClientChange();
-}
-
-async function deleteTransModal() {
-    if(!confirm("هل تريد حذف العملية؟")) return;
-    closeModal("transModal");
-    await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "deleteTransaction", trans_id: currentTransId })
-    });
-    await syncData(false, true);
-    onClientChange();
-}
-
-// ============================================================
-// 5. قائمة العملاء (مع إمكانية التعديل وحساب مانجو)
-// ============================================================
-function showClientsBalances() {
-    renderBalancesModal(allBalances);
-    openModal("clientsModal");
-}
-
-function renderBalancesModal(balancesList) {
-    const data = [...balancesList].sort((a, b) => b.total - a.total);
-
-    let totalDebit = 0;
-    let totalCredit = 0;
-
-    data.forEach(c => {
-        if(c.total >= 0) totalDebit += c.total;
-        else totalCredit += Math.abs(c.total);
-    });
-
-    const diff = totalDebit - totalCredit;
-
-    const totalsDiv = qs("clientsTotals");
-    if(totalsDiv){
-        totalsDiv.innerHTML = `
-            <div><strong>إجمالي لك:</strong> ${totalDebit.toLocaleString()} ريال</div>
-            <div><strong>إجمالي عليك:</strong> ${totalCredit.toLocaleString()} ريال</div>
-            <div><strong>الفرق:</strong> 
-                <span style="color:${diff >= 0 ? 'red' : 'green'}">${diff >= 0 ? `لك ${diff.toLocaleString()}` : `عليك ${Math.abs(diff).toLocaleString()}`}</span>
-            </div>
-        `;
-    }
-
-    const tbody = document.querySelector("#clientsBalanceTable tbody"); 
-    tbody.innerHTML = "";
-
-    data.forEach(c => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${c.client_id}</td>
-            <td style="font-weight:bold">${c.name}</td>
-            <td>${c.mobile || "---"}</td>
-            <td style="color:#0284c7;font-weight:bold;">${c.mango_user || "---"}</td>
-            <td style="font-weight:bold;color:${c.total>=0?'red':'green'}">
-                ${c.total>=0?`عليه ${c.total.toLocaleString()}`:`له ${Math.abs(c.total).toLocaleString()}`}
-            </td>
-            <td>
-                <button class="edit-btn" style="background:#0284c7;color:white;padding:4px 8px;border:none;border-radius:4px;cursor:pointer;margin-left:4px;">
-                    تعديل
-                </button>
-                <button class="del-btn" style="background:#EF4444;color:white;padding:4px 8px;border:none;border-radius:4px;cursor:pointer;">
-                    حذف
-                </button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-
-        tr.querySelector(".edit-btn").addEventListener("click", () => openEditClientModal(c.client_id));
-        tr.querySelector(".del-btn").addEventListener("click", () => deleteClient(c.client_id, c.name));
-    });
-}
-
-function filterClientsTable() {
-    const q = qs("search_client").value.toLowerCase();
-    document.querySelectorAll("#clientsBalanceTable tbody tr").forEach(r => {
-        const name = r.children[1].textContent.toLowerCase();
-        const mobile = r.children[2].textContent.toLowerCase();
-        const mango = r.children[3].textContent.toLowerCase();
-        r.style.display = (name.includes(q) || mobile.includes(q) || mango.includes(q)) ? "" : "none";
-    });
-}
-
-async function deleteClient(client_id, name) {
-    if(!confirm(`هل تريد حذف العميل "${name}" وكل عملياته؟`)) return;
-
-    const res = await fetch(API, {
-        method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "deleteClient", client_id })
-    });
-    const data = await res.json();
-    if(data.status === "success"){
-        alert("تم حذف العميل بنجاح");
-        await syncData(false, true);
-        showClientsBalances();
-    } else {
-        alert("حدث خطأ أثناء الحذف");
-    }
-}
-
-// ============================================================
-// 6. الطباعة
-// ============================================================
-function printTransactions() {
-    if (!currentDisplayedTrans.length) return alert("لا توجد عمليات للطباعة");
-
-    const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
-    const clientName = client.name || "";
-    const balObj = allBalances.find(b => String(b.client_id) === String(currentClientId));
-    const total = balObj ? balObj.total : 0;
-
-    const companyName = "شركة يمن ستلايت";
-    const companyPhone = "738092209";
-    const logoUrl = "https://raw.githubusercontent.com/falahsab/daftar/refs/heads/main/img/%D8%AF%D9%81%D8%AA%D8%B1-%D9%8A%D9%85%D9%86-%D8%B3%D8%AA%D9%84%D8%A7%D9%8A%D8%AA-192.png";
-
-    const html = `
-    <html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <title>YemenSAT</title>
-        <style>
-            body { font-family: "Tajawal", sans-serif; direction: rtl; margin:20px; color:#0F172A; }
-            header { display:flex; justify-content: space-between; align-items:center; border-bottom: 2px solid #00693B; padding-bottom:10px; margin-bottom:20px; }
-            header img { height:60px; }
-            header .client-info { text-align: center; flex:1; }
-            header .client-info h2 { margin:0; color:#00693B; font-size:1.3em; }
-            header .client-info p { margin:0; font-size:0.95em; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #444; padding: 10px; text-align: center; }
-            th { background: #00A651; color: white; }
-            tbody tr:nth-child(even) { background-color: #f2f2f2; }
-            .debit { color: red; font-weight: bold; }
-            .credit { color: green; font-weight: bold; }
-            tfoot td { font-weight: bold; font-size: 1.05em; }
-            footer { margin-top: 40px; text-align: left; font-weight: bold; font-size:0.9em; }
-            @media print {
-                body { margin: 0; }
-                table { page-break-inside: auto; }
-                tr { page-break-inside: avoid; page-break-after: auto; }
-                thead { display: table-header-group; }
-                tfoot { display: table-footer-group; }
-                footer { position: fixed; bottom: 0; left: 20px; }
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            ${logoUrl ? `<img src="${logoUrl}" alt="Logo">` : '<div style="width:60px;"></div>'}
-            <div class="client-info">
-                <h2>تقرير عمليات العميل</h2>
-                <p>اسم العميل: ${clientName}</p>
-            </div>
-            <div style="width:60px;"></div>
-        </header>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>المبلغ</th>
-                    <th>النوع</th>
-                    <th>البيان</th>
-                    <th>التاريخ</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${currentDisplayedTrans.map(t => {
-                    const date = new Date(t.date);
-                    const formattedDate = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
-                    return `
-                        <tr>
-                            <td class="${t.type === "debit" ? "debit" : "credit"}">${Math.abs(t.amount).toLocaleString()}</td>
-                            <td>${t.type === "debit" ? "عليه" : "له"}</td>
-                            <td>${t.note}</td>
-                            <td>${formattedDate}</td>
-                        </tr>
-                    `;
-                }).join('')}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="3" style="text-align: right;">صافي الحساب</td>
-                    <td style="color:${total >= 0 ? 'red' : 'green'};">
-                        ${total >= 0 ? `عليه ${total.toLocaleString()}` : `له ${Math.abs(total).toLocaleString()}`}
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-
-        <footer>${companyName} | ${companyPhone}</footer>
-    </body>
-    </html>
-    `;
-
-    const win = window.open("", "_blank");
-    win.document.write(html);
-    win.document.close();
-    win.focus();
-    setTimeout(() => win.print(), 500);
-}
-
-function printClientsList() {
-    const rows = Array.from(document.querySelectorAll("#clientsBalanceTable tbody tr"))
-                      .filter(r => r.style.display !== "none");
-
-    if (!rows.length) return alert("لا توجد بيانات للطباعة");
-
-    const companyName = "شركة يمن ستلايت";
-    const companyPhone = "738092209";
-
-    const html = `
-    <html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8">
-        <style>
-            body { font-family: "Tajawal", sans-serif; direction: rtl; margin:20px; color:#0F172A; }
-            header { display:flex; justify-content: space-between; align-items:center; border-bottom: 2px solid #00693B; padding-bottom:10px; margin-bottom:20px; }
-            header img { height:60px; }
-            header .report-info { text-align: center; flex:1; }
-            header .report-info h2 { margin:0; color:#00693B; font-size:1.3em; }
-            header .report-info p { margin:0; font-size:0.95em; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-            th, td { border: 1px solid #444; padding: 10px; text-align: center; }
-            th { background: #00A651; color: white; }
-            tbody tr:nth-child(even) { background-color: #f2f2f2; }
-            tfoot td { font-weight: bold; font-size: 1.05em; }
-            footer { margin-top: 40px; text-align: left; font-weight: bold; font-size:0.9em; }
-            @media print {
-                body { margin: 0; }
-                table { page-break-inside: auto; }
-                tr { page-break-inside: avoid; page-break-after: auto; }
-                thead { display: table-header-group; }
-                tfoot { display: table-footer-group; }
-                footer { position: fixed; bottom: 0; left: 20px; }
-            }
-        </style>
-    </head>
-    <body>
-        <header>
-            <div class="report-info">
-                <h2>قائمة العملاء وصافي الحساب</h2>
-                <p>عدد العملاء: ${rows.length}</p>
-            </div>
-        </header>
-
-        <table>
-            <thead>
-                <tr>
-                    <th>العميل</th>
-                    <th>الجوال</th>
-                    <th>حساب مانجو</th>
-                    <th>صافي الحساب</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${rows.map(r => {
-                    const name = r.children[1].textContent;
-                    const mobile = r.children[2].textContent;
-                    const mango = r.children[3].textContent;
-                    const totalText = r.children[4].textContent.trim();
-                    const color = totalText.startsWith("عليه") ? "red" : "green";
-
-                    return `<tr>
-                                <td>${name}</td>
-                                <td>${mobile}</td>
-                                <td>${mango}</td>
-                                <td style="color:${color}; font-weight:bold;">${totalText}</td>
-                            </tr>`;
-                }).join('')}
-            </tbody>
-        </table>
-
-        <footer>${companyName} | ${companyPhone}</footer>
-    </body>
-    </html>
-    `;
-
-    const win = window.open("", "_blank");
-    win.document.title = " ";
-    win.document.write(html);
-    win.document.close();
-    win.focus();
-    setTimeout(() => win.print(), 500);
-}
-
-// ============================================================
-// 7. جهات الاتصال (Contact Picker)
-// ============================================================
-function closePopup() { qs("numberPopup").style.display = "none"; }
-
-qs("pickContact").addEventListener("click", async () => {
-    if (!("contacts" in navigator && "select" in navigator.contacts)) {
-        alert("المتصفح لا يدعم اختيار جهات الاتصال");
-        return;
-    }
-
-    try {
-        const contacts = await navigator.contacts.select(["tel"], { multiple: false });
-        if (!contacts.length || !contacts[0].tel.length) return;
-
-        let numbers = contacts[0].tel.map(n => {
-            n = n.replace(/\s+/g, "").replace(/-/g, "").replace(/\(/g, "").replace(/\)/g, "");
-            if (n.startsWith("+967")) n = n.slice(4);
-            else if (n.startsWith("00967")) n = n.slice(5);
-            else if (n.startsWith("967")) n = n.slice(3);
-            n = n.replace(/^0/, "");
-            return n;
-        });
-
-        if (numbers.length === 1) {
-            qs("new_mobile").value = numbers[0];
-            return;
-        }
-
-        const listDiv = qs("numbersList");
-        listDiv.innerHTML = "";
-        numbers.forEach(num => {
-            let btn = document.createElement("button");
-            btn.textContent = num;
-            btn.style.cssText = "display:block;width:100%;margin:5px 0;padding:8px;border:none;background:#28a745;color:white;border-radius:6px;";
-            btn.addEventListener("click", () => {
-                qs("new_mobile").value = num;
-                closePopup();
-            });
-            listDiv.appendChild(btn);
-        });
-
-        qs("numberPopup").style.display = "block";
-    } catch(e) {}
-});
-</script>
+<!-- نافذة اختيار الرقم المنبثقة للاتصال -->
+<div id="numberPopup" class="modal">
+    <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
+        <h4 style="margin-bottom: 12px; color: var(--primary);">اختر الرقم المناسب</h4>
+        <div id="numbersList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        <button class="trans-btn btn-secondary" onclick="closePopup()" style="margin-top: 12px; width: 100%;">إلغاء</button>
+    </div>
+</div>
+
+<script src="admin.js"></script>
 </body>
 </html>
