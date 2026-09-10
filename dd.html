@@ -1009,7 +1009,7 @@ function renderClientsDropdown() {
         const op = document.createElement("option");
         op.value = c.client_id;
         const mangoText = c.mango_user ? ` [Mango: ${c.mango_user}]` : '';
-        op.textContent = `${c.name} (${c.mobile || '-'})${mangoText}`;
+        op.textContent = `${c.name}`;
         frag.appendChild(op);
     });
     select.appendChild(frag);
