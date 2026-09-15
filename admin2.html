@@ -1461,7 +1461,7 @@ function sendSmsMsg(t, clientName, smsNumber) {
         ? `عليك ${balanceUntil.toLocaleString()} ريال` 
         : `لك ${Math.abs(balanceUntil).toLocaleString()} ريال`;
 
-    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount).toLocaleString()} ريال\nالبيان: ${t.note}\nالإجمالي: ${totalText}`;
+    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount).toLocaleString()} ريال\nالإجمالي: ${totalText}`;
     window.open(`sms:${smsNumber}?body=${encodeURIComponent(msg)}`, "_blank");
 }
 
