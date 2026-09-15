@@ -92,7 +92,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 19px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -104,6 +104,15 @@ body {
 
 .icon-btn.logout { color: var(--danger); }
 .icon-btn.logout:hover { background: var(--danger-bg); }
+
+/* دوران أيقونة التحديث */
+@keyframes spinAnimation {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.spinning {
+    animation: spinAnimation 0.7s linear infinite !important;
+}
 
 /* القائمة الجانبية */
 .side-menu {
@@ -546,6 +555,8 @@ if (localStorage.getItem("role") !== "admin") {
                 <h2>لوحة الإدارة | يمن ستلايت</h2>
             </div>
             <div style="display: flex; gap: 8px;">
+                <!-- زر التحديث ومسح الكاش الجديد -->
+                <button class="icon-btn" id="refreshBtn" onclick="hardRefreshSystem()" title="تحديث شامل ومسح الكاش" style="color: var(--primary);">🔄</button>
                 <button class="icon-btn" onclick="openSheetDiagnosticModal()" title="فحص الشيت المربوط في جوجل" style="color: var(--info);">🔗</button>
                 <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
             </div>
@@ -557,6 +568,7 @@ if (localStorage.getItem("role") !== "admin") {
                 <h3>القائمة الرئيسية</h3>
                 <button class="icon-btn" onclick="closeMenu()">✕</button>
             </div>
+            <a href="#" onclick="hardRefreshSystem(); closeMenu(); return false;" style="color: var(--primary);">🔄 تحديث شامل ومسح الكاش</a>
             <a href="#" onclick="openSheetDiagnosticModal(); closeMenu(); return false;" style="color: var(--info);">🔗 فحص الشيت المربوط</a>
             <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
             <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
@@ -913,6 +925,53 @@ function closeMenu() {
     qs("menuOverlay").classList.remove("show");
 }
 
+// -------------------------------------------------------------
+// زر ودالة [تحديث شامل ومسح الكاش مع الحفاظ على تسجيل الدخول]
+// -------------------------------------------------------------
+async function hardRefreshSystem() {
+    const btn = qs("refreshBtn");
+    if (btn) btn.classList.add("spinning");
+    showToast("جاري مسح الكاش وتحديث البيانات من الشيت...", "success");
+
+    try {
+        // 1. الحفاظ الدقيق على بيانات تسجيل الدخول
+        const savedAuth = {
+            role: localStorage.getItem("role"),
+            username: localStorage.getItem("username"),
+            user: localStorage.getItem("user"),
+            admin: localStorage.getItem("admin"),
+            savedNotes: localStorage.getItem("savedNotes")
+        };
+
+        // مسح الكاش المحلي للجلسة والـ LocalStorage
+        sessionStorage.clear();
+        localStorage.clear();
+
+        // إعادة تثبيت بيانات تسجيل الدخول
+        Object.keys(savedAuth).forEach(key => {
+            if (savedAuth[key] !== null && savedAuth[key] !== undefined) {
+                localStorage.setItem(key, savedAuth[key]);
+            }
+        });
+
+        // مسح كاش الـ Service Worker / CacheStorage إن وُجد
+        if ('caches' in window) {
+            try {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(k => caches.delete(k)));
+            } catch (e) {}
+        }
+
+        // 2. إرسال طلب إجباري للسيرفر لمسح كاش خوادم جوجل أيضاً
+        await apiCall("getDashboardData", { forceRefresh: true });
+
+        // 3. إعادة تحميل الصفحة كنسخة جديدة كلياً
+        window.location.reload();
+    } catch (err) {
+        window.location.reload();
+    }
+}
+
 // فحص الشيت المربوط بالسيرفر
 async function openSheetDiagnosticModal() {
     openModal("diagnosticModal");
@@ -1134,7 +1193,7 @@ async function addTrans() {
         qs("amount").value = "";
         qs("note").value = "";
 
-        // إضافة للذاكرة المحلية وتحديث الواجهة فوراً في 0 ثانية
+        // إضافة للذاكرة وتحديث الواجهة فوراً
         allTransactions.push(data.trans);
         renderCurrentClientView();
         recalculateGlobalTotals();
@@ -1354,7 +1413,7 @@ async function saveTransModal() {
     closeModal("transModal");
     showToast("جاري حفظ التعديل في الشيت...");
 
-    const data = await apiCall("updateTransaction", { trans_id: currentTransId, amount: realAmount, type, note });
+    const data = await apiCall("updateTransaction", { trans_id: currentTransId, amount, type, note });
     if (data.status === "success") {
         showToast("تم تحديث العملية في الشيت بنجاح");
         const t = allTransactions.find(x => String(x.trans_id) === String(currentTransId));
@@ -1838,7 +1897,7 @@ function printClientsList() {
     setTimeout(() => win.print(), 350);
 }
 
-// بدء التشغيل فوري
+// بدء التشغيل اللحظي
 loadDashboardData();
 </script>
 </body>
