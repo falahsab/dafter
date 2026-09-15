@@ -545,7 +545,10 @@ if (localStorage.getItem("role") !== "admin") {
             <div class="card-title">
                 <h2>لوحة الإدارة | يمن ستلايت</h2>
             </div>
-            <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="icon-btn" onclick="openSheetDiagnosticModal()" title="فحص الشيت المربوط في جوجل" style="color: var(--info);">🔗</button>
+                <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
+            </div>
         </div>
 
         <!-- القائمة الجانبية -->
@@ -554,6 +557,7 @@ if (localStorage.getItem("role") !== "admin") {
                 <h3>القائمة الرئيسية</h3>
                 <button class="icon-btn" onclick="closeMenu()">✕</button>
             </div>
+            <a href="#" onclick="openSheetDiagnosticModal(); closeMenu(); return false;" style="color: var(--info);">🔗 فحص الشيت المربوط</a>
             <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
             <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
             <a href="#" onclick="showClientsBalances(); closeMenu(); return false;">👥 حسابات العملاء</a>
@@ -603,11 +607,11 @@ if (localStorage.getItem("role") !== "admin") {
 
         <!-- أزرار الإضافة السريعة -->
         <div class="action-buttons">
-            <button type="button" class="trans-btn credit-btn" onclick="addTransType('credit')">
+            <button type="button" class="trans-btn credit-btn" id="btnCredit" onclick="addTransType('credit')">
                 <span>⬇</span>
                 <span>إضافة له (دائن)</span>
             </button>
-            <button type="button" class="trans-btn debit-btn" onclick="addTransType('debit')">
+            <button type="button" class="trans-btn debit-btn" id="btnDebit" onclick="addTransType('debit')">
                 <span>⬆</span>
                 <span>إضافة عليه (مدين)</span>
             </button>
@@ -729,6 +733,22 @@ if (localStorage.getItem("role") !== "admin") {
   </div>
 </div>
 
+<!-- مودال فحص الشيت المربوط في Google Drive -->
+<div id="diagnosticModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h3>🔗 فحص الشيت المربوط بالسيرفر</h3>
+            <button class="modal-close" onclick="closeModal('diagnosticModal')">&times;</button>
+        </div>
+        <div class="modal-body" id="diagnosticBody">
+            <div style="text-align: center; padding: 20px;">جاري فحص الاتصال بالشيت...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="trans-btn btn-secondary" onclick="closeModal('diagnosticModal')">إغلاق</button>
+        </div>
+    </div>
+</div>
+
 <!-- مودال تعديل عملية مالية -->
 <div id="transModal" class="modal">
   <div class="modal-content">
@@ -831,7 +851,8 @@ if (localStorage.getItem("role") !== "admin") {
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbxd7WPBkqmt7i3jPUJ8qtpk9hJEYwSdSs45Yn-krVEYj_UNCDICyKpb9Nr-4wLkk_EP/exec";
+// تأكد من وضع رابط النشر الأخير
+const API = "https://script.google.com/macros/s/AKfycbymFXt9M0AGsvvl5MDSUlPA1ZicjujyC__3EWVVq_IYQW1H2svqjXc2Ji4Ltw-tF7lF/exec";
 const waSvgIcon = `<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.698c.983.54 1.81.826 2.806.826 3.182 0 5.768-2.587 5.768-5.766-.001-3.187-2.575-5.77-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.115-.526-1.815-.752-2.983-2.59-3.074-2.711-.09-.12-1.229-1.636-1.229-3.12 0-1.485.765-2.217 1.036-2.518.271-.301.591-.376.787-.376.196 0 .393.002.564.01.181.01.425-.069.664.506.248.595.845 2.062.919 2.213.074.151.123.327.024.524-.098.197-.148.32-.294.493-.146.173-.308.386-.44.518-.146.146-.299.306-.129.598.17.292.755 1.246 1.62 2.015 1.111.989 2.049 1.296 2.341 1.442.292.146.463.123.634-.073.171-.196.732-.853.928-1.146.196-.293.391-.244.659-.146.268.098 1.708.805 2.001.951.293.146.488.22.561.342.073.122.073.708-.071 1.113z"/></svg>`;
 
 const qs = id => document.getElementById(id);
@@ -851,11 +872,11 @@ async function apiCall(action, payload = {}) {
         try {
             return JSON.parse(text);
         } catch (err) {
-            console.error("استجابة السيرفر غير قابلة للتحليل كـ JSON:", text);
+            console.error("استجابة غير مهيأة JSON:", text);
             return { status: "error", message: "استجابة غير صحيحة من الخادم" };
         }
     } catch (netErr) {
-        console.error("فشل الاتصال بالخادم:", netErr);
+        console.error("فشل الاتصال:", netErr);
         return { status: "error", message: "تعذر الاتصال بالخادم، تحقق من الإنترنت" };
     }
 }
@@ -893,7 +914,47 @@ function closeMenu() {
     qs("menuOverlay").classList.remove("show");
 }
 
-// تحميل بيانات لوحة التحكم
+// فحص الشيت المربوط بالسيرفر
+async function openSheetDiagnosticModal() {
+    openModal("diagnosticModal");
+    const body = qs("diagnosticBody");
+    body.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">🔍 جاري الاتصال بجوجل والتحقق من الشيت...</div>`;
+
+    const data = await apiCall("checkConnection");
+    if (data.status === "success") {
+        body.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:12px; font-size:0.92rem;">
+                <div style="background:#ecfdf5; border:1px solid #10b981; padding:12px; border-radius:8px;">
+                    <div style="font-weight:bold; color:#047857; margin-bottom:4px;">✓ الاتصال بالسيرفر والشيت متصل وسليم 100%</div>
+                    <div><strong>اسم الشيت:</strong> ${escapeHtml(data.spreadsheet_name)}</div>
+                    <div><strong>معرّف الشيت:</strong> <code style="font-size:0.8rem; background:#fff; padding:2px 4px; border-radius:4px;">${escapeHtml(data.spreadsheet_id)}</code></div>
+                </div>
+
+                <div style="background:#f8fafc; border:1px solid var(--border-color); padding:12px; border-radius:8px;">
+                    <div><strong>ورقة العملاء:</strong> ${escapeHtml(data.clients_sheet)} (${data.clients_count} عميل)</div>
+                    <div><strong>ورقة العمليات:</strong> ${escapeHtml(data.transactions_sheet)} (${data.transactions_count} عملية مسجلة)</div>
+                    <div><strong>التبويبات المكتشفة:</strong> ${data.all_sheets.join(" ، ")}</div>
+                </div>
+
+                <div style="text-align:center; margin-top:10px;">
+                    <a href="${data.spreadsheet_url}" target="_blank" class="trans-btn credit-btn" style="display:inline-flex; text-decoration:none;">
+                        📑 اضغط هنا لفتح هذا الشيت مباشرة في المتصفح
+                    </a>
+                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">تأكد أن هذا هو نفس الملف الذي تتابعه وتفتحه في حاسوبك</p>
+                </div>
+            </div>
+        `;
+    } else {
+        body.innerHTML = `
+            <div style="background:#fef2f2; color:#b91c1c; padding:15px; border-radius:8px; text-align:center;">
+                <strong>تعذر الاتصال بالشيت:</strong><br>
+                ${escapeHtml(data.message || "خطأ غير معروف")}
+            </div>
+        `;
+    }
+}
+
+// تحميل بيانات لوحة التحكم بسرعة فائقة
 async function loadDashboardData(forceRefresh = false) {
     qs("loading").style.display = "block";
     try {
@@ -913,18 +974,6 @@ async function loadDashboardData(forceRefresh = false) {
         }
 
         cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
-
-        if (data.recentMap && typeof data.recentMap === "object") {
-            Object.keys(data.recentMap).forEach(cid => {
-                const balObj = cachedBalancesList.find(b => String(b.client_id) === String(cid));
-                transCache[cid] = {
-                    list: data.recentMap[cid] || [],
-                    total: balObj ? balObj.total : 0,
-                    isPartial: true
-                };
-            });
-        }
-
         updateStats();
 
         if (currentClientId) {
@@ -1004,7 +1053,7 @@ function setClientModalMode(mode, clientId = null) {
 
     qs("selectClientToEditBox").style.display = isEdit ? "block" : "none";
     qs("clientModalTitle").textContent = isEdit ? "✏️ تعديل بيانات العميل" : "➕ إضافة عميل جديد";
-    qs("saveClientBtn").textContent = isEdit ? "حفظ التعديلات" : "إضافة العميل";
+    qs("saveClientBtn").textContent = isEdit ? "حفظ التعديلات على الشيت" : "إضافة العميل للشيت";
 
     if (isEdit) {
         qs("tabEditClient").classList.add("active");
@@ -1059,7 +1108,7 @@ function onSelectClientToEdit() {
     qs("new_mango_user").value = client.mango_user || "";
 }
 
-// حفظ العميل (إضافة أو تعديل) دون إظهار أخطاء زائفة
+// حفظ العميل (إضافة أو تعديل) مع التأكد التام من الحفظ
 async function saveClientData() {
     const clientId = qs("edit_client_id").value;
     const name = qs("new_name").value.trim();
@@ -1080,16 +1129,9 @@ async function saveClientData() {
 
     btn.disabled = true;
     const originalText = btn.textContent;
-    btn.textContent = "جاري الحفظ...";
+    btn.textContent = "جاري الحفظ في الشيت...";
 
-    const payload = {
-        name,
-        mobile,
-        mobile_sms,
-        username,
-        password,
-        mango_user
-    };
+    const payload = { name, mobile, mobile_sms, username, password, mango_user };
     if (isEdit) payload.client_id = clientId;
 
     const data = await apiCall(action, payload);
@@ -1098,11 +1140,11 @@ async function saveClientData() {
     btn.textContent = originalText;
 
     if (data.status === "success") {
-        showToast(isEdit ? "تم تحديث بيانات العميل بنجاح" : "تمت إضافة العميل بنجاح");
+        showToast(isEdit ? "تم تحديث العميل في الشيت بنجاح" : "تمت إضافة العميل للشيت بنجاح");
         closeModal("addClientModal");
         clearClientForm();
         
-        // تحديث محلي مباشر للعميل في الذاكرة لتفادي بطء الشاشة
+        // تحديث محلي سريع في الذاكرة
         if (isEdit) {
             const cIndex = allClients.findIndex(c => String(c.client_id) === String(clientId));
             if (cIndex !== -1) {
@@ -1112,10 +1154,9 @@ async function saveClientData() {
             delete transCache[clientId];
         }
 
-        // تحديث متزن في الخلفية
         loadDashboardData(true);
     } else {
-        showToast(data.message || "حدث خطأ أثناء حفظ البيانات", "error");
+        showToast(data.message || "حدث خطأ أثناء حفظ البيانات في الشيت", "error");
     }
 }
 
@@ -1187,10 +1228,6 @@ async function loadTransactions(forceRefresh = false) {
         clientTransactions = cached.list || [];
         updateStats(cached.total);
         renderTransactions(clientTransactions.slice(0, 5));
-        
-        if (cached.isPartial) {
-            fetchFullTransactionsBackground(currentClientId);
-        }
         return;
     }
 
@@ -1202,22 +1239,7 @@ async function loadTransactions(forceRefresh = false) {
         clientTransactions = (data.list || []);
         transCache[currentClientId] = {
             list: clientTransactions,
-            total: data.total,
-            isPartial: false
-        };
-        updateStats(data.total);
-        renderTransactions(clientTransactions.slice(0, 5));
-    }
-}
-
-async function fetchFullTransactionsBackground(cid) {
-    const data = await apiCall("getClientAllTransactions", { client_id: cid });
-    if (data.status === "success" && currentClientId === cid) {
-        clientTransactions = (data.list || []);
-        transCache[cid] = {
-            list: clientTransactions,
-            total: data.total,
-            isPartial: false
+            total: data.total
         };
         updateStats(data.total);
         renderTransactions(clientTransactions.slice(0, 5));
@@ -1231,7 +1253,7 @@ async function showAllTransactions() {
     }
 
     const cached = transCache[currentClientId];
-    if (cached && !cached.isPartial) {
+    if (cached) {
         renderTransactions(cached.list);
         return;
     }
@@ -1242,23 +1264,20 @@ async function showAllTransactions() {
 
     if (data.status === "success") {
         clientTransactions = (data.list || []);
-        transCache[currentClientId] = {
-            list: clientTransactions,
-            total: data.total,
-            isPartial: false
-        };
+        transCache[currentClientId] = { list: clientTransactions, total: data.total };
         renderTransactions(clientTransactions);
     } else {
         showToast("تعذر جلب جميع العمليات", "error");
     }
 }
 
-// إضافة عملية مالية جديدة لحظياً
+// إضافة عملية مالية جديدة لحظياً مع الحفظ الفعلي
 async function addTrans() {
     const client_id = qs("client_select").value;
     let amount = Number(qs("amount").value);
     const type = qs("type").value;
     const note = qs("note").value.trim();
+    const btnC = qs("btnCredit"), btnD = qs("btnDebit");
 
     if (!client_id) { showToast("يرجى اختيار العميل أولاً", "error"); return; }
     if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
@@ -1266,37 +1285,26 @@ async function addTrans() {
 
     const realAmount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
 
-    const currentTotal = clientTransactions.length > 0 ? getTransactionBalance(clientTransactions[0]) : 0;
-    const newTotal = currentTotal + realAmount;
-
-    const tempTrans = {
-        trans_id: "temp_" + Date.now(),
-        client_id: client_id,
-        amount: realAmount,
-        type: type,
-        note: note,
-        date: new Date().toISOString(),
-        balance_after: newTotal
-    };
-
-    clientTransactions.unshift(tempTrans);
-    renderTransactions(clientTransactions.slice(0, 5));
-    updateStats(newTotal);
-
-    qs("amount").value = "";
-    qs("note").value = "";
-    showToast("تم تسجيل العملية بنجاح");
+    btnC.disabled = true;
+    btnD.disabled = true;
+    showToast("جاري تسجيل العملية وحفظها في الشيت...");
 
     const data = await apiCall("addTransaction", { client_id, amount: realAmount, type, note });
+    
+    btnC.disabled = false;
+    btnD.disabled = false;
+
     if (data.status === "success") {
-        if (data.trans_id) tempTrans.trans_id = data.trans_id;
+        showToast("تم الحفظ في الشيت بنجاح ✓");
+        qs("amount").value = "";
+        qs("note").value = "";
+        
         delete transCache[client_id];
-        // تحديث متزن ومتتابع
+        // تحديث العمليات والرصيد فوراً
         await loadTransactions(true);
         loadDashboardData(true);
     } else {
         showToast(data.message || "حدث خطأ أثناء الحفظ على السيرفر", "error");
-        loadTransactions(true);
     }
 }
 
@@ -1362,7 +1370,6 @@ function renderTransactions(transactions) {
     tbody.appendChild(frag);
 }
 
-// تعديل العملية المالية مع معالجة آمنة للمتغيرات
 function openTransModal(id) {
     currentTransId = id;
     const t = clientTransactions.find(x => String(x.trans_id) === String(id));
@@ -1381,11 +1388,11 @@ async function saveTransModal() {
     amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
 
     closeModal("transModal");
-    showToast("جاري حفظ التعديل...");
+    showToast("جاري حفظ التعديل في الشيت...");
 
     const data = await apiCall("updateTransaction", { trans_id: currentTransId, amount, type, note });
     if (data.status === "success") {
-        showToast("تم تحديث العملية بنجاح");
+        showToast("تم تحديث العملية في الشيت بنجاح");
         delete transCache[currentClientId];
         await loadTransactions(true);
         loadDashboardData(true);
@@ -1394,21 +1401,15 @@ async function saveTransModal() {
     }
 }
 
-// حذف العملية المالية الآمن
 async function deleteTransModal() {
-    if (!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
+    if (!confirm("هل أنت متأكد من حذف هذه العملية نهائياً من الشيت؟")) return;
     
     closeModal("transModal");
-    showToast("جاري حذف العملية...");
+    showToast("جاري حذف العملية من الشيت...");
 
-    // حذف محلي فوري من الجدول دون انتظار
-    const deletedId = currentTransId;
-    clientTransactions = clientTransactions.filter(x => String(x.trans_id) !== String(deletedId));
-    renderTransactions(clientTransactions.slice(0, 5));
-
-    const data = await apiCall("deleteTransaction", { trans_id: deletedId });
+    const data = await apiCall("deleteTransaction", { trans_id: currentTransId });
     if (data.status === "success") {
-        showToast("تم حذف العملية بنجاح");
+        showToast("تم حذف العملية من الشيت بنجاح");
         delete transCache[currentClientId];
         await loadTransactions(true);
         loadDashboardData(true);
@@ -1418,7 +1419,6 @@ async function deleteTransModal() {
     }
 }
 
-// طباعة كشف حساب
 function printTransactions() {
     if (!clientTransactions.length) {
         showToast("لا توجد عمليات لطباعتها", "error");
@@ -1438,7 +1438,7 @@ function printTransactions() {
             <tr>
                 <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${Math.abs(t.amount).toLocaleString()}</td>
                 <td>${isDebit ? 'عليه' : 'له'}</td>
-                <td>${t.note}</td>
+                <td>${escapeHtml(t.note)}</td>
                 <td>${date}</td>
                 <td style="color:${bal >= 0 ? '#dc2626' : '#16a34a'}; font-weight:bold;">${bal >= 0 ? `عليه ${bal.toLocaleString()}` : `له ${Math.abs(bal).toLocaleString()}`}</td>
             </tr>
@@ -1478,7 +1478,7 @@ function printTransactions() {
         </div>
 
         <div class="client-card">
-            <strong>اسم العميل:</strong> ${clientName} | <strong>رقم الهاتف:</strong> ${client.mobile || '-'}
+            <strong>اسم العميل:</strong> ${escapeHtml(clientName)} | <strong>رقم الهاتف:</strong> ${escapeHtml(client.mobile || '-')}
         </div>
 
         <table>
@@ -1515,7 +1515,6 @@ function printTransactions() {
     setTimeout(() => win.print(), 350);
 }
 
-// عرض حسابات العملاء
 function showClientsBalances() {
     const data = [...cachedBalancesList].sort((a, b) => b.total - a.total);
 
@@ -1553,11 +1552,11 @@ function showClientsBalances() {
         };
 
         tr.querySelector(".del-btn").onclick = async () => {
-            if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته بشكل نهائي؟`)) {
-                showToast("جاري حذف العميل...");
+            if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته نهائياً من الشيت؟`)) {
+                showToast("جاري حذف العميل من الشيت...");
                 const res = await apiCall("deleteClient", { client_id: c.client_id });
                 if (res.status === "success") {
-                    showToast("تم حذف العميل بنجاح");
+                    showToast("تم حذف العميل من الشيت بنجاح");
                     delete transCache[c.client_id];
                     await loadDashboardData(true);
                     showClientsBalances();
@@ -1793,10 +1792,10 @@ function printClientsList() {
 
         return `
             <tr>
-                <td>${name}</td>
-                <td>${mobile}</td>
-                <td style="direction:ltr; font-family:monospace;">${mango}</td>
-                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${total}</td>
+                <td>${escapeHtml(name)}</td>
+                <td>${escapeHtml(mobile)}</td>
+                <td style="direction:ltr; font-family:monospace;">${escapeHtml(mango)}</td>
+                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${escapeHtml(total)}</td>
             </tr>
         `;
     }).join('');
