@@ -578,7 +578,7 @@ if (localStorage.getItem("role") !== "admin") {
             </div>
         </div>
 
-        <!-- اختيار العميل والبحث السريع مع زر التعديل المباشر -->
+        <!-- صندوق اختيار وبحث العميل -->
         <div class="search-select-box">
             <input id="client_search" class="search-input" type="text" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango User..." oninput="filterClientSelect()">
             <div style="display: flex; gap: 8px;">
@@ -831,16 +831,34 @@ if (localStorage.getItem("role") !== "admin") {
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbwKlx_IZCmAvVt7VBwOsR1K6UNBXTob6eYsJrsgSDe0mqAdDRCblvNe6NYZZ3smMmTk/exec";
+const API = "https://script.google.com/macros/s/AKfycbxd7WPBkqmt7i3jPUJ8qtpk9hJEYwSdSs45Yn-krVEYj_UNCDICyKpb9Nr-4wLkk_EP/exec";
 const waSvgIcon = `<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.698c.983.54 1.81.826 2.806.826 3.182 0 5.768-2.587 5.768-5.766-.001-3.187-2.575-5.77-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.115-.526-1.815-.752-2.983-2.59-3.074-2.711-.09-.12-1.229-1.636-1.229-3.12 0-1.485.765-2.217 1.036-2.518.271-.301.591-.376.787-.376.196 0 .393.002.564.01.181.01.425-.069.664.506.248.595.845 2.062.919 2.213.074.151.123.327.024.524-.098.197-.148.32-.294.493-.146.173-.308.386-.44.518-.146.146-.299.306-.129.598.17.292.755 1.246 1.62 2.015 1.111.989 2.049 1.296 2.341 1.442.292.146.463.123.634-.073.171-.196.732-.853.928-1.146.196-.293.391-.244.659-.146.268.098 1.708.805 2.001.951.293.146.488.22.561.342.073.122.073.708-.071 1.113z"/></svg>`;
 
 const qs = id => document.getElementById(id);
 let allClients = [], clientTransactions = [], currentClientId = "", currentTransId = null;
 let currentClientModalMode = 'new';
 let cachedBalancesList = [];
-
-// محرك الكاش المحلي فائق السرعة
 const transCache = {};
+
+// دالة اتصال مركزية آمنة 100% مع السيرفر
+async function apiCall(action, payload = {}) {
+    try {
+        const response = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action, ...payload })
+        });
+        const text = await response.text();
+        try {
+            return JSON.parse(text);
+        } catch (err) {
+            console.error("استجابة السيرفر غير قابلة للتحليل كـ JSON:", text);
+            return { status: "error", message: "استجابة غير صحيحة من الخادم" };
+        }
+    } catch (netErr) {
+        console.error("فشل الاتصال بالخادم:", netErr);
+        return { status: "error", message: "تعذر الاتصال بالخادم، تحقق من الإنترنت" };
+    }
+}
 
 // نظام الإشعارات Toast
 function showToast(message, type = "success") {
@@ -879,13 +897,8 @@ function closeMenu() {
 async function loadDashboardData(forceRefresh = false) {
     qs("loading").style.display = "block";
     try {
-        const res = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify({ action: "getDashboardData", forceRefresh })
-        });
-        const data = await res.json();
-
-        if (data.status !== "success") throw new Error(data.message);
+        const data = await apiCall("getDashboardData", { forceRefresh });
+        if (data.status !== "success") return;
 
         allClients = Array.isArray(data.clients) ? data.clients : [];
         renderClientsDropdown();
@@ -901,7 +914,6 @@ async function loadDashboardData(forceRefresh = false) {
 
         cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
 
-        // تسخين الكاش لعمليات العملاء مسبقاً
         if (data.recentMap && typeof data.recentMap === "object") {
             Object.keys(data.recentMap).forEach(cid => {
                 const balObj = cachedBalancesList.find(b => String(b.client_id) === String(cid));
@@ -920,8 +932,7 @@ async function loadDashboardData(forceRefresh = false) {
         }
 
     } catch (e) {
-        console.error("خطأ أثناء تحميل لوحة التحكم:", e);
-        showToast("تعذر تحميل البيانات، تأكد من الاتصال", "error");
+        console.error(e);
     } finally {
         qs("loading").style.display = "none";
     }
@@ -1048,6 +1059,7 @@ function onSelectClientToEdit() {
     qs("new_mango_user").value = client.mango_user || "";
 }
 
+// حفظ العميل (إضافة أو تعديل) دون إظهار أخطاء زائفة
 async function saveClientData() {
     const clientId = qs("edit_client_id").value;
     const name = qs("new_name").value.trim();
@@ -1059,7 +1071,7 @@ async function saveClientData() {
     const btn = qs("saveClientBtn");
 
     if (!name || !mobile || !username || !password) {
-        showToast("يرجى تعبئة الحقول الأساسية: الاسم، الجوال، المستخدم، كلمة المرور", "error");
+        showToast("يرجى تعبئة الحقول الأساسية المطلوبة", "error");
         return;
     }
 
@@ -1071,7 +1083,6 @@ async function saveClientData() {
     btn.textContent = "جاري الحفظ...";
 
     const payload = {
-        action: action,
         name,
         mobile,
         mobile_sms,
@@ -1079,41 +1090,42 @@ async function saveClientData() {
         password,
         mango_user
     };
-
     if (isEdit) payload.client_id = clientId;
 
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify(payload)
-        });
-        const data = await res.json();
+    const data = await apiCall(action, payload);
 
-        if (data.status === "success") {
-            showToast(isEdit ? "تم تحديث بيانات العميل بنجاح" : "تمت إضافة العميل بنجاح");
-            closeModal("addClientModal");
-            clearClientForm();
-            if (clientId) delete transCache[clientId];
-            await loadDashboardData(true);
-        } else {
-            showToast(data.message || "حدث خطأ أثناء حفظ البيانات", "error");
+    btn.disabled = false;
+    btn.textContent = originalText;
+
+    if (data.status === "success") {
+        showToast(isEdit ? "تم تحديث بيانات العميل بنجاح" : "تمت إضافة العميل بنجاح");
+        closeModal("addClientModal");
+        clearClientForm();
+        
+        // تحديث محلي مباشر للعميل في الذاكرة لتفادي بطء الشاشة
+        if (isEdit) {
+            const cIndex = allClients.findIndex(c => String(c.client_id) === String(clientId));
+            if (cIndex !== -1) {
+                allClients[cIndex] = { ...allClients[cIndex], name, mobile, mobile_sms, username, password, mango_user };
+                renderClientsDropdown();
+            }
+            delete transCache[clientId];
         }
-    } catch (err) {
-        showToast("تعذر الاتصال بالخادم", "error");
-    } finally {
-        btn.disabled = false;
-        btn.textContent = originalText;
+
+        // تحديث متزن في الخلفية
+        loadDashboardData(true);
+    } else {
+        showToast(data.message || "حدث خطأ أثناء حفظ البيانات", "error");
     }
 }
 
 // -------------------------------------------------------------
-// حساب الرصيد التراكمي الدقيق وإرسال الرسائل
+// حساب الرصيد التراكمي وإرسال الإشعارات بدقة 100%
 // -------------------------------------------------------------
 function getTransactionBalance(t) {
     if (t.balance_after !== undefined && !isNaN(t.balance_after)) {
         return Number(t.balance_after);
     }
-    // حساب تراكمي احتياطي
     let bal = 0;
     const chronological = [...clientTransactions].reverse();
     const idx = chronological.findIndex(x => String(x.trans_id) === String(t.trans_id));
@@ -1124,7 +1136,6 @@ function getTransactionBalance(t) {
     return Number(t.amount) || 0;
 }
 
-// إرسال SMS مصحح بدقة 100%
 function sendSmsMsg(t, clientName, smsNumber) {
     if (!smsNumber) {
         showToast("لا يوجد رقم SMS مسجل لهذا العميل", "error");
@@ -1141,7 +1152,6 @@ function sendSmsMsg(t, clientName, smsNumber) {
     window.open(`sms:${smsNumber}?body=${encodeURIComponent(msg)}`, "_blank");
 }
 
-// إرسال واتساب مصحح بدقة 100%
 function sendWhatsAppMsg(t, clientName, clientMobile) {
     if (!clientMobile) {
         showToast("لا يوجد رقم واتساب مسجل لهذا العميل", "error");
@@ -1185,52 +1195,33 @@ async function loadTransactions(forceRefresh = false) {
     }
 
     qs("loading").style.display = "block";
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify({ 
-                action: "getClientAllTransactions", 
-                client_id: currentClientId,
-                forceRefresh: forceRefresh 
-            })
-        });
-        const data = await res.json();
+    const data = await apiCall("getClientAllTransactions", { client_id: currentClientId, forceRefresh });
+    qs("loading").style.display = "none";
 
-        if (data.status === "success") {
-            clientTransactions = (data.list || []);
-            transCache[currentClientId] = {
-                list: clientTransactions,
-                total: data.total,
-                isPartial: false
-            };
-            updateStats(data.total);
-            renderTransactions(clientTransactions.slice(0, 5));
-        }
-    } catch (e) {
-        showToast("فشل تحميل عمليات العميل", "error");
-    } finally {
-        qs("loading").style.display = "none";
+    if (data.status === "success") {
+        clientTransactions = (data.list || []);
+        transCache[currentClientId] = {
+            list: clientTransactions,
+            total: data.total,
+            isPartial: false
+        };
+        updateStats(data.total);
+        renderTransactions(clientTransactions.slice(0, 5));
     }
 }
 
 async function fetchFullTransactionsBackground(cid) {
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify({ action: "getClientAllTransactions", client_id: cid })
-        });
-        const data = await res.json();
-        if (data.status === "success" && currentClientId === cid) {
-            clientTransactions = (data.list || []);
-            transCache[cid] = {
-                list: clientTransactions,
-                total: data.total,
-                isPartial: false
-            };
-            updateStats(data.total);
-            renderTransactions(clientTransactions.slice(0, 5));
-        }
-    } catch (e) {}
+    const data = await apiCall("getClientAllTransactions", { client_id: cid });
+    if (data.status === "success" && currentClientId === cid) {
+        clientTransactions = (data.list || []);
+        transCache[cid] = {
+            list: clientTransactions,
+            total: data.total,
+            isPartial: false
+        };
+        updateStats(data.total);
+        renderTransactions(clientTransactions.slice(0, 5));
+    }
 }
 
 async function showAllTransactions() {
@@ -1246,25 +1237,19 @@ async function showAllTransactions() {
     }
 
     qs("loading").style.display = "block";
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify({ action: "getClientAllTransactions", client_id: currentClientId })
-        });
-        const data = await res.json();
-        if (data.status === "success") {
-            clientTransactions = (data.list || []);
-            transCache[currentClientId] = {
-                list: clientTransactions,
-                total: data.total,
-                isPartial: false
-            };
-            renderTransactions(clientTransactions);
-        }
-    } catch (e) {
+    const data = await apiCall("getClientAllTransactions", { client_id: currentClientId });
+    qs("loading").style.display = "none";
+
+    if (data.status === "success") {
+        clientTransactions = (data.list || []);
+        transCache[currentClientId] = {
+            list: clientTransactions,
+            total: data.total,
+            isPartial: false
+        };
+        renderTransactions(clientTransactions);
+    } else {
         showToast("تعذر جلب جميع العمليات", "error");
-    } finally {
-        qs("loading").style.display = "none";
     }
 }
 
@@ -1281,11 +1266,9 @@ async function addTrans() {
 
     const realAmount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
 
-    // الرصيد التراكمي الفوري المحدث
     const currentTotal = clientTransactions.length > 0 ? getTransactionBalance(clientTransactions[0]) : 0;
     const newTotal = currentTotal + realAmount;
 
-    // إنشاء كائن العملية محلياً
     const tempTrans = {
         trans_id: "temp_" + Date.now(),
         client_id: client_id,
@@ -1296,7 +1279,6 @@ async function addTrans() {
         balance_after: newTotal
     };
 
-    // ⚡ تحديث فوري للشاشة (Optimistic UI) في 0.05 ثانية
     clientTransactions.unshift(tempTrans);
     renderTransactions(clientTransactions.slice(0, 5));
     updateStats(newTotal);
@@ -1305,24 +1287,16 @@ async function addTrans() {
     qs("note").value = "";
     showToast("تم تسجيل العملية بنجاح");
 
-    try {
-        const res = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify({ action: "addTransaction", client_id, amount: realAmount, type, note })
-        });
-        const data = await res.json();
-
-        if (data.status === "success") {
-            if (data.trans_id) tempTrans.trans_id = data.trans_id;
-            delete transCache[client_id];
-            loadTransactions(true);
-            loadDashboardData(true);
-        } else {
-            showToast("حدث خطأ أثناء حفظ العملية", "error");
-            loadTransactions(true);
-        }
-    } catch (e) {
-        showToast("تعذر المزامنة المؤقتة", "error");
+    const data = await apiCall("addTransaction", { client_id, amount: realAmount, type, note });
+    if (data.status === "success") {
+        if (data.trans_id) tempTrans.trans_id = data.trans_id;
+        delete transCache[client_id];
+        // تحديث متزن ومتتابع
+        await loadTransactions(true);
+        loadDashboardData(true);
+    } else {
+        showToast(data.message || "حدث خطأ أثناء الحفظ على السيرفر", "error");
+        loadTransactions(true);
     }
 }
 
@@ -1388,10 +1362,10 @@ function renderTransactions(transactions) {
     tbody.appendChild(frag);
 }
 
-// تعديل وحذف العملية
+// تعديل العملية المالية مع معالجة آمنة للمتغيرات
 function openTransModal(id) {
     currentTransId = id;
-    const t = clientTransactions.find(x => x.trans_id == id);
+    const t = clientTransactions.find(x => String(x.trans_id) === String(id));
     if (!t) return;
     qs("modal_amount").value = Math.abs(t.amount);
     qs("modal_type").value = t.type;
@@ -1406,33 +1380,41 @@ async function saveTransModal() {
     const note = qs("modal_note").value;
     amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
 
-    try {
-        await fetch(API, { 
-            method: "POST", 
-            body: JSON.stringify({ action: "updateTransaction", trans_id: currentTransId, amount, type, note }) 
-        });
-        closeModal("transModal");
+    closeModal("transModal");
+    showToast("جاري حفظ التعديل...");
+
+    const data = await apiCall("updateTransaction", { trans_id: currentTransId, amount, type, note });
+    if (data.status === "success") {
         showToast("تم تحديث العملية بنجاح");
         delete transCache[currentClientId];
-        await Promise.all([loadTransactions(true), loadDashboardData(true)]);
-    } catch (e) {
-        showToast("فشل تحديث العملية", "error");
+        await loadTransactions(true);
+        loadDashboardData(true);
+    } else {
+        showToast(data.message || "فشل تحديث العملية", "error");
     }
 }
 
+// حذف العملية المالية الآمن
 async function deleteTransModal() {
     if (!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
-    try {
-        await fetch(API, { 
-            method: "POST", 
-            body: JSON.stringify({ action: "deleteTransaction", trans_id: currentTransId }) 
-        });
-        closeModal("transModal");
-        showToast("تم حذف العملية");
+    
+    closeModal("transModal");
+    showToast("جاري حذف العملية...");
+
+    // حذف محلي فوري من الجدول دون انتظار
+    const deletedId = currentTransId;
+    clientTransactions = clientTransactions.filter(x => String(x.trans_id) !== String(deletedId));
+    renderTransactions(clientTransactions.slice(0, 5));
+
+    const data = await apiCall("deleteTransaction", { trans_id: deletedId });
+    if (data.status === "success") {
+        showToast("تم حذف العملية بنجاح");
         delete transCache[currentClientId];
-        await Promise.all([loadTransactions(true), loadDashboardData(true)]);
-    } catch (e) {
-        showToast("فشل حذف العملية", "error");
+        await loadTransactions(true);
+        loadDashboardData(true);
+    } else {
+        showToast(data.message || "فشل حذف العملية من السيرفر", "error");
+        loadTransactions(true);
     }
 }
 
@@ -1572,11 +1554,16 @@ function showClientsBalances() {
 
         tr.querySelector(".del-btn").onclick = async () => {
             if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته بشكل نهائي؟`)) {
-                await fetch(API, { method: "POST", body: JSON.stringify({ action: "deleteClient", client_id: c.client_id }) });
-                showToast("تم حذف العميل بنجاح");
-                delete transCache[c.client_id];
-                await loadDashboardData(true);
-                showClientsBalances();
+                showToast("جاري حذف العميل...");
+                const res = await apiCall("deleteClient", { client_id: c.client_id });
+                if (res.status === "success") {
+                    showToast("تم حذف العميل بنجاح");
+                    delete transCache[c.client_id];
+                    await loadDashboardData(true);
+                    showClientsBalances();
+                } else {
+                    showToast(res.message || "فشل حذف العميل", "error");
+                }
             }
         };
 
