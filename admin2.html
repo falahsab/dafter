@@ -92,7 +92,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 19px;
+    font-size: 20px;
     cursor: pointer;
     transition: all 0.2s ease;
 }
@@ -102,16 +102,11 @@ body {
     transform: translateY(-1px);
 }
 
-.icon-btn.logout { color: var(--danger); }
-.icon-btn.logout:hover { background: var(--danger-bg); }
-
-/* دوران أيقونة التحديث */
-@keyframes spinAnimation {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+.icon-btn.logout {
+    color: var(--danger);
 }
-.spinning {
-    animation: spinAnimation 0.7s linear infinite !important;
+.icon-btn.logout:hover {
+    background: var(--danger-bg);
 }
 
 /* القائمة الجانبية */
@@ -131,7 +126,9 @@ body {
     gap: 8px;
 }
 
-.side-menu.open { right: 0; }
+.side-menu.open {
+    right: 0;
+}
 
 .side-menu-header {
     display: flex;
@@ -174,7 +171,9 @@ body {
     z-index: 1000;
 }
 
-.menu-overlay.show { display: block; }
+.menu-overlay.show {
+    display: block;
+}
 
 /* ملخص الحسابات الإجمالي */
 .account-summary {
@@ -216,8 +215,10 @@ body {
 .debit-value { color: #dc2626; }
 .balance-value { color: var(--info); }
 
-/* المدخلات */
-.form-group { margin-bottom: 14px; }
+/* الحقول والمدخلات */
+.form-group {
+    margin-bottom: 14px;
+}
 
 .input-label {
     font-size: 0.85rem;
@@ -259,8 +260,13 @@ input:focus, select:focus {
     padding-left: 38px;
 }
 
-.note-wrapper { position: relative; }
-.note-wrapper input { padding-left: 48px; }
+.note-wrapper {
+    position: relative;
+}
+
+.note-wrapper input {
+    padding-left: 48px;
+}
 
 .paste-btn {
     position: absolute;
@@ -278,7 +284,9 @@ input:focus, select:focus {
     transition: 0.2s;
 }
 
-.paste-btn:hover { background: #e2e8f0; }
+.paste-btn:hover {
+    background: #e2e8f0;
+}
 
 /* الأزرار */
 .action-buttons {
@@ -309,11 +317,24 @@ input:focus, select:focus {
     box-shadow: var(--shadow-md);
 }
 
-.trans-btn:active { transform: translateY(0); }
-.credit-btn { background: linear-gradient(135deg, #059669, #10b981); }
-.debit-btn { background: linear-gradient(135deg, #e11d48, #f43f5e); }
-.btn-secondary { background: #475569; }
-.btn-accent { background: #0284c7; }
+.trans-btn:active {
+    transform: translateY(0);
+}
+
+.credit-btn {
+    background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.debit-btn {
+    background: linear-gradient(135deg, #e11d48, #f43f5e);
+}
+
+.btn-secondary {
+    background: #475569;
+}
+.btn-accent {
+    background: #0284c7;
+}
 
 /* الجداول */
 .table-responsive {
@@ -346,8 +367,17 @@ td {
     color: var(--text-main);
 }
 
-tr:last-child td { border-bottom: none; }
-tbody tr:hover { background-color: #f1f5f9; }
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr {
+    transition: background-color 0.15s;
+}
+
+tbody tr:hover {
+    background-color: #f1f5f9;
+}
 
 .badge {
     display: inline-block;
@@ -359,6 +389,7 @@ tbody tr:hover { background-color: #f1f5f9; }
 
 .badge-debit { background: #fee2e2; color: #b91c1c; }
 .badge-credit { background: #dcfce7; color: #15803d; }
+
 .debit-text { color: #dc2626; font-weight: 700; }
 .credit-text { color: #16a34a; font-weight: 700; }
 
@@ -388,7 +419,7 @@ tbody tr:hover { background-color: #f1f5f9; }
 .sms-btn { background: #3b82f6; }
 .sms-btn:hover { background: #2563eb; }
 
-/* النوافذ المنبثقة */
+/* النوافذ المنبثقة (Modals) */
 .modal {
     display: none;
     position: fixed;
@@ -411,7 +442,9 @@ tbody tr:hover { background-color: #f1f5f9; }
     animation: modalScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.modal-large { max-width: 820px; }
+.modal-large {
+    max-width: 800px;
+}
 
 @keyframes modalScale {
     from { opacity: 0; transform: scale(0.95); }
@@ -441,8 +474,15 @@ tbody tr:hover { background-color: #f1f5f9; }
     line-height: 1;
 }
 
-.modal-close:hover { color: var(--danger); }
-.modal-body { padding: 20px; max-height: 75vh; overflow-y: auto; }
+.modal-close:hover {
+    color: var(--danger);
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
 
 .modal-footer {
     display: flex;
@@ -452,7 +492,7 @@ tbody tr:hover { background-color: #f1f5f9; }
     border-top: 1px solid var(--border-color);
 }
 
-/* أزرار نمط الإضافة والتعديل */
+/* تبويبات نمط الإضافة / التعديل */
 .mode-tabs {
     display: flex;
     gap: 6px;
@@ -481,7 +521,7 @@ tbody tr:hover { background-color: #f1f5f9; }
     box-shadow: var(--shadow-sm);
 }
 
-/* إشعار Toast */
+/* Toast Notification */
 .toast-container {
     position: fixed;
     bottom: 24px;
@@ -510,7 +550,11 @@ tbody tr:hover { background-color: #f1f5f9; }
     transition: all 0.25s ease;
 }
 
-.toast.show { opacity: 1; transform: translateY(0); }
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .toast.success { background: #059669; }
 .toast.error { background: #dc2626; }
 
@@ -538,6 +582,7 @@ tbody tr:hover { background-color: #f1f5f9; }
 <body>
 
 <script>
+// التحقق من صلاحيات المدير
 if (localStorage.getItem("role") !== "admin") {
     alert("يجب تسجيل الدخول كأدمن أولاً");
     window.location.href = "index.html";
@@ -548,18 +593,15 @@ if (localStorage.getItem("role") !== "admin") {
 
 <div class="main-wrapper">
     <div class="card">
-        <!-- الترويسة -->
+        <!-- ترويسة الصفحة -->
         <div class="card-header">
             <button class="icon-btn" onclick="toggleMenu()" title="القائمة">☰</button>
+
             <div class="card-title">
                 <h2>لوحة الإدارة | يمن ستلايت</h2>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <!-- زر التحديث ومسح الكاش -->
-                <button class="icon-btn" id="refreshBtn" onclick="hardRefreshSystem()" title="تحديث شامل ومسح الكاش" style="color: var(--primary);">🔄</button>
-                <button class="icon-btn" onclick="openSheetDiagnosticModal()" title="فحص الشيت المربوط في جوجل" style="color: var(--info);">🔗</button>
-                <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
-            </div>
+
+            <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
         </div>
 
         <!-- القائمة الجانبية -->
@@ -568,8 +610,6 @@ if (localStorage.getItem("role") !== "admin") {
                 <h3>القائمة الرئيسية</h3>
                 <button class="icon-btn" onclick="closeMenu()">✕</button>
             </div>
-            <a href="#" onclick="hardRefreshSystem(); closeMenu(); return false;" style="color: var(--primary);">🔄 تحديث شامل ومسح الكاش</a>
-            <a href="#" onclick="openSheetDiagnosticModal(); closeMenu(); return false;" style="color: var(--info);">🔗 فحص الشيت المربوط</a>
             <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
             <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
             <a href="#" onclick="showClientsBalances(); closeMenu(); return false;">👥 حسابات العملاء</a>
@@ -578,7 +618,7 @@ if (localStorage.getItem("role") !== "admin") {
         </div>
         <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
 
-        <!-- ملخص الحسابات الإجمالي العام (مستمد مباشرة من الشيت) -->
+        <!-- ملخص الحسابات الإجمالي العام -->
         <div class="account-summary">
             <div class="summary-item">
                 <span class="label">إجمالي ما لكم (مدين)</span>
@@ -594,11 +634,11 @@ if (localStorage.getItem("role") !== "admin") {
             </div>
         </div>
 
-        <!-- صندوق اختيار وبحث العميل -->
+        <!-- اختيار العميل والبحث السريع مع زر التعديل المباشر -->
         <div class="search-select-box">
             <input id="client_search" class="search-input" type="text" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango User..." oninput="filterClientSelect()">
             <div style="display: flex; gap: 8px;">
-                <select id="client_select" style="flex: 1;" onchange="onClientSelected()">
+                <select id="client_select" style="flex: 1;">
                     <option value="">-- اختر العميل --</option>
                 </select>
                 <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
@@ -619,17 +659,17 @@ if (localStorage.getItem("role") !== "admin") {
 
         <!-- أزرار الإضافة السريعة -->
         <div class="action-buttons">
-            <button type="button" class="trans-btn credit-btn" id="btnCredit" onclick="addTransType('credit')">
+            <button type="button" class="trans-btn credit-btn" onclick="addTransType('credit')">
                 <span>⬇</span>
                 <span>إضافة له (دائن)</span>
             </button>
-            <button type="button" class="trans-btn debit-btn" id="btnDebit" onclick="addTransType('debit')">
+            <button type="button" class="trans-btn debit-btn" onclick="addTransType('debit')">
                 <span>⬆</span>
                 <span>إضافة عليه (مدين)</span>
             </button>
         </div>
 
-        <div id="loading" class="loading-indicator">جاري تحديث البيانات...</div>
+        <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
 
         <!-- ملخص رصيد العميل المختار -->
         <div class="account-summary" style="margin-top: 20px;">
@@ -688,6 +728,7 @@ if (localStorage.getItem("role") !== "admin") {
     </div>
     
     <div class="modal-body">
+        <!-- شريط التبديل بين وضع الإضافة والتعديل -->
         <div class="mode-tabs">
             <button type="button" id="tabNewClient" class="mode-tab-btn active" onclick="setClientModalMode('new')">
                 ➕ عميل جديد
@@ -697,9 +738,10 @@ if (localStorage.getItem("role") !== "admin") {
             </button>
         </div>
 
+        <!-- قائمة اختيار العميل للتعديل -->
         <div id="selectClientToEditBox" class="form-group" style="display: none;">
             <label class="input-label" style="color: var(--primary); font-weight: bold;">اختر العميل المراد تعديل بياناته:</label>
-            <select id="modal_client_select" onchange="onSelectClientToEdit()">
+            <select id="modal_client_select" onchange="onSelectClientToEdit() ">
                 <option value="">-- اختر عميلاً للتعديل --</option>
             </select>
         </div>
@@ -734,6 +776,7 @@ if (localStorage.getItem("role") !== "admin") {
             <input id="new_password" type="text" placeholder="كلمة المرور">
         </div>
 
+        <!-- حقل Mango User المضاف -->
         <div class="form-group">
             <label class="input-label">اسم المستخدم Mango User (اختياري)</label>
             <input id="new_mango_user" placeholder="Mango User (مثال: user123)">
@@ -742,22 +785,6 @@ if (localStorage.getItem("role") !== "admin") {
         <button class="trans-btn credit-btn" style="width:100%" id="saveClientBtn" onclick="saveClientData()">إضافة العميل</button>
     </div>
   </div>
-</div>
-
-<!-- مودال فحص الشيت المربوط في Google Drive -->
-<div id="diagnosticModal" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h3>🔗 فحص الشيت المربوط بالسيرفر</h3>
-            <button class="modal-close" onclick="closeModal('diagnosticModal')">&times;</button>
-        </div>
-        <div class="modal-body" id="diagnosticBody">
-            <div style="text-align: center; padding: 20px;">جاري فحص الاتصال بالشيت...</div>
-        </div>
-        <div class="modal-footer">
-            <button class="trans-btn btn-secondary" onclick="closeModal('diagnosticModal')">إغلاق</button>
-        </div>
-    </div>
 </div>
 
 <!-- مودال تعديل عملية مالية -->
@@ -770,7 +797,7 @@ if (localStorage.getItem("role") !== "admin") {
     <div class="modal-body">
         <div class="form-group">
             <label class="input-label">المبلغ</label>
-            <input id="modal_amount" type="number" placeholder="المبلغ" step="any">
+            <input id="modal_amount" type="number" placeholder="المبلغ">
         </div>
         <div class="form-group">
             <label class="input-label">النوع</label>
@@ -785,8 +812,8 @@ if (localStorage.getItem("role") !== "admin") {
         </div>
     </div>
     <div class="modal-footer">
-        <button class="trans-btn credit-btn" id="modalSaveBtn" onclick="saveTransModal()">حفظ التعديل</button>
-        <button class="trans-btn debit-btn" id="modalDeleteBtn" onclick="deleteTransModal()">حذف</button>
+        <button class="trans-btn credit-btn" onclick="saveTransModal()">حفظ التعديل</button>
+        <button class="trans-btn debit-btn" onclick="deleteTransModal()">حذف</button>
         <button class="trans-btn btn-secondary" onclick="closeModal('transModal')">إلغاء</button>
     </div>
   </div>
@@ -852,7 +879,7 @@ if (localStorage.getItem("role") !== "admin") {
     </div>
 </div>
 
-<!-- نافذة اختيار الرقم للاتصال -->
+<!-- نافذة اختيار الرقم المنبثقة للاتصال -->
 <div id="numberPopup" class="modal">
     <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
         <h4 style="margin-bottom: 12px; color: var(--primary);">اختر الرقم المناسب</h4>
@@ -862,52 +889,22 @@ if (localStorage.getItem("role") !== "admin") {
 </div>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbw3z8Iffv7OaOU9XR8GOl2vBknIuvK3EzYU9nTcKsXu5r7xc5akoYWgGLxhhvfbnADL/exec";
+const API = "https://script.google.com/macros/s/AKfycby0MNbRU_JqajrNoNBP2FU5HOnXN1LFAOU_RJJxmWW5XSN0s5c1VELrcYIaGZ1ce7Jo/exec";
+
+// أيقونة واتساب SVG
 const waSvgIcon = `<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.698c.983.54 1.81.826 2.806.826 3.182 0 5.768-2.587 5.768-5.766-.001-3.187-2.575-5.77-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.115-.526-1.815-.752-2.983-2.59-3.074-2.711-.09-.12-1.229-1.636-1.229-3.12 0-1.485.765-2.217 1.036-2.518.271-.301.591-.376.787-.376.196 0 .393.002.564.01.181.01.425-.069.664.506.248.595.845 2.062.919 2.213.074.151.123.327.024.524-.098.197-.148.32-.294.493-.146.173-.308.386-.44.518-.146.146-.299.306-.129.598.17.292.755 1.246 1.62 2.015 1.111.989 2.049 1.296 2.341 1.442.292.146.463.123.634-.073.171-.196.732-.853.928-1.146.196-.293.391-.244.659-.146.268.098 1.708.805 2.001.951.293.146.488.22.561.342.073.122.073.708-.071 1.113z"/></svg>`;
 
 const qs = id => document.getElementById(id);
-
-// مخزن الذاكرة المحلي الفائق
-let allClients = [];
-let cachedBalancesList = [];
-let cachedBalancesMap = {};
-let clientTransCache = {}; // تخزين حركات كل عميل لسرعة 0 ثانية
-let currentClientId = "";
-let currentTransId = null;
+let allClients = [], clientTransactions = [], currentClientId = "", currentTransId = null;
 let currentClientModalMode = 'new';
-let showingAllCurrent = false;
+let cachedBalancesList = [];
 
-// فحص موحد لنجاح العملية (سواء رد السيرفر بـ status: success أو success: true)
-function isSuccess(res) {
-    return Boolean(res && (res.status === "success" || res.success === true));
-}
+// ==========================================
+// محرك الكاش المحلي فائق السرعة (0 ثانية استجابة)
+// ==========================================
+const transCache = {}; // { [clientId]: { list: [], total: number, isPartial: boolean } }
 
-// دالة اتصال مركزية فائقة الموثوقية مع مهلة زمنية لحماية المتصفح
-async function apiCall(action, payload = {}) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 20000);
-    try {
-        const response = await fetch(API, {
-            method: "POST",
-            body: JSON.stringify({ action, ...payload }),
-            signal: controller.signal
-        });
-        clearTimeout(timeoutId);
-        const text = await response.text();
-        try {
-            return JSON.parse(text);
-        } catch (err) {
-            return { status: "error", success: false, message: "استجابة غير صحيحة من الخادم" };
-        }
-    } catch (netErr) {
-        clearTimeout(timeoutId);
-        if (netErr.name === 'AbortError') {
-            return { status: "error", success: false, message: "انتهت مهلة الاتصال بالخادم، يُرجى المحاولة ثانية" };
-        }
-        return { status: "error", success: false, message: "تعذر الاتصال بالخادم، تحقق من الإنترنت" };
-    }
-}
-
+// نظام الإشعارات Toast
 function showToast(message, type = "success") {
     const container = qs("toastContainer");
     const toast = document.createElement("div");
@@ -922,15 +919,18 @@ function showToast(message, type = "success") {
     }, 2800);
 }
 
+// فتح وإغلاق النوافذ
 function openModal(id) { qs(id).style.display = "flex"; }
 function closeModal(id) { qs(id).style.display = "none"; }
-window.onclick = e => { if (e.target.classList.contains("modal")) e.target.style.display = "none"; };
+window.onclick = e => { if (e.target.classList.contains("modal")) e.target.style.display = "none"; }
 
+// تسجيل الخروج
 function logout() {
     localStorage.clear();
     window.location.href = "index.html";
 }
 
+// القائمة الجانبية
 function toggleMenu() {
     qs("sideMenu").classList.toggle("open");
     qs("menuOverlay").classList.toggle("show");
@@ -940,246 +940,96 @@ function closeMenu() {
     qs("menuOverlay").classList.remove("show");
 }
 
-function escapeHtml(str) {
-    if (str === null || str === undefined) return "";
-    return String(str).replace(/[&<>"']/g, function(m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
-    });
-}
-
-// -------------------------------------------------------------
-// زر ودالة [تحديث شامل ومسح الكاش - فوري في المكان وبدون reload]
-// -------------------------------------------------------------
-async function hardRefreshSystem() {
-    const btn = qs("refreshBtn");
-    if (btn) btn.classList.add("spinning");
-    showToast("جاري مسح الكاش وتحديث البيانات من الشيت السحابي...");
-
-    try {
-        // تفريغ كاش العمليات الداخلي
-        clientTransCache = {};
-
-        // مسح كاش المتصفح التخزيني إن وُجد
-        if ('caches' in window) {
-            try {
-                const keys = await caches.keys();
-                await Promise.all(keys.map(k => caches.delete(k)));
-            } catch (e) {}
-        }
-
-        // جلب أحدث بيانات فورية من السيرفر مع إجبار مسح الكاش السحابي
-        await loadDashboardData(true);
-
-        // إذا كان هناك عميل مختار، نحدث عملياته فوراً أيضاً
-        if (currentClientId) {
-            await loadClientTransactions(currentClientId, true);
-        }
-
-        showToast("✓ تم تحديث البيانات بنجاح من الشيت السحابي", "success");
-    } catch (err) {
-        console.error(err);
-        showToast("حدث خطأ أثناء التحديث", "error");
-    } finally {
-        if (btn) btn.classList.remove("spinning");
-    }
-}
-
-// -------------------------------------------------------------
-// فحص الشيت المربوط بالسيرفر
-// -------------------------------------------------------------
-async function openSheetDiagnosticModal() {
-    openModal("diagnosticModal");
-    const body = qs("diagnosticBody");
-    body.innerHTML = `<div style="text-align:center; padding:20px; color:var(--text-muted);">🔍 جاري التحقق من الشيت المربوط...</div>`;
-
-    const data = await apiCall("checkConnection");
-    if (isSuccess(data)) {
-        body.innerHTML = `
-            <div style="display:flex; flex-direction:column; gap:12px; font-size:0.92rem;">
-                <div style="background:#ecfdf5; border:1px solid #10b981; padding:12px; border-radius:8px;">
-                    <div style="font-weight:bold; color:#047857; margin-bottom:4px;">✓ الشيت متصل وجاهز للعمليات السريعة</div>
-                    <div><strong>اسم الشيت:</strong> ${escapeHtml(data.spreadsheet_name)}</div>
-                    <div><strong>معرّف الشيت:</strong> <code style="font-size:0.8rem; background:#fff; padding:2px 4px; border-radius:4px;">${escapeHtml(data.spreadsheet_id)}</code></div>
-                </div>
-
-                <div style="background:#f8fafc; border:1px solid var(--border-color); padding:12px; border-radius:8px;">
-                    <div><strong>ورقة العملاء:</strong> ${escapeHtml(data.clients_sheet)} (${data.clients_count} عميل)</div>
-                    <div><strong>ورقة العمليات:</strong> ${escapeHtml(data.transactions_sheet)} (${data.transactions_count} عملية مسجلة)</div>
-                </div>
-
-                <div style="text-align:center; margin-top:10px;">
-                    <a href="${data.spreadsheet_url}" target="_blank" class="trans-btn credit-btn" style="display:inline-flex; text-decoration:none;">
-                        📑 اضغط هنا لفتح هذا الشيت مباشرة في المتصفح
-                    </a>
-                </div>
-            </div>
-        `;
-    } else {
-        body.innerHTML = `<div style="background:#fef2f2; color:#b91c1c; padding:15px; border-radius:8px;">تعذر الاتصال بالشيت</div>`;
-    }
-}
-
-// -------------------------------------------------------------
-// تحميل ملخص وبيانات النظام (Dashboard Data)
-// -------------------------------------------------------------
+// ==========================================
+// التحميل الموحد السريع للوحة التحكم
+// ==========================================
 async function loadDashboardData(forceRefresh = false) {
     qs("loading").style.display = "block";
     try {
-        const data = await apiCall("getDashboardData", { forceRefresh });
-        if (!isSuccess(data)) {
-            showToast(data.message || "تعذر جلب بيانات الداشبورد", "error");
-            return;
-        }
-
-        allClients = Array.isArray(data.clients) ? data.clients : [];
-        cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
-        cachedBalancesMap = {};
-        cachedBalancesList.forEach(b => {
-            cachedBalancesMap[String(b.client_id)] = b.total;
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getDashboardData", forceRefresh })
         });
+        const data = await res.json();
 
-        // عرض الإجماليات المعتمدة مباشرة من السيرفر دون تصفير
+        if (data.status !== "success") throw new Error(data.message);
+
+        // 1. العملاء
+        allClients = Array.isArray(data.clients) ? data.clients : [];
+        renderClientsDropdown();
+
+        // 2. ملخص الحسابات الإجمالي
         if (data.totals) {
-            qs("totalDebit").textContent = (data.totals.totalDebit || 0).toLocaleString() + " ر.ي";
-            qs("totalCredit").textContent = (data.totals.totalCredit || 0).toLocaleString() + " ر.ي";
-            const net = data.totals.netBalance || 0;
+            qs("totalCredit").textContent = Number(data.totals.totalCredit || 0).toLocaleString() + " ر.ي";
+            qs("totalDebit").textContent = Number(data.totals.totalDebit || 0).toLocaleString() + " ر.ي";
+            const net = Number(data.totals.netBalance || 0);
             qs("netBalance").textContent = net >= 0 
                 ? `لكم ${net.toLocaleString()} ر.ي` 
                 : `عليكم ${Math.abs(net).toLocaleString()} ر.ي`;
         }
-        qs("stat_clients").textContent = allClients.length;
 
-        renderClientsDropdown();
+        // 3. الأرصدة لقائمة العملاء
+        cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
 
-        if (currentClientId) {
-            renderCurrentClientView();
+        // 4. تسخين الكاش لعمليات العملاء مسبقاً (Preloading)
+        if (data.recentMap && typeof data.recentMap === "object") {
+            Object.keys(data.recentMap).forEach(cid => {
+                const balObj = cachedBalancesList.find(b => String(b.client_id) === String(cid));
+                transCache[cid] = {
+                    list: data.recentMap[cid] || [],
+                    total: balObj ? balObj.total : 0,
+                    isPartial: true
+                };
+            });
         }
+
+        updateStats();
+
+        // إذا كان هناك عميل مختار، اعرض عملياته فوراً من الكاش المحدث
+        if (currentClientId) {
+            loadTransactions(false);
+        }
+
     } catch (e) {
-        console.error(e);
+        console.error("خطأ أثناء تحميل لوحة التحكم:", e);
+        showToast("تعذر تحميل البيانات، تأكد من الاتصال", "error");
     } finally {
         qs("loading").style.display = "none";
     }
 }
 
+// تعبئة القائمة المنسدلة للعملاء
 function renderClientsDropdown() {
     const select = qs("client_select");
-    const prevSelected = select.value || currentClientId;
+    const prevSelected = select.value;
     select.innerHTML = `<option value="">-- اختر العميل --</option>`;
 
     const frag = document.createDocumentFragment();
     allClients.forEach(c => {
         const op = document.createElement("option");
         op.value = c.client_id;
-        op.textContent = c.name;
+        const mangoText = c.mango_user ? ` [Mango: ${c.mango_user}]` : '';
+        op.textContent = `${c.name}`;
         frag.appendChild(op);
     });
     select.appendChild(frag);
 
-    if (prevSelected) {
-        select.value = prevSelected;
-        currentClientId = prevSelected;
-    }
+    if (prevSelected) select.value = prevSelected;
     toggleEditSelectedBtn();
 }
 
+// إظهار زر التعديل المباشر عند تحديد عميل
 function toggleEditSelectedBtn() {
     const hasClient = !!qs("client_select").value;
     qs("editCurrentClientBtn").style.display = hasClient ? "flex" : "none";
 }
 
-function onClientSelected() {
-    currentClientId = qs("client_select").value;
-    toggleEditSelectedBtn();
-    showingAllCurrent = false;
-    renderCurrentClientView();
+function editCurrentlySelectedClient() {
+    const clientId = qs("client_select").value;
+    if (clientId) openEditClientModal(clientId);
 }
 
-// -------------------------------------------------------------
-// جلب وعرض حركات ورصيد العميل المختار (لحظي مع دقة 100%)
-// -------------------------------------------------------------
-async function loadClientTransactions(clientId, forceRefresh = false) {
-    if (!clientId) return;
-
-    if (!forceRefresh && clientTransCache[clientId]) {
-        renderTransactionsFromData(clientTransCache[clientId]);
-        return;
-    }
-
-    qs("loading").style.display = "block";
-    try {
-        const data = await apiCall("getClientAllTransactions", { client_id: clientId, forceRefresh });
-        if (isSuccess(data)) {
-            clientTransCache[clientId] = data;
-            cachedBalancesMap[String(clientId)] = data.total;
-            if (String(currentClientId) === String(clientId)) {
-                renderTransactionsFromData(data);
-            }
-        } else {
-            showToast("تعذر جلب حركات العميل", "error");
-        }
-    } finally {
-        qs("loading").style.display = "none";
-    }
-}
-
-function renderCurrentClientView() {
-    if (!currentClientId) {
-        qs("transBody").innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">اختر عميلاً لعرض عملياته فوراً</td></tr>`;
-        qs("stat_total").textContent = "0 ر.ي";
-        qs("stat_last").textContent = "-";
-        return;
-    }
-
-    // إذا كان الرصيد معروفاً مسبقاً، نظهره فوراً أثناء التحميل لتجربة مستخدم فائقة السرعة
-    if (cachedBalancesMap[String(currentClientId)] !== undefined) {
-        const bal = cachedBalancesMap[String(currentClientId)];
-        const totalEl = qs("stat_total");
-        if (bal >= 0) {
-            totalEl.textContent = `عليه ${bal.toLocaleString()} ر.ي`;
-            totalEl.className = "value debit-value";
-        } else {
-            totalEl.textContent = `له ${Math.abs(bal).toLocaleString()} ر.ي`;
-            totalEl.className = "value credit-value";
-        }
-    }
-
-    loadClientTransactions(currentClientId, false);
-}
-
-function renderTransactionsFromData(data) {
-    const list = Array.isArray(data.list) ? data.list : [];
-    const total = data.total !== undefined ? data.total : (cachedBalancesMap[String(currentClientId)] || 0);
-
-    // تحديث رصيد العميل
-    const totalEl = qs("stat_total");
-    if (total >= 0) {
-        totalEl.textContent = `عليه ${total.toLocaleString()} ر.ي`;
-        totalEl.className = "value debit-value";
-    } else {
-        totalEl.textContent = `له ${Math.abs(total).toLocaleString()} ر.ي`;
-        totalEl.className = "value credit-value";
-    }
-
-    // تاريخ آخر عملية
-    if (list.length > 0 && list[0].date) {
-        qs("stat_last").textContent = formatDate(list[0].date);
-    } else {
-        qs("stat_last").textContent = "لا توجد";
-    }
-
-    const transToShow = showingAllCurrent ? list : list.slice(0, 5);
-    renderTransactionsTable(transToShow);
-}
-
-function showAllTransactions() {
-    if (!currentClientId) {
-        showToast("يرجى اختيار العميل أولاً", "error");
-        return;
-    }
-    showingAllCurrent = true;
-    renderCurrentClientView();
-}
-
+// بحث سريع بالاسم أو الهاتف أو Mango User
 function filterClientSelect() {
     const q = qs("client_search").value.trim().toLowerCase();
     const select = qs("client_select");
@@ -1196,28 +1046,305 @@ function filterClientSelect() {
     });
 
     toggleEditSelectedBtn();
-    if (foundFirst) onClientSelected();
+    if (foundFirst) loadTransactions(false);
 }
 
-function formatDate(dateVal) {
-    if (!dateVal) return "-";
-    try {
-        const d = new Date(dateVal);
-        if (isNaN(d.getTime())) return String(dateVal);
-        return d.toLocaleDateString('ar-EG');
-    } catch(e) {
-        return String(dateVal);
+// ==========================================
+// إدارة نافذة العميل (إضافة جديد / تعديل حالي)
+// ==========================================
+function openNewClientModal() {
+    setClientModalMode('new');
+    openModal('addClientModal');
+}
+
+function openEditClientModal(clientId) {
+    setClientModalMode('edit', clientId);
+    openModal('addClientModal');
+}
+
+function setClientModalMode(mode, clientId = null) {
+    currentClientModalMode = mode;
+    const isEdit = (mode === 'edit');
+
+    qs("selectClientToEditBox").style.display = isEdit ? "block" : "none";
+    qs("clientModalTitle").textContent = isEdit ? "✏️ تعديل بيانات العميل" : "➕ إضافة عميل جديد";
+    qs("saveClientBtn").textContent = isEdit ? "حفظ التعديلات" : "إضافة العميل";
+
+    if (isEdit) {
+        qs("tabEditClient").classList.add("active");
+        qs("tabNewClient").classList.remove("active");
+    } else {
+        qs("tabNewClient").classList.add("active");
+        qs("tabEditClient").classList.remove("active");
+        clearClientForm();
+    }
+
+    const modalSelect = qs("modal_client_select");
+    modalSelect.innerHTML = `<option value="">-- اختر عميلاً للتعديل --</option>`;
+    allClients.forEach(c => {
+        const op = document.createElement("option");
+        op.value = c.client_id;
+        op.textContent = `${c.name} (${c.mobile || '-'})`;
+        modalSelect.appendChild(op);
+    });
+
+    if (clientId) {
+        modalSelect.value = clientId;
+        onSelectClientToEdit();
     }
 }
 
-// -------------------------------------------------------------
-// جدول العمليات المالية
-// -------------------------------------------------------------
-function renderTransactionsTable(transactions) {
+function clearClientForm() {
+    qs("edit_client_id").value = "";
+    qs("new_name").value = "";
+    qs("new_mobile").value = "";
+    qs("new_mobile_sms").value = "";
+    qs("new_username").value = "";
+    qs("new_password").value = "";
+    qs("new_mango_user").value = "";
+}
+
+function onSelectClientToEdit() {
+    const clientId = qs("modal_client_select").value;
+    if (!clientId) {
+        clearClientForm();
+        return;
+    }
+
+    const client = allClients.find(c => String(c.client_id) === String(clientId));
+    if (!client) return;
+
+    qs("edit_client_id").value = client.client_id;
+    qs("new_name").value = client.name || "";
+    qs("new_mobile").value = client.mobile || "";
+    qs("new_mobile_sms").value = client.mobile_sms || "";
+    qs("new_username").value = client.username || "";
+    qs("new_password").value = client.password || "";
+    qs("new_mango_user").value = client.mango_user || "";
+}
+
+// حفظ العميل (إضافة أو تعديل مع mango_user)
+async function saveClientData() {
+    const clientId = qs("edit_client_id").value;
+    const name = qs("new_name").value.trim();
+    const mobile = qs("new_mobile").value.trim();
+    const mobile_sms = qs("new_mobile_sms").value.trim();
+    const username = qs("new_username").value.trim();
+    const password = qs("new_password").value.trim();
+    const mango_user = qs("new_mango_user").value.trim();
+    const btn = qs("saveClientBtn");
+
+    if (!name || !mobile || !username || !password) {
+        showToast("يرجى تعبئة الحقول الأساسية: الاسم، الجوال، المستخدم، كلمة المرور", "error");
+        return;
+    }
+
+    const isEdit = (currentClientModalMode === 'edit' && clientId);
+    const action = isEdit ? "updateClient" : "addClient";
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري الحفظ...";
+
+    const payload = {
+        action: action,
+        name,
+        mobile,
+        mobile_sms,
+        username,
+        password,
+        mango_user
+    };
+
+    if (isEdit) payload.client_id = clientId;
+
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            showToast(isEdit ? "تم تحديث بيانات العميل بنجاح" : "تمت إضافة العميل بنجاح");
+            closeModal("addClientModal");
+            clearClientForm();
+            if (clientId) delete transCache[clientId];
+            await loadDashboardData(true);
+        } else {
+            showToast(data.message || "حدث خطأ أثناء حفظ البيانات", "error");
+        }
+    } catch (err) {
+        showToast("تعذر الاتصال بالخادم", "error");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+// ==========================================
+// جلب وعرض العمليات المالية فائق السرعة
+// ==========================================
+async function loadTransactions(forceRefresh = false) {
+    currentClientId = qs("client_select").value;
+    toggleEditSelectedBtn();
+
+    if (!currentClientId) {
+        qs("transBody").innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">اختر عميلاً لعرض عملياته فوراً</td></tr>`;
+        qs("stat_total").textContent = "0 ر.ي";
+        qs("stat_last").textContent = "-";
+        return;
+    }
+
+    // 1. العرض الفوري من الكاش المحلي إن وجد (0 ثانية استجابة)
+    const cached = transCache[currentClientId];
+    if (cached && !forceRefresh) {
+        clientTransactions = cached.list || [];
+        updateStats(cached.total);
+        renderTransactions(clientTransactions.slice(0, 5));
+        
+        // إذا كان الكاش جزئياً فقط (أول 10 عمليات)، قم بجلب البقية في الخلفية بهدوء
+        if (cached.isPartial) {
+            fetchFullTransactionsBackground(currentClientId);
+        }
+        return;
+    }
+
+    // 2. إذا لم تكن العمليات في الكاش أو طُلب التحديث الإجباري
+    qs("loading").style.display = "block";
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ 
+                action: "getClientAllTransactions", 
+                client_id: currentClientId,
+                forceRefresh: forceRefresh 
+            })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            clientTransactions = (data.list || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+            transCache[currentClientId] = {
+                list: clientTransactions,
+                total: data.total,
+                isPartial: false
+            };
+            updateStats(data.total);
+            renderTransactions(clientTransactions.slice(0, 5));
+        }
+    } catch (e) {
+        showToast("فشل تحميل عمليات العميل", "error");
+    } finally {
+        qs("loading").style.display = "none";
+    }
+}
+
+// جلب العمليات كاملة في الخلفية دون تعطيل واجهة المستخدم
+async function fetchFullTransactionsBackground(cid) {
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClientAllTransactions", client_id: cid })
+        });
+        const data = await res.json();
+        if (data.status === "success" && currentClientId === cid) {
+            clientTransactions = (data.list || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+            transCache[cid] = {
+                list: clientTransactions,
+                total: data.total,
+                isPartial: false
+            };
+            updateStats(data.total);
+            renderTransactions(clientTransactions.slice(0, 5));
+        }
+    } catch (e) {}
+}
+
+async function showAllTransactions() {
+    if (!currentClientId) {
+        showToast("يرجى اختيار العميل أولاً", "error");
+        return;
+    }
+
+    const cached = transCache[currentClientId];
+    if (cached && !cached.isPartial) {
+        renderTransactions(cached.list);
+        return;
+    }
+
+    qs("loading").style.display = "block";
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClientAllTransactions", client_id: currentClientId })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+            clientTransactions = (data.list || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+            transCache[currentClientId] = {
+                list: clientTransactions,
+                total: data.total,
+                isPartial: false
+            };
+            renderTransactions(clientTransactions);
+        }
+    } catch (e) {
+        showToast("تعذر جلب جميع العمليات", "error");
+    } finally {
+        qs("loading").style.display = "none";
+    }
+}
+
+// إضافة عملية مالية جديدة
+async function addTrans() {
+    const client_id = qs("client_select").value;
+    let amount = Number(qs("amount").value);
+    const type = qs("type").value;
+    const note = qs("note").value.trim();
+
+    if (!client_id) { showToast("يرجى اختيار العميل أولاً", "error"); return; }
+    if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
+    if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
+
+    amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
+    qs("loading").style.display = "block";
+
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "addTransaction", client_id, amount, type, note })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            showToast("تم تسجيل العملية بنجاح");
+            qs("amount").value = "";
+            qs("note").value = "";
+            delete transCache[client_id]; // مسح كاش العميل للتحديث
+            await Promise.all([loadTransactions(true), loadDashboardData(true)]);
+        } else {
+            showToast("حدث خطأ أثناء إضافة العملية", "error");
+        }
+    } catch (e) {
+        showToast("تعذر الاتصال بالخادم", "error");
+    } finally {
+        qs("loading").style.display = "none";
+    }
+}
+
+function addTransType(type) {
+    saveNoteSuggestion();
+    qs("type").value = type;
+    addTrans();
+}
+
+// رسم جدول العمليات
+function renderTransactions(transactions) {
     const tbody = qs("transBody");
     tbody.innerHTML = "";
 
-    if (!transactions || !transactions.length) {
+    if (!transactions.length) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">لا توجد عمليات مسجلة لهذا العميل</td></tr>`;
         return;
     }
@@ -1232,623 +1359,243 @@ function renderTransactionsTable(transactions) {
     transactions.forEach(t => {
         const tr = document.createElement("tr");
         tr.style.cursor = "pointer";
-        tr.onclick = (e) => {
-            if (e.target.closest("button")) return;
-            openTransModal(t.trans_id);
-        };
+        tr.onclick = () => openTransModal(t.trans_id);
 
         const isDebit = t.type === "debit";
-        const dateStr = formatDate(t.date);
+        const dateStr = t.date ? new Date(t.date).toLocaleDateString('ar-EG') : '-';
 
         tr.innerHTML = `
             <td class="${isDebit ? 'debit-text' : 'credit-text'}">${Math.abs(t.amount).toLocaleString()}</td>
             <td><span class="badge ${isDebit ? 'badge-debit' : 'badge-credit'}">${isDebit ? 'عليه' : 'له'}</span></td>
             <td>${escapeHtml(t.note)}</td>
-            <td style="color:var(--text-muted); font-size:0.85rem;">${dateStr}</td>
+            <td>${dateStr}</td>
             <td>
                 <div class="wa-sms-group">
-                    <button class="wa-btn" onclick="sendWhatsAppMsg(event, ${t.trans_id})" title="إشعار واتساب">${waSvgIcon} واتساب</button>
-                    <button class="sms-btn" onclick="sendSmsMsg(event, ${t.trans_id})" title="إشعار SMS">💬 SMS</button>
+                    <button class="wa-btn" title="إرسال عبر واتساب">${waSvgIcon} واتساب</button>
+                    <button class="sms-btn" title="إرسال عبر SMS">SMS</button>
                 </div>
             </td>
         `;
+
+        const waBtn = tr.querySelector(".wa-btn");
+        const smsBtn = tr.querySelector(".sms-btn");
+
+        waBtn.onclick = e => {
+            e.stopPropagation();
+            sendWhatsAppMsg(t, clientName, clientMobile);
+        };
+
+        smsBtn.onclick = e => {
+            e.stopPropagation();
+            sendSmsMsg(t, clientName, clientSms);
+        };
+
         frag.appendChild(tr);
     });
 
     tbody.appendChild(frag);
 }
 
-// -------------------------------------------------------------
-// إضافة عملية مالية جديدة
-// -------------------------------------------------------------
-async function addTrans() {
-    const client_id = qs("client_select").value;
-    let amount = Number(qs("amount").value);
-    const type = qs("type").value;
-    const note = qs("note").value.trim();
-    const btnC = qs("btnCredit"), btnD = qs("btnDebit");
-
-    if (!client_id) { showToast("يرجى اختيار العميل أولاً", "error"); return; }
-    if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
-    if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
-
-    const realAmount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
-
-    btnC.disabled = true;
-    btnD.disabled = true;
-    showToast("جاري الحفظ في الشيت...");
-
-    const data = await apiCall("addTransaction", { client_id, amount: realAmount, type, note });
-    
-    btnC.disabled = false;
-    btnD.disabled = false;
-
-    if (isSuccess(data)) {
-        showToast("تم الحفظ في الشيت بنجاح ✓");
-        qs("amount").value = "";
-        qs("note").value = "";
-
-        // حذف كاش حركات هذا العميل لتحديثها طازجة
-        delete clientTransCache[client_id];
-
-        // تحديث البيانات في الخلفية
-        await loadClientTransactions(client_id, true);
-        await loadDashboardData(true);
+// دالة إرسال إشعار الواتساب مع حساب الرصيد التراكمي الدقيق 100%
+function sendWhatsAppMsg(t, clientName, clientMobile) {
+    let balanceUntil = 0;
+    if (t.balance_after !== undefined && t.balance_after !== null) {
+        balanceUntil = Number(t.balance_after);
     } else {
-        showToast(data.message || "حدث خطأ أثناء الحفظ على السيرفر", "error");
+        const sorted = [...clientTransactions].sort((a,b) => {
+            const dateDiff = new Date(a.date) - new Date(b.date);
+            if (dateDiff !== 0) return dateDiff;
+            return Number(a.trans_id) - Number(b.trans_id);
+        });
+        const index = sorted.findIndex(x => x.trans_id == t.trans_id);
+        for (let i = 0; i <= index; i++) balanceUntil += Number(sorted[i].amount);
     }
+
+    const typeText = t.type === "debit" ? "عليك" : "لك";
+    const totalText = balanceUntil >= 0 ? `عليك ${balanceUntil.toLocaleString()}` : `لك ${Math.abs(balanceUntil).toLocaleString()}`;
+
+    const msg = `👤 *الأخ:* ${clientName}\n💰 *قيد ${typeText} مبلغ:* ${Math.abs(t.amount).toLocaleString()} ريال\n📝 *البيان:* ${t.note}\n---------------\n📊 *رصيدك بعد هذه العملية:*\n       ${totalText} ريال`;
+    
+    let phone = String(clientMobile || "").replace(/[^0-9]/g, '');
+    if (phone.length === 9 && (phone.startsWith("7") || phone.startsWith("73") || phone.startsWith("77") || phone.startsWith("71") || phone.startsWith("78"))) {
+        phone = "967" + phone;
+    }
+    window.open(`https://wa.me/${phone || clientMobile}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
-function addTransType(type) {
-    saveNoteSuggestion();
-    qs("type").value = type;
-    addTrans();
+// دالة إرسال إشعار SMS مع حساب الرصيد التراكمي الدقيق 100%
+function sendSmsMsg(t, clientName, smsNumber) {
+    if (!smsNumber) {
+        showToast("لا يوجد رقم SMS مسجل لهذا العميل", "error");
+        return;
+    }
+    let balanceUntil = 0;
+    if (t.balance_after !== undefined && t.balance_after !== null) {
+        balanceUntil = Number(t.balance_after);
+    } else {
+        const sorted = [...clientTransactions].sort((a,b) => {
+            const dateDiff = new Date(a.date) - new Date(b.date);
+            if (dateDiff !== 0) return dateDiff;
+            return Number(a.trans_id) - Number(b.trans_id);
+        });
+        const index = sorted.findIndex(x => x.trans_id == t.trans_id);
+        for (let i = 0; i <= index; i++) balanceUntil += Number(sorted[i].amount);
+    }
+
+    const typeText = t.type === "debit" ? "عليك" : "لك";
+    const totalText = balanceUntil >= 0 ? `عليك ${balanceUntil.toLocaleString()}` : `لك ${Math.abs(balanceUntil).toLocaleString()}`;
+
+    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount)}\nالإجمالي: ${totalText}`;
+    window.open(`sms:${smsNumber}?body=${encodeURIComponent(msg)}`, "_blank");
 }
 
-// -------------------------------------------------------------
-// تعديل وحذف العمليات المالية
-// -------------------------------------------------------------
-function openTransModal(transId) {
-    const cached = clientTransCache[currentClientId];
-    if (!cached || !cached.list) return;
-
-    const t = cached.list.find(x => String(x.trans_id) === String(transId));
+// تعديل وحذف العملية المالية
+function openTransModal(id) {
+    currentTransId = id;
+    const t = clientTransactions.find(x => x.trans_id == id);
     if (!t) return;
-
-    currentTransId = transId;
     qs("modal_amount").value = Math.abs(t.amount);
     qs("modal_type").value = t.type;
-    qs("modal_note").value = t.note || "";
+    qs("modal_note").value = t.note;
     openModal("transModal");
 }
 
 async function saveTransModal() {
     if (!currentTransId) return;
-    const amount = Number(qs("modal_amount").value);
+    let amount = Number(qs("modal_amount").value);
     const type = qs("modal_type").value;
-    const note = qs("modal_note").value.trim();
-    const btn = qs("modalSaveBtn");
+    const note = qs("modal_note").value;
+    amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
 
-    if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
-    if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
-
-    const realAmount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
-
-    btn.disabled = true;
-    showToast("جاري حفظ التعديل في الشيت...");
-
-    const data = await apiCall("updateTransaction", { trans_id: currentTransId, amount: realAmount, type, note });
-    btn.disabled = false;
-
-    if (isSuccess(data)) {
-        showToast("تم تعديل العملية بنجاح ✓");
+    try {
+        await fetch(API, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "updateTransaction", trans_id: currentTransId, amount, type, note }) 
+        });
         closeModal("transModal");
-        delete clientTransCache[currentClientId];
-        await loadClientTransactions(currentClientId, true);
-        await loadDashboardData(true);
-    } else {
-        showToast(data.message || "حدث خطأ أثناء تعديل العملية", "error");
+        showToast("تم تحديث العملية بنجاح");
+        delete transCache[currentClientId];
+        await Promise.all([loadTransactions(true), loadDashboardData(true)]);
+    } catch (e) {
+        showToast("فشل تحديث العملية", "error");
     }
 }
 
 async function deleteTransModal() {
-    if (!currentTransId) return;
-    if (!confirm("هل أنت متأكد من حذف هذه العملية نهائياً من الشيت؟")) return;
-
-    const btn = qs("modalDeleteBtn");
-    btn.disabled = true;
-    showToast("جاري الحذف من الشيت...");
-
-    const data = await apiCall("deleteTransaction", { trans_id: currentTransId });
-    btn.disabled = false;
-
-    if (isSuccess(data)) {
-        showToast("تم حذف العملية بنجاح من الشيت ✓");
-        closeModal("transModal");
-        delete clientTransCache[currentClientId];
-        await loadClientTransactions(currentClientId, true);
-        await loadDashboardData(true);
-    } else {
-        showToast(data.message || "حدث خطأ أثناء الحذف", "error");
-    }
-}
-
-// -------------------------------------------------------------
-// إدارة العملاء (إضافة وتعديل)
-// -------------------------------------------------------------
-function setClientModalMode(mode) {
-    currentClientModalMode = mode;
-    const isEdit = (mode === 'edit');
-
-    qs("tabNewClient").classList.toggle("active", !isEdit);
-    qs("tabEditClient").classList.toggle("active", isEdit);
-    qs("selectClientToEditBox").style.display = isEdit ? "block" : "none";
-    qs("clientModalTitle").textContent = isEdit ? "✏️ تعديل بيانات عميل" : "➕ إضافة عميل جديد";
-    qs("saveClientBtn").textContent = isEdit ? "حفظ التعديلات" : "إضافة العميل";
-
-    if (isEdit) {
-        populateModalClientsSelect();
-    } else {
-        clearClientForm();
-    }
-}
-
-function openNewClientModal() {
-    clearClientForm();
-    setClientModalMode('new');
-    openModal("addClientModal");
-}
-
-function openEditClientModal(clientId) {
-    setClientModalMode('edit');
-    populateModalClientsSelect();
-    qs("modal_client_select").value = clientId;
-    onSelectClientToEdit();
-    openModal("addClientModal");
-}
-
-function editCurrentlySelectedClient() {
-    if (!currentClientId) {
-        showToast("يرجى اختيار العميل أولاً", "error");
-        return;
-    }
-    openEditClientModal(currentClientId);
-}
-
-function populateModalClientsSelect() {
-    const select = qs("modal_client_select");
-    select.innerHTML = `<option value="">-- اختر عميلاً للتعديل --</option>`;
-    allClients.forEach(c => {
-        const op = document.createElement("option");
-        op.value = c.client_id;
-        op.textContent = c.name;
-        select.appendChild(op);
-    });
-}
-
-function onSelectClientToEdit() {
-    const id = qs("modal_client_select").value;
-    if (!id) {
-        clearClientForm();
-        return;
-    }
-    const c = allClients.find(x => String(x.client_id) === String(id));
-    if (!c) return;
-
-    qs("edit_client_id").value = c.client_id;
-    qs("new_name").value = c.name || "";
-    qs("new_mobile").value = c.mobile || "";
-    qs("new_mobile_sms").value = c.mobile_sms || "";
-    qs("new_username").value = c.username || "";
-    qs("new_password").value = c.password || "";
-    qs("new_mango_user").value = c.mango_user || "";
-}
-
-function clearClientForm() {
-    qs("edit_client_id").value = "";
-    qs("new_name").value = "";
-    qs("new_mobile").value = "";
-    qs("new_mobile_sms").value = "";
-    qs("new_username").value = "";
-    qs("new_password").value = "";
-    qs("new_mango_user").value = "";
-}
-
-async function saveClientData() {
-    const isNew = (currentClientModalMode === 'new');
-    const editId = qs("edit_client_id").value;
-
-    const name = qs("new_name").value.trim();
-    const mobile = qs("new_mobile").value.trim();
-    const mobile_sms = qs("new_mobile_sms").value.trim();
-    const username = qs("new_username").value.trim();
-    const password = qs("new_password").value.trim();
-    const mango_user = qs("new_mango_user").value.trim();
-    const btn = qs("saveClientBtn");
-
-    if (!isNew && !editId) { showToast("يرجى اختيار العميل المراد تعديله", "error"); return; }
-    if (!name) { showToast("يرجى إدخال اسم العميل", "error"); return; }
-    if (!mobile) { showToast("يرجى إدخال رقم الواتساب", "error"); return; }
-    if (!username || !password) { showToast("يرجى إدخال اسم المستخدم وكلمة المرور", "error"); return; }
-
-    btn.disabled = true;
-    showToast(isNew ? "جاري إضافة العميل للشيت..." : "جاري حفظ تعديلات العميل...");
-
-    const action = isNew ? "addClient" : "updateClient";
-    const payload = isNew 
-        ? { name, mobile, mobile_sms, username, password, mango_user }
-        : { client_id: editId, name, mobile, mobile_sms, username, password, mango_user };
-
-    const data = await apiCall(action, payload);
-    btn.disabled = false;
-
-    if (isSuccess(data)) {
-        showToast(isNew ? "تم إضافة العميل بنجاح ✓" : "تم تعديل بيانات العميل بنجاح ✓");
-        closeModal("addClientModal");
-        await loadDashboardData(true);
-        if (!isNew && String(currentClientId) === String(editId)) {
-            renderCurrentClientView();
-        }
-    } else {
-        showToast(data.message || "حدث خطأ أثناء الحفظ", "error");
-    }
-}
-
-async function deleteClientFromList(clientId, clientName) {
-    if (!confirm(`هل أنت متأكد من حذف العميل [${clientName}] وكافة عملياته نهائياً من الشيت؟`)) return;
-
-    showToast("جاري حذف العميل من الشيت...");
-    const data = await apiCall("deleteClient", { client_id: clientId });
-
-    if (isSuccess(data)) {
-        showToast("تم حذف العميل وكافة عملياته بنجاح ✓");
-        delete clientTransCache[clientId];
-        if (String(currentClientId) === String(clientId)) {
-            currentClientId = "";
-        }
-        await loadDashboardData(true);
-        showClientsBalances();
-    } else {
-        showToast(data.message || "حدث خطأ أثناء حذف العميل", "error");
-    }
-}
-
-// -------------------------------------------------------------
-// إشعارات WhatsApp و SMS مع رصيد تراكمي دقيق 100%
-// -------------------------------------------------------------
-function sendWhatsAppMsg(e, transId) {
-    e.stopPropagation();
-    const cached = clientTransCache[currentClientId];
-    if (!cached || !cached.list) return;
-
-    const t = cached.list.find(x => String(x.trans_id) === String(transId));
-    if (!t) return;
-
-    const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
-    const clientName = client.name || "";
-    const clientMobile = client.mobile || "";
-
-    if (!clientMobile) {
-        showToast("لا يوجد رقم واتساب مسجل لهذا العميل", "error");
-        return;
-    }
-
-    const isDebit = t.type === "debit";
-    const amount = Math.abs(t.amount);
-    const bal = t.balance_after !== undefined ? t.balance_after : (cached.total || 0);
-
-    const msg = `شركة يمن ستلايت\nالعميل: ${clientName}\nالعملية: ${isDebit ? 'عليه' : 'له'} ${amount.toLocaleString()} ر.ي\nالبيان: ${t.note}\nالرصيد المتبقي: ${bal >= 0 ? 'عليكم ' + bal.toLocaleString() : 'لكم ' + Math.abs(bal).toLocaleString()} ر.ي`;
-
-    let phone = String(clientMobile).replace(/[^0-9]/g, '');
-    if (phone.length === 9 && (phone.startsWith("7") || phone.startsWith("73") || phone.startsWith("77") || phone.startsWith("71") || phone.startsWith("78"))) {
-        phone = "967" + phone;
-    }
-
-    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
-}
-
-function sendSmsMsg(e, transId) {
-    e.stopPropagation();
-    const cached = clientTransCache[currentClientId];
-    if (!cached || !cached.list) return;
-
-    const t = cached.list.find(x => String(x.trans_id) === String(transId));
-    if (!t) return;
-
-    const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
-    const clientName = client.name || "";
-    const clientSms = client.mobile_sms || client.mobile || "";
-
-    if (!clientSms) {
-        showToast("لا يوجد رقم SMS مسجل لهذا العميل", "error");
-        return;
-    }
-
-    const isDebit = t.type === "debit";
-    const amount = Math.abs(t.amount);
-    const bal = t.balance_after !== undefined ? t.balance_after : (cached.total || 0);
-
-    const msg = `شركة يمن ستلايت\nالعميل: ${clientName}\nالعملية: ${isDebit ? 'عليه' : 'له'} ${amount.toLocaleString()} ر.ي\nالبيان: ${t.note}\nالرصيد المتبقي: ${bal >= 0 ? 'عليكم ' + bal.toLocaleString() : 'لكم ' + Math.abs(bal).toLocaleString()} ر.ي`;
-
-    window.open(`sms:${clientSms}?body=${encodeURIComponent(msg)}`, '_blank');
-}
-
-// -------------------------------------------------------------
-// مودال حسابات العملاء وصافي الأرصدة
-// -------------------------------------------------------------
-function showClientsBalances() {
-    openModal("clientsModal");
-    const tbody = qs("clientsBalanceBody");
-    tbody.innerHTML = "";
-
-    const list = cachedBalancesList.length ? cachedBalancesList : allClients.map(c => ({
-        client_id: c.client_id,
-        name: c.name,
-        mobile: c.mobile,
-        mango_user: c.mango_user,
-        total: cachedBalancesMap[String(c.client_id)] || 0
-    }));
-
-    let totalDebit = 0, totalCredit = 0;
-
-    const frag = document.createDocumentFragment();
-    list.forEach(c => {
-        const total = c.total || 0;
-        const isDebit = total >= 0;
-        if (isDebit) totalDebit += total;
-        else totalCredit += Math.abs(total);
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${c.client_id}</td>
-            <td style="font-weight:700; color:var(--primary); cursor:pointer;" onclick="selectClientFromTable(${c.client_id})">${escapeHtml(c.name)}</td>
-            <td style="direction:ltr;">${escapeHtml(c.mobile || '-')}</td>
-            <td style="direction:ltr; font-family:monospace;">${escapeHtml(c.mango_user || '-')}</td>
-            <td class="${isDebit ? 'debit-text' : 'credit-text'}">${isDebit ? 'عليه ' : 'له '}${Math.abs(total).toLocaleString()} ر.ي</td>
-            <td>
-                <div style="display:flex; gap:6px; justify-content:center;">
-                    <button class="trans-btn btn-accent" style="padding:4px 8px; font-size:0.75rem;" onclick="openEditClientModal(${c.client_id}); closeModal('clientsModal');">✏️ تعديل</button>
-                    <button class="trans-btn debit-btn" style="padding:4px 8px; font-size:0.75rem;" onclick="deleteClientFromList(${c.client_id}, '${escapeHtml(c.name)}')">🗑️ حذف</button>
-                </div>
-            </td>
-        `;
-        frag.appendChild(tr);
-    });
-
-    tbody.appendChild(frag);
-
-    const net = totalDebit - totalCredit;
-    qs("clientsTotals").innerHTML = `
-        <div class="summary-item"><span class="label">إجمالي مدين</span><span class="value debit-value">${totalDebit.toLocaleString()} ر.ي</span></div>
-        <div class="summary-item"><span class="label">إجمالي دائن</span><span class="value credit-value">${totalCredit.toLocaleString()} ر.ي</span></div>
-        <div class="summary-item"><span class="label">الصافي</span><span class="value balance-value">${net >= 0 ? 'لكم ' + net.toLocaleString() : 'عليكم ' + Math.abs(net).toLocaleString()} ر.ي</span></div>
-    `;
-}
-
-function selectClientFromTable(clientId) {
-    closeModal("clientsModal");
-    qs("client_select").value = clientId;
-    onClientSelected();
-}
-
-function filterClientsTable() {
-    const q = qs("search_client_list").value.trim().toLowerCase();
-    document.querySelectorAll("#clientsBalanceBody tr").forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(q) ? "" : "none";
-    });
-}
-
-// -------------------------------------------------------------
-// مودال Mango Users
-// -------------------------------------------------------------
-function showMangoUsers() {
-    openModal("mangoUsersModal");
-    const tbody = qs("mangoUsersBody");
-    tbody.innerHTML = "";
-
-    const mangoList = allClients.filter(c => c.mango_user && c.mango_user.trim() !== "");
-
-    if (!mangoList.length) {
-        tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-muted); padding:20px;">لا يوجد عملاء لديهم أسماء Mango مسجلة</td></tr>`;
-        return;
-    }
-
-    const frag = document.createDocumentFragment();
-    mangoList.forEach(c => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td style="font-weight:700;">${escapeHtml(c.name)}</td>
-            <td style="direction:ltr; font-family:monospace; font-weight:bold; color:var(--primary);">${escapeHtml(c.mango_user)}</td>
-            <td>
-                <button class="trans-btn btn-secondary" style="padding:4px 10px; font-size:0.8rem; margin:auto;" onclick="copyMangoUser('${escapeHtml(c.mango_user)}')">📋 نسخ</button>
-            </td>
-        `;
-        frag.appendChild(tr);
-    });
-
-    tbody.appendChild(frag);
-}
-
-function filterMangoUsers() {
-    const q = qs("mangoSearch").value.trim().toLowerCase();
-    document.querySelectorAll("#mangoUsersBody tr").forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(q) ? "" : "none";
-    });
-}
-
-function copyMangoUser(str) {
-    navigator.clipboard.writeText(str).then(() => {
-        showToast(`تم نسخ اسم Mango (${str}) بنجاح ✓`);
-    });
-}
-
-// -------------------------------------------------------------
-// استيراد جهات الاتصال والحافظة
-// -------------------------------------------------------------
-async function pasteFromClipboard() {
+    if (!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
     try {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-            qs("note").value = text;
-            showToast("تم اللصق من الحافظة ✓");
-        }
-    } catch(e) {
-        showToast("تعذر الوصول للحافظة، يرجى اللصق يدوياً", "error");
-    }
-}
-
-function saveNoteSuggestion() {
-    const note = qs("note").value.trim();
-    if (!note) return;
-    let notes = JSON.parse(localStorage.getItem("savedNotes") || "[]");
-    if (!notes.includes(note)) {
-        notes.unshift(note);
-        if (notes.length > 20) notes.pop();
-        localStorage.setItem("savedNotes", JSON.stringify(notes));
-        renderNotesDatalist();
-    }
-}
-
-function renderNotesDatalist() {
-    const list = qs("notesList");
-    list.innerHTML = "";
-    const notes = JSON.parse(localStorage.getItem("savedNotes") || "[]");
-    notes.forEach(n => {
-        const op = document.createElement("option");
-        op.value = n;
-        list.appendChild(op);
-    });
-}
-
-const pickContactBtn = qs("pickContact");
-if (pickContactBtn) {
-    if ('contacts' in navigator && 'ContactsManager' in window) {
-        pickContactBtn.addEventListener('click', async () => {
-            try {
-                const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: false });
-                if (contacts.length && contacts[0].tel && contacts[0].tel.length) {
-                    if (contacts[0].name && contacts[0].name[0] && !qs("new_name").value) {
-                        qs("new_name").value = contacts[0].name[0];
-                    }
-                    if (contacts[0].tel.length === 1) {
-                        applyPhone(contacts[0].tel[0]);
-                    } else {
-                        showNumbersPopup(contacts[0].tel);
-                    }
-                }
-            } catch(e) {
-                console.warn(e);
-            }
+        await fetch(API, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "deleteTransaction", trans_id: currentTransId }) 
         });
-    } else {
-        pickContactBtn.style.display = "none";
+        closeModal("transModal");
+        showToast("تم حذف العملية");
+        delete transCache[currentClientId];
+        await Promise.all([loadTransactions(true), loadDashboardData(true)]);
+    } catch (e) {
+        showToast("فشل حذف العملية", "error");
     }
 }
 
-function applyPhone(phone) {
-    const clean = phone.replace(/[^0-9]/g, '');
-    qs("new_mobile").value = clean;
-    if (!qs("new_mobile_sms").value) qs("new_mobile_sms").value = clean;
-}
-
-function showNumbersPopup(numbers) {
-    const list = qs("numbersList");
-    list.innerHTML = "";
-    numbers.forEach(num => {
-        const btn = document.createElement("button");
-        btn.className = "trans-btn btn-secondary";
-        btn.style.padding = "10px";
-        btn.textContent = num;
-        btn.onclick = () => {
-            applyPhone(num);
-            closePopup();
-        };
-        list.appendChild(btn);
-    });
-    openModal("numberPopup");
-}
-function closePopup() { closeModal("numberPopup"); }
-
-// -------------------------------------------------------------
-// الطباعة
-// -------------------------------------------------------------
+// طباعة كشف حساب عميل
 function printTransactions() {
-    if (!currentClientId) {
-        showToast("يرجى اختيار العميل أولاً", "error");
-        return;
-    }
-
-    const cached = clientTransCache[currentClientId];
-    if (!cached || !cached.list) {
-        showToast("لا توجد بيانات للطباعة", "error");
+    if (!clientTransactions.length) {
+        showToast("لا توجد عمليات لطباعتها", "error");
         return;
     }
 
     const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
-    const clientName = client.name || "";
-    const clientMobile = client.mobile || "";
-    const balance = cached.total || 0;
-    const isDebit = balance >= 0;
+    const clientName = client.name || "عميل غير محدد";
+    const total = clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
     const today = new Date().toLocaleDateString('ar-EG');
 
-    const tableRows = cached.list.map(t => `
-        <tr>
-            <td style="color:${t.type === 'debit' ? '#dc2626' : '#16a34a'}; font-weight:bold;">${Math.abs(t.amount).toLocaleString()}</td>
-            <td>${t.type === 'debit' ? 'عليه (مدين)' : 'له (دائن)'}</td>
-            <td>${escapeHtml(t.note)}</td>
-            <td>${formatDate(t.date)}</td>
-            <td style="font-weight:bold;">${t.balance_after !== undefined ? t.balance_after.toLocaleString() : '-'}</td>
-        </tr>
-    `).join('');
+    const sorted = [...clientTransactions].sort((a,b) => {
+        const dateDiff = new Date(a.date) - new Date(b.date);
+        if (dateDiff !== 0) return dateDiff;
+        return Number(a.trans_id) - Number(b.trans_id);
+    });
+    let runBalance = 0;
+    const balances = {};
+    sorted.forEach(t => {
+        runBalance += Number(t.amount);
+        balances[t.trans_id] = runBalance;
+    });
+
+    const rowsHtml = clientTransactions.map(t => {
+        const bal = (t.balance_after !== undefined && t.balance_after !== null) ? t.balance_after : balances[t.trans_id];
+        const isDebit = t.type === "debit";
+        const date = t.date ? new Date(t.date).toLocaleDateString('ar-EG') : '-';
+        return `
+            <tr>
+                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${Math.abs(t.amount).toLocaleString()}</td>
+                <td>${isDebit ? 'عليه' : 'له'}</td>
+                <td>${t.note}</td>
+                <td>${date}</td>
+                <td style="color:${bal >= 0 ? '#dc2626' : '#16a34a'}; font-weight:bold;">${bal >= 0 ? `عليه ${bal.toLocaleString()}` : `له ${Math.abs(bal).toLocaleString()}`}</td>
+            </tr>
+        `;
+    }).join('');
 
     const html = `
     <!DOCTYPE html>
     <html lang="ar" dir="rtl">
     <head>
         <meta charset="UTF-8">
-        <title>كشف حساب | ${escapeHtml(clientName)}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+        <title>كشف حساب - ${clientName}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
         <style>
-            body { font-family: "Tajawal", sans-serif; margin: 20px; direction: rtl; color: #0f172a; }
-            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #047857; padding-bottom: 12px; }
-            .info-box { display: flex; justify-content: space-between; background: #f8fafc; padding: 12px 16px; border-radius: 8px; margin: 15px 0; border: 1px solid #e2e8f0; }
-            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.92rem; }
-            th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: center; }
+            body { font-family: "Tajawal", sans-serif; margin: 20px; color: #0f172a; direction: rtl; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #047857; padding-bottom: 12px; margin-bottom: 20px; }
+            .company h2 { margin: 0; color: #047857; font-size: 1.4rem; }
+            .company p { margin: 2px 0 0; color: #64748b; font-size: 0.85rem; }
+            .client-card { background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.95rem; }
+            th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }
             th { background: #047857; color: white; }
             tr:nth-child(even) { background: #f8fafc; }
-            .footer { margin-top: 30px; display: flex; justify-content: space-between; font-weight: bold; }
+            .footer { margin-top: 40px; display: flex; justify-content: space-between; border-top: 1px dashed #94a3b8; padding-top: 15px; font-size: 0.85rem; color: #64748b; }
         </style>
     </head>
     <body>
         <div class="header">
-            <div>
+            <div class="company">
                 <h2>شركة يمن ستلايت</h2>
-                <p>كشف حساب عميل تفصيلي</p>
+                <p>هاتف: 738092209</p>
             </div>
-            <div>تاريخ التقرير: ${today}</div>
+            <div style="text-align: left;">
+                <h3>كشف حساب مالي</h3>
+                <p style="font-size:0.85rem; color:#64748b;">تاريخ التقرير: ${today}</p>
+            </div>
         </div>
-        <div class="info-box">
-            <div><strong>اسم العميل:</strong> ${escapeHtml(clientName)}</div>
-            <div><strong>رقم الجوال:</strong> ${escapeHtml(clientMobile)}</div>
-            <div><strong>الرصيد الصافي:</strong> <span style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${isDebit ? 'عليه ' : 'له '}${Math.abs(balance).toLocaleString()} ر.ي</span></div>
+
+        <div class="client-card">
+            <strong>اسم العميل:</strong> ${clientName} | <strong>رقم الهاتف:</strong> ${client.mobile || '-'}
         </div>
+
         <table>
             <thead>
                 <tr>
-                    <th>المبلغ (ر.ي)</th>
+                    <th>المبلغ</th>
                     <th>النوع</th>
                     <th>البيان</th>
                     <th>التاريخ</th>
-                    <th>الرصيد بعد الحركة</th>
+                    <th>الرصيد بعد العملية</th>
                 </tr>
             </thead>
-            <tbody>${tableRows}</tbody>
+            <tbody>${rowsHtml}</tbody>
+            <tfoot>
+                <tr style="background:#f1f5f9; font-weight:bold;">
+                    <td colspan="2" style="text-align:right;">الرصيد الصافي النهائي:</td>
+                    <td colspan="3" style="color:${total >= 0 ? '#dc2626' : '#16a34a'}; font-size:1.1rem;">
+                        ${total >= 0 ? `عليه ${total.toLocaleString()} ريال` : `له ${Math.abs(total).toLocaleString()} ريال`}
+                    </td>
+                </tr>
+            </tfoot>
         </table>
+
         <div class="footer">
-            <div>المحاسب: ....................</div>
-            <div>الختم / التوقيع: ....................</div>
+            <span>تم الاستخراج بواسطة نظام يمن ستلايت</span>
+            <span>توقيع المحاسب: ..........................</span>
         </div>
     </body>
     </html>`;
@@ -1859,26 +1606,288 @@ function printTransactions() {
     setTimeout(() => win.print(), 350);
 }
 
+// عرض نافذة حسابات وأرصدة العملاء
+function showClientsBalances() {
+    const data = [...cachedBalancesList].sort((a, b) => b.total - a.total);
+
+    let totalDebit = 0, totalCredit = 0;
+    const tbody = qs("clientsBalanceBody");
+    tbody.innerHTML = "";
+    const frag = document.createDocumentFragment();
+
+    data.forEach(c => {
+        const tot = Number(c.total) || 0;
+        if (tot >= 0) totalDebit += tot;
+        else totalCredit += Math.abs(tot);
+
+        const tr = document.createElement("tr");
+        tr.dataset.mango = c.mango_user || "";
+        tr.innerHTML = `
+            <td>${c.client_id}</td>
+            <td><strong>${escapeHtml(c.name)}</strong></td>
+            <td>${escapeHtml(c.mobile || '-')}</td>
+            <td style="font-family:monospace; direction:ltr; font-weight:bold;">${escapeHtml(c.mango_user || '-')}</td>
+            <td style="font-weight:bold; color:${tot >= 0 ? '#dc2626' : '#16a34a'}">
+                ${tot >= 0 ? `عليه ${tot.toLocaleString()}` : `له ${Math.abs(tot).toLocaleString()}`}
+            </td>
+            <td>
+                <div style="display: flex; gap: 4px; justify-content: center;">
+                    <button class="trans-btn btn-accent edit-btn" style="padding: 4px 8px; font-size: 0.75rem;">تعديل</button>
+                    <button class="trans-btn debit-btn del-btn" style="padding: 4px 8px; font-size: 0.75rem;">حذف</button>
+                </div>
+            </td>
+        `;
+
+        tr.querySelector(".edit-btn").onclick = () => {
+            closeModal("clientsModal");
+            openEditClientModal(c.client_id);
+        };
+
+        tr.querySelector(".del-btn").onclick = async () => {
+            if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته بشكل نهائي؟`)) {
+                await fetch(API, { method: "POST", body: JSON.stringify({ action: "deleteClient", client_id: c.client_id }) });
+                showToast("تم حذف العميل بنجاح");
+                delete transCache[c.client_id];
+                await loadDashboardData(true);
+                showClientsBalances();
+            }
+        };
+
+        frag.appendChild(tr);
+    });
+
+    tbody.appendChild(frag);
+
+    const diff = totalDebit - totalCredit;
+    qs("clientsTotals").innerHTML = `
+        <div class="summary-item">
+            <span class="label">إجمالي لكم</span>
+            <span class="value debit-value">${totalDebit.toLocaleString()} ر.ي</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">إجمالي عليكم</span>
+            <span class="value credit-value">${totalCredit.toLocaleString()} ر.ي</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">الصافي</span>
+            <span class="value balance-value">${diff >= 0 ? `لكم ${diff.toLocaleString()}` : `عليكم ${Math.abs(diff).toLocaleString()}`}</span>
+        </div>
+    `;
+
+    openModal("clientsModal");
+}
+
+function filterClientsTable() {
+    const q = qs("search_client_list").value.trim().toLowerCase();
+    document.querySelectorAll("#clientsBalanceBody tr").forEach(r => {
+        const name = r.children[1]?.textContent.toLowerCase() || "";
+        const mobile = r.children[2]?.textContent.toLowerCase() || "";
+        const mango = r.children[3]?.textContent.toLowerCase() || "";
+        r.style.display = (name.includes(q) || mobile.includes(q) || mango.includes(q)) ? "" : "none";
+    });
+}
+
+// تحديث الإحصائيات في الشاشة الرئيسية
+function updateStats(explicitTotal = null) {
+    qs("stat_clients").textContent = allClients.length;
+    if (clientTransactions.length && clientTransactions[0].date) {
+        qs("stat_last").textContent = new Date(clientTransactions[0].date).toLocaleDateString('ar-EG');
+    } else {
+        qs("stat_last").textContent = "لا توجد";
+    }
+
+    const sum = explicitTotal !== null ? explicitTotal : clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
+    const totalEl = qs("stat_total");
+    if (sum >= 0) {
+        totalEl.textContent = `عليه ${sum.toLocaleString()} ر.ي`;
+        totalEl.className = "value debit-value";
+    } else {
+        totalEl.textContent = `له ${Math.abs(sum).toLocaleString()} ر.ي`;
+        totalEl.className = "value credit-value";
+    }
+}
+
+// جهات الاتصال من الموبايل
+function closePopup() { qs("numberPopup").style.display = "none"; }
+
+qs("pickContact").addEventListener("click", async () => {
+    if (!("contacts" in navigator && "select" in navigator.contacts)) {
+        showToast("المتصفح لا يدعم استيراد جهات الاتصال", "error");
+        return;
+    }
+
+    try {
+        const contacts = await navigator.contacts.select(["tel"], { multiple: false });
+        if (!contacts.length || !contacts[0].tel || !contacts[0].tel.length) return;
+
+        let numbers = contacts[0].tel.map(n => {
+            return n.replace(/[\s\-\(\)]/g, "")
+                    .replace(/^(\+967|00967|967)/, "")
+                    .replace(/^0/, "");
+        });
+
+        if (numbers.length === 1) {
+            qs("new_mobile").value = numbers[0];
+            return;
+        }
+
+        const listDiv = qs("numbersList");
+        listDiv.innerHTML = "";
+        numbers.forEach(num => {
+            const btn = document.createElement("button");
+            btn.textContent = num;
+            btn.className = "trans-btn credit-btn";
+            btn.onclick = () => {
+                qs("new_mobile").value = num;
+                closePopup();
+            };
+            listDiv.appendChild(btn);
+        });
+
+        qs("numberPopup").style.display = "flex";
+    } catch (e) {
+        console.warn(e);
+    }
+});
+
+// التعامل مع الحافظة ولصق البيان
+async function pasteFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        qs("note").value = text;
+        showToast("تم لصق النص");
+    } catch (err) {
+        showToast("تعذر الوصول للحافظة، يرجى اللصق يدوياً", "error");
+    }
+}
+
+// حفظ سجل البيانات المقترحة
+let savedNotes = JSON.parse(localStorage.getItem("savedNotes") || "[]");
+function refreshNotes() {
+    const list = qs("notesList");
+    list.innerHTML = "";
+    savedNotes.forEach(note => {
+        const op = document.createElement("option");
+        op.value = note;
+        list.appendChild(op);
+    });
+}
+refreshNotes();
+
+function saveNoteSuggestion() {
+    const value = qs("note").value.trim();
+    if (/^\d+$/.test(value) || !value) return;
+
+    if (!savedNotes.includes(value)) {
+        savedNotes.unshift(value);
+        savedNotes = savedNotes.slice(0, 50);
+        localStorage.setItem("savedNotes", JSON.stringify(savedNotes));
+        refreshNotes();
+    }
+}
+
+// عرض Mango Users مع زر تعديل فوري
+function showMangoUsers() {
+    const tbody = qs("mangoUsersBody");
+    tbody.innerHTML = "";
+
+    const clients = allClients
+        .filter(c => c.mango_user && String(c.mango_user).trim())
+        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
+
+    if (!clients.length) {
+        tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-muted);padding:20px;">لا يوجد Mango User مسجل حتى الآن</td></tr>`;
+    } else {
+        const frag = document.createDocumentFragment();
+        clients.forEach(c => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${escapeHtml(c.name)}</strong></td>
+                <td style="direction:ltr; font-family:monospace; font-weight:bold;">${escapeHtml(c.mango_user)}</td>
+                <td>
+                    <div style="display:flex; gap:6px; justify-content:center;">
+                        <button class="trans-btn btn-accent copy-btn" style="padding:4px 8px; font-size:0.8rem;">📋 نسخ</button>
+                        <button class="trans-btn credit-btn edit-mango-btn" style="padding:4px 8px; font-size:0.8rem;">✏️ تعديل</button>
+                    </div>
+                </td>
+            `;
+
+            const copyBtn = tr.querySelector(".copy-btn");
+            copyBtn.onclick = () => copyMangoUser(c.mango_user, copyBtn);
+
+            const editBtn = tr.querySelector(".edit-mango-btn");
+            editBtn.onclick = () => {
+                closeModal("mangoUsersModal");
+                openEditClientModal(c.client_id);
+            };
+
+            frag.appendChild(tr);
+        });
+        tbody.appendChild(frag);
+    }
+
+    qs("mangoSearch").value = "";
+    openModal("mangoUsersModal");
+}
+
+async function copyMangoUser(value, button) {
+    if (!value) return;
+    try {
+        await navigator.clipboard.writeText(String(value));
+        button.textContent = "✓ تم";
+        button.style.background = "#059669";
+        setTimeout(() => {
+            button.textContent = "📋 نسخ";
+            button.style.background = "";
+        }, 1200);
+        showToast("تم نسخ اسم المستخدم");
+    } catch {
+        showToast("تعذر النسخ التلقائي", "error");
+    }
+}
+
+function filterMangoUsers() {
+    const q = qs("mangoSearch").value.trim().toLowerCase();
+    document.querySelectorAll("#mangoUsersBody tr").forEach(row => {
+        const name = row.children[0]?.textContent.toLowerCase() || "";
+        const mango = row.children[1]?.textContent.toLowerCase() || "";
+        row.style.display = (name.includes(q) || mango.includes(q)) ? "" : "none";
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 function printClientsList() {
-    const list = cachedBalancesList.length ? cachedBalancesList : allClients.map(c => ({
-        client_id: c.client_id,
-        name: c.name,
-        mobile: c.mobile,
-        mango_user: c.mango_user,
-        total: cachedBalancesMap[String(c.client_id)] || 0
-    }));
+    const rows = Array.from(document.querySelectorAll("#clientsBalanceBody tr"))
+                      .filter(r => r.style.display !== "none");
+
+    if (!rows.length) {
+        showToast("لا توجد بيانات للطباعة", "error");
+        return;
+    }
 
     const today = new Date().toLocaleDateString('ar-EG');
-    const tableRows = list.map(c => {
-        const total = c.total || 0;
-        const isDebit = total >= 0;
+    const tableRows = rows.map(r => {
+        const name = r.children[1]?.textContent || "";
+        const mobile = r.children[2]?.textContent || "";
+        const mango = r.children[3]?.textContent || "";
+        const total = r.children[4]?.textContent || "";
+        const isDebit = total.includes("عليه");
+
         return `
             <tr>
-                <td>${c.client_id}</td>
-                <td style="font-weight:bold;">${escapeHtml(c.name)}</td>
-                <td style="direction:ltr;">${escapeHtml(c.mobile || '-')}</td>
-                <td style="direction:ltr; font-family:monospace;">${escapeHtml(c.mango_user || '-')}</td>
-                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${isDebit ? 'عليه ' : 'له '}${Math.abs(total).toLocaleString()}</td>
+                <td>${name}</td>
+                <td>${mobile}</td>
+                <td style="direction:ltr; font-family:monospace;">${mango}</td>
+                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${total}</td>
             </tr>
         `;
     }).join('');
@@ -1910,11 +1919,10 @@ function printClientsList() {
         <table>
             <thead>
                 <tr>
-                    <th>الرقم</th>
                     <th>العميل</th>
                     <th>الجوال</th>
                     <th>Mango User</th>
-                    <th>الرصيد الصافي (ر.ي)</th>
+                    <th>الرصيد الصافي</th>
                 </tr>
             </thead>
             <tbody>${tableRows}</tbody>
@@ -1928,9 +1936,9 @@ function printClientsList() {
     setTimeout(() => win.print(), 350);
 }
 
-// بدء التشغيل
-renderNotesDatalist();
+// بدء التشغيل السريع
 loadDashboardData();
+qs("client_select").addEventListener("change", () => loadTransactions(false));
 </script>
 </body>
 </html>
