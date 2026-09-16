@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">لوحة تقارير المبيعات والأرباح المتقدمة</title>
+  
+  <!-- خط Tajawal ومكتبة Chart.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --success-light: #dcfce7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --purple: #8b5cf6;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 14px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: "Tajawal", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      transition: direction 0.3s;
+    }
+
+    *, *::before, *::after { box-sizing: inherit; }
+    .container { max-width: 1300px; margin: 0 auto; }
+
+    /* ==============================
+       الهيدر الرئيسي
+       ============================== */
+    .header {
+      background: var(--card-bg);
+      padding: 16px 22px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-title-wrap h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .view-mode-tabs {
+      background: #f1f5f9;
+      padding: 4px;
+      border-radius: 10px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover { background: #059669; }
+    .btn-light { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); }
+    .btn-light:hover { background: #e2e8f0; }
+
+    /* ==============================
+       شريط الفلاتر
+       ============================== */
+    .filter-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-group label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+    }
+
+    .select-control {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      min-width: 130px;
+    }
+
+    .loading-banner {
+      display: none;
+      background: var(--card-bg);
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      margin-bottom: 20px;
+    }
+    .loading-banner.active { display: block; }
+    .progress-track {
+      width: 100%;
+      height: 7px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--primary);
+      transition: width 0.3s;
+    }
+
+    /* ==============================
+       بطاقات المؤشرات (KPIs)
+       ============================== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3.5px;
+    }
+
+    .kpi-profit::before { background: var(--primary); }
+    .kpi-sales::before { background: var(--success); }
+    .kpi-codes::before { background: var(--purple); }
+    .kpi-cancel::before { background: var(--danger); }
+
+    .kpi-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .kpi-value {
+      font-size: 23px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      font-weight: 600;
+    }
+
+    /* ==============================
+       شبكة الرسوم البيانية الأربعة
+       ============================== */
+    .charts-grid,
+    .charts-grid-equal {
+      display: grid;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .charts-grid {
+      grid-template-columns: 2fr 1fr;
+    }
+
+    .charts-grid-equal {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .chart-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-title {
+      margin: 0 0 14px 0;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .chart-canvas-wrap {
+      position: relative;
+      height: 280px;
+      width: 100%;
+    }
+
+    /* ==============================
+       الجداول
+       ============================== */
+    .section-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 26px 0 12px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .table-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 13.5px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      padding: 11px 13px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 11px 13px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+
+    .total-row {
+      background: #f1f5f9 !important;
+      font-weight: 800;
+      border-top: 2px solid var(--border);
+    }
+    .total-row td { color: var(--primary-dark); }
+
+    .text-danger { color: var(--danger); font-weight: 700; }
+    .text-success { color: var(--success); font-weight: 700; }
+
+    /* نافذة المودال */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.active { display: flex; }
+    .print-modal {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .print-option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: start;
+    }
+    .print-option-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    /* ===================================================
+       تنسيقات الطباعة وظهور المخططات الأربعة في الـ PDF
+       =================================================== */
+    .print-header-block { display: none; }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 10mm 8mm 12mm 8mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #000 !important;
+        padding: 0 !important;
+        font-size: 9.5pt;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .container { max-width: 100% !important; width: 100% !important; }
+      .header, .filter-panel, .loading-banner, .btn, .view-mode-tabs, .modal-overlay {
+        display: none !important;
+      }
+
+      .print-header-block {
+        display: block !important;
+        border-bottom: 2px solid #2563eb;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+      }
+
+      .print-title { font-size: 16pt; font-weight: 800; color: #1e293b; margin: 0 0 6px 0; }
+      .print-meta-grid {
+        display: flex;
+        gap: 16px;
+        font-size: 9pt;
+        color: #475569;
+        flex-wrap: wrap;
+      }
+
+      .print-kpis {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+      }
+
+      .kpi-card {
+        border: 1px solid #cbd5e1 !important;
+        padding: 8px 10px !important;
+        box-shadow: none !important;
+        border-radius: 6px !important;
+      }
+      .kpi-value { font-size: 13pt !important; }
+
+      /* =======================================
+         إظهار المخططات الأربعة بدقة أثناء الطباعة
+         ======================================= */
+      .charts-grid,
+      .charts-grid-equal {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        margin-bottom: 16px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .chart-card {
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        padding: 10px !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        background: #ffffff !important;
+      }
+
+      .chart-title {
+        font-size: 10pt !important;
+        margin-bottom: 8px !important;
+        font-weight: 800 !important;
+      }
+
+      .chart-canvas-wrap {
+        height: 190px !important;
+        width: 100% !important;
+      }
+
+      canvas {
+        max-width: 100% !important;
+        max-height: 190px !important;
+        display: block !important;
+      }
+
+      .table-container {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 4px !important;
+        margin-bottom: 16px !important;
+        overflow: visible !important;
+      }
+
+      table { width: 100% !important; font-size: 8.5pt !important; }
+      thead { display: table-header-group !important; }
+      tbody tr { page-break-inside: avoid !important; }
+
+      th {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 5px !important;
+      }
+      td { border: 1px solid #e2e8f0 !important; padding: 5px !important; }
+
+      /* التحكم بإخفاء الأقسام بناءً على خيار الطباعة */
+      body.print-summary-only #sectionDetails,
+      body.print-summary-only #titleDetails { display: none !important; }
+
+      body.print-details-only .charts-grid,
+      body.print-details-only .charts-grid-equal,
+      body.print-details-only #sectionBreakdown,
+      body.print-details-only #titleBreakdown,
+      body.print-details-only #sectionProducts,
+      body.print-details-only #titleProducts { display: none !important; }
+    }
+
+    @media (max-width: 900px) {
+      .charts-grid, .charts-grid-equal { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- ترويسة التقرير المطبوع -->
+    <div class="print-header-block">
+      <h2 class="print-title" id="printReportTitle">📄 تقرير مبيعات الموزع المعتمد</h2>
+      <div class="print-meta-grid">
+        <span><strong>نوع التقرير:</strong> <span id="printReportType">-</span></span>
+        <span><strong>الفترة:</strong> <span id="printPeriod">-</span></span>
+        <span><strong>المستخدم:</strong> <span id="printUser">جميع المستخدمين</span></span>
+        <span><strong>تاريخ الاستخراج:</strong> <span id="printDate">-</span></span>
+      </div>
+    </div>
+
+    <!-- الهيدر الرئيسي -->
+    <header class="header">
+      <div class="header-title-wrap">
+        <h1 data-i18n="dashboardTitle">📊 لوحة تقارير المبيعات والأرباح</h1>
+      </div>
+
+      <!-- محدد نوع التقرير (أسبوعي / شهري / سنوي) -->
+      <div class="view-mode-tabs">
+        <button type="button" class="tab-btn active" onclick="switchViewMode('annual')">📅 سنوي</button>
+        <button type="button" class="tab-btn" onclick="switchViewMode('monthly')">📆 شهري</button>
+        <button type="button" class="tab-btn" onclick="switchViewMode('weekly')">⏱️ أسبوعي</button>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn btn-success" onclick="openPrintModal()">🖨️ طباعة PDF</button>
+        <button type="button" class="btn btn-light" onclick="reloadCurrentData()">🔄 تحديث</button>
+        <button type="button" class="btn btn-primary" onclick="window.location.href='index.html'">الرئيسية</button>
+      </div>
+    </header>
+
+    <!-- شريط التحميل -->
+    <div class="loading-banner" id="loadingBanner">
+      <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 13px;">
+        <span id="loadingStatus">⏳ جاري جلب وتجميع بيانات الشيت...</span>
+        <span id="loadingPct">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- شريط الفلاتر والمحددات -->
+    <section class="filter-panel">
+      <!-- محدد السنة -->
+      <div class="filter-group">
+        <label for="yearSelect">السنة:</label>
+        <select id="yearSelect" class="select-control" onchange="onYearChange()">
+          <option value="2026" selected>2026</option>
+          <option value="2025">2025</option>
+        </select>
+      </div>
+
+      <!-- محدد الشهر (يظهر في الوضعين الشهري والأسبوعي) -->
+      <div class="filter-group" id="monthFilterGroup" style="display: none;">
+        <label for="monthSelect">الشهر:</label>
+        <select id="monthSelect" class="select-control" onchange="onMonthChange()">
+          <option value="9">سبتمبر (9)</option>
+          <option value="8">أغسطس (8)</option>
+          <option value="7">يوليو (7)</option>
+          <option value="6">يونيو (6)</option>
+          <option value="5">مايو (5)</option>
+          <option value="4">أبريل (4)</option>
+          <option value="3">مارس (3)</option>
+          <option value="2">فبراير (2)</option>
+          <option value="1">يناير (1)</option>
+          <option value="10">أكتوبر (10)</option>
+          <option value="11">نوفمبر (11)</option>
+          <option value="12">ديسمبر (12)</option>
+        </select>
+      </div>
+
+      <!-- محدد الأسبوع (يظهر في الوضع الأسبوعي فقط) -->
+      <div class="filter-group" id="weekFilterGroup" style="display: none;">
+        <label for="weekSelect">الأسبوع:</label>
+        <select id="weekSelect" class="select-control" onchange="applyFiltersAndRender()">
+          <option value="all">جميع أسابيع الشهر</option>
+          <option value="1">الأسبوع 1 (1 - 7)</option>
+          <option value="2">الأسبوع 2 (8 - 14)</option>
+          <option value="3">الأسبوع 3 (15 - 21)</option>
+          <option value="4">الأسبوع 4 (22 - 28)</option>
+          <option value="5">الأسبوع 5 (29 - 31)</option>
+        </select>
+      </div>
+
+      <!-- فلترة بالمستخدم -->
+      <div class="filter-group">
+        <label for="userFilter">المستخدم:</label>
+        <select id="userFilter" class="select-control" onchange="applyFiltersAndRender()">
+          <option value="">جميع المستخدمين</option>
+        </select>
+      </div>
+
+      <!-- فلترة بالمنتج -->
+      <div class="filter-group">
+        <label for="productFilter">المنتج:</label>
+        <select id="productFilter" class="select-control" onchange="applyFiltersAndRender()">
+          <option value="">جميع المنتجات</option>
+        </select>
+      </div>
+
+      <button type="button" class="btn btn-light" onclick="resetFilters()">إلغاء الفلترة</button>
+    </section>
+
+    <!-- المؤشرات الكبرى الدقيقة (KPIs) -->
+    <section class="kpi-grid print-kpis">
+      <div class="kpi-card kpi-profit">
+        <span class="kpi-title">💰 إجمالي الربح</span>
+        <div class="kpi-value-wrap">
+          <span class="kpi-value" id="kpiProfit">0.00</span>
+          <span style="font-size: 13px; font-weight: 700; color: var(--text-muted);">مانجو</span>
+        </div>
+        <span class="kpi-sub" id="kpiHalfProfit">نصف الربح (50%): 0.00</span>
+      </div>
+
+      <div class="kpi-card kpi-sales">
+        <span class="kpi-title">🛒 إجمالي المبيعات</span>
+        <div class="kpi-value-wrap">
+          <span class="kpi-value" id="kpiSales">0.00</span>
+          <span style="font-size: 13px; font-weight: 700; color: var(--text-muted);">مانجو</span>
+        </div>
+        <span class="kpi-sub" id="kpiNetCalc">الصافي الفعلي بعد الخصم</span>
+      </div>
+
+      <div class="kpi-card kpi-codes">
+        <span class="kpi-title">🔢 صافي الأكواد المباعة</span>
+        <div class="kpi-value-wrap">
+          <span class="kpi-value" id="kpiNetCodes">0</span>
+          <span style="font-size: 13px; font-weight: 700; color: var(--text-muted);">كود</span>
+        </div>
+        <span class="kpi-sub" id="kpiOpsBreakdown">إجمالي العمليات: 0</span>
+      </div>
+
+      <div class="kpi-card kpi-cancel">
+        <span class="kpi-title">❌ العمليات الملغية</span>
+        <div class="kpi-value-wrap">
+          <span class="kpi-value text-danger" id="kpiCancelled">0</span>
+        </div>
+        <span class="kpi-sub" id="kpiCancelRate">نسبة الإلغاء: 0%</span>
+      </div>
+    </section>
+
+    <!-- الرسوم البيانية: الصف الأول -->
+    <section class="charts-grid">
+      <div class="chart-card">
+        <h3 class="chart-title" id="trendChartTitle">📈 مسار الأرباح والمبيعات</h3>
+        <div class="chart-canvas-wrap">
+          <canvas id="trendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3 class="chart-title">🍩 توزيع المبيعات حسب المنتجات</h3>
+        <div class="chart-canvas-wrap">
+          <canvas id="productsPieChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- الرسوم البيانية: الصف الثاني -->
+    <section class="charts-grid-equal">
+      <div class="chart-card">
+        <h3 class="chart-title">👥 أفضل المستخدمين / الموزعين أداءً</h3>
+        <div class="chart-canvas-wrap">
+          <canvas id="topUsersChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3 class="chart-title" id="statusChartTitle">📊 معدل العمليات الناجحة والملغية</h3>
+        <div class="chart-canvas-wrap">
+          <canvas id="statusChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. جدول التحليل الزمني -->
+    <h3 class="section-title" id="titleBreakdown">📊 التحليل الزمني للأداء</h3>
+    <section class="table-container" id="sectionBreakdown">
+      <table id="breakdownTable">
+        <thead>
+          <tr>
+            <th id="thPeriodName">الفترة</th>
+            <th>العمليات</th>
+            <th>المبيعات</th>
+            <th>الملغي</th>
+            <th>صافي الأكواد</th>
+            <th>الربح</th>
+            <th>نسبة المساهمة</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- 2. جدول إحصائيات المنتجات -->
+    <h3 class="section-title" id="titleProducts">📦 إحصائيات المنتجات المباعة</h3>
+    <section class="table-container" id="sectionProducts">
+      <table id="productsTable">
+        <thead>
+          <tr>
+            <th>المنتج</th>
+            <th>المبيعات</th>
+            <th>الملغي</th>
+            <th>صافي الأكواد</th>
+            <th>إجمالي الربح</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- 3. جدول تفاصيل جميع العمليات -->
+    <h3 class="section-title" id="titleDetails">📋 تفاصيل جميع العمليات</h3>
+    <section class="table-container" id="sectionDetails">
+      <table id="detailsTable">
+        <thead>
+          <tr>
+            <th>التاريخ</th>
+            <th>المنتج</th>
+            <th>المبلغ</th>
+            <th>المستخدم</th>
+            <th>الرقم التسلسلي (SN)</th>
+            <th>الربح</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <!-- نافذة خيارات الطباعة المتقدمة -->
+  <div class="modal-overlay" id="printModal" onclick="if(event.target===this) closePrintModal()">
+    <div class="print-modal">
+      <h3 style="margin:0 0 6px 0;">🖨️ خيارات طباعة التقرير PDF</h3>
+      <p style="margin:0; font-size:13px; color:var(--text-muted);">اختر القسم المطلوب تصديره إلى PDF:</p>
+      
+      <button type="button" class="print-option-btn" onclick="executePrint('summary')">
+        <span>📊</span>
+        <span>تقرير الإحصائيات مع الرسوم البيانية الأربعة والجداول</span>
+      </button>
+
+      <button type="button" class="print-option-btn" onclick="executePrint('details')">
+        <span>📋</span>
+        <span>كشف تفاصيل العمليات والأرقام التسلسلية فقط</span>
+      </button>
+
+      <button type="button" class="print-option-btn" style="border-color:#93c5fd; background:#eff6ff;" onclick="executePrint('all')">
+        <span>📑</span>
+        <span>طباعة التقرير الشامل بالكامل (الرسوم + الجداول + التفاصيل)</span>
+      </button>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" class="btn btn-light" onclick="closePrintModal()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwmNfmyYczC73kfkJMr2d_qK5gXKyNy82bodx54rDyCdKFjdtU0xMW3r-Ci3BWmrJ2Bgg/exec";
+
+    let currentYear = "2026";
+    let currentViewMode = "annual"; 
+    const cachedMonthSheets = {};
+
+    // كائنات المخططات البيانية الأربعة
+    let trendChartObj = null;
+    let productsChartObj = null;
+    let usersChartObj = null;
+    let statusChartObj = null;
+
+    function parseNum(val) {
+      if (val === null || val === undefined || val === "") return 0;
+      if (typeof val === "number") return val;
+      const clean = String(val).replace(/,/g, "").trim();
+      const n = parseFloat(clean);
+      return isNaN(n) ? 0 : n;
+    }
+
+    function formatNumber(val, maxDecimals = 6) {
+      if (val === null || val === undefined || isNaN(val)) return "0.00";
+      const num = Number(val);
+      const cleanNum = Number(Math.round(num + "e" + maxDecimals) + "e-" + maxDecimals);
+      return cleanNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: maxDecimals
+      });
+    }
+
+    function calculateAccurateStats(rows) {
+      let profit = 0;
+      let amount = 0;
+      let salesCount = 0;
+      let cancelledCount = 0;
+      const totalOps = rows.length;
+
+      rows.forEach(r => {
+        const p = parseNum(r[5]);
+        const itemAmt = Math.abs(parseNum(r[2]));
+
+        profit += p;
+
+        if (p < 0) {
+          amount -= itemAmt;
+          cancelledCount++;
+        } else {
+          amount += itemAmt;
+          salesCount++;
+        }
+      });
+
+      const netCodes = salesCount - cancelledCount;
+      const cancelRate = totalOps > 0 ? ((cancelledCount / totalOps) * 100).toFixed(1) : "0.0";
+
+      return { profit, amount, salesCount, cancelledCount, totalOps, netCodes, cancelRate };
+    }
+
+    async function fetchMonthSheet(monthNum, yearNum) {
+      const sheetName = `${monthNum}${yearNum}`;
+      if (cachedMonthSheets[sheetName]) return cachedMonthSheets[sheetName];
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 14000);
+
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ monthSheet: sheetName }),
+          signal: controller.signal
+        });
+
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const raw = await res.text();
+          const json = JSON.parse(raw);
+          if (json.success && Array.isArray(json.data)) {
+            cachedMonthSheets[sheetName] = json.data;
+            return json.data;
+          }
+        }
+      } catch (e) {
+        console.warn(`Sheet ${sheetName} not found or failed.`);
+      }
+
+      cachedMonthSheets[sheetName] = [];
+      return [];
+    }
+
+    function switchViewMode(mode) {
+      currentViewMode = mode;
+
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      if (mode === "annual") document.querySelectorAll(".tab-btn")[0].classList.add("active");
+      if (mode === "monthly") document.querySelectorAll(".tab-btn")[1].classList.add("active");
+      if (mode === "weekly") document.querySelectorAll(".tab-btn")[2].classList.add("active");
+
+      document.getElementById("monthFilterGroup").style.display = mode === "annual" ? "none" : "flex";
+      document.getElementById("weekFilterGroup").style.display = mode === "weekly" ? "flex" : "none";
+
+      loadAndRenderModeData();
+    }
+
+    async function loadAndRenderModeData() {
+      const banner = document.getElementById("loadingBanner");
+      const status = document.getElementById("loadingStatus");
+      const pct = document.getElementById("loadingPct");
+      const fill = document.getElementById("progressFill");
+
+      banner.classList.add("active");
+      fill.style.width = "20%";
+      pct.textContent = "20%";
+
+      if (currentViewMode === "annual") {
+        status.textContent = "⏳ جاري فحص وتجميع بيانات أشهر السنة بالكامل...";
+        for (let m = 1; m <= 12; m++) {
+          await fetchMonthSheet(m, currentYear);
+          const p = Math.round((m / 12) * 100);
+          fill.style.width = `${p}%`;
+          pct.textContent = `${p}%`;
+        }
+      } else {
+        const m = document.getElementById("monthSelect").value;
+        status.textContent = `⏳ جاري جلب بيانات شهر (${m}/${currentYear})...`;
+        await fetchMonthSheet(m, currentYear);
+        fill.style.width = "100%";
+        pct.textContent = "100%";
+      }
+
+      setTimeout(() => banner.classList.remove("active"), 300);
+
+      populateUsersAndProducts();
+      applyFiltersAndRender();
+    }
+
+    function populateUsersAndProducts() {
+      const userSel = document.getElementById("userFilter");
+      const prodSel = document.getElementById("productFilter");
+
+      const rows = getRawRowsForCurrentMode();
+      const users = [...new Set(rows.map(r => r[3]))].filter(Boolean).sort();
+      const prods = [...new Set(rows.map(r => r[1]))].filter(Boolean).sort();
+
+      const curU = userSel.value;
+      const curP = prodSel.value;
+
+      userSel.innerHTML = `<option value="">جميع المستخدمين</option>`;
+      users.forEach(u => {
+        const o = document.createElement("option");
+        o.value = u;
+        o.textContent = u;
+        if (u === curU) o.selected = true;
+        userSel.appendChild(o);
+      });
+
+      prodSel.innerHTML = `<option value="">جميع المنتجات</option>`;
+      prods.forEach(p => {
+        const o = document.createElement("option");
+        o.value = p;
+        o.textContent = p;
+        if (p === curP) o.selected = true;
+        prodSel.appendChild(o);
+      });
+    }
+
+    function getRawRowsForCurrentMode() {
+      if (currentViewMode === "annual") {
+        let all = [];
+        for (let m = 1; m <= 12; m++) {
+          all = all.concat(cachedMonthSheets[`${m}${currentYear}`] || []);
+        }
+        return all;
+      } else {
+        const m = document.getElementById("monthSelect").value;
+        return cachedMonthSheets[`${m}${currentYear}`] || [];
+      }
+    }
+
+    function applyFiltersAndRender() {
+      const selectedUser = document.getElementById("userFilter").value;
+      const selectedProd = document.getElementById("productFilter").value;
+      const selectedWeek = document.getElementById("weekSelect").value;
+
+      let rawRows = getRawRowsForCurrentMode();
+
+      let filtered = rawRows.filter(r => {
+        const matchU = !selectedUser || String(r[3]) === selectedUser;
+        const matchP = !selectedProd || String(r[1]) === selectedProd;
+        return matchU && matchP;
+      });
+
+      if (currentViewMode === "weekly" && selectedWeek !== "all") {
+        const w = parseInt(selectedWeek, 10);
+        filtered = filtered.filter(r => {
+          const dt = new Date(String(r[0]).split("T")[0]);
+          if (isNaN(dt.getTime())) return false;
+          const day = dt.getDate();
+          if (w === 1) return day >= 1 && day <= 7;
+          if (w === 2) return day >= 8 && day <= 14;
+          if (w === 3) return day >= 15 && day <= 21;
+          if (w === 4) return day >= 22 && day <= 28;
+          if (w === 5) return day >= 29;
+          return true;
+        });
+      }
+
+      const stats = calculateAccurateStats(filtered);
+
+      document.getElementById("kpiProfit").textContent = formatNumber(stats.profit);
+      document.getElementById("kpiHalfProfit").textContent = `نصف الربح (50%): ${formatNumber(stats.profit / 2)}`;
+      document.getElementById("kpiSales").textContent = formatNumber(stats.amount);
+      document.getElementById("kpiNetCodes").textContent = stats.netCodes.toLocaleString();
+      document.getElementById("kpiOpsBreakdown").textContent = `إجمالي العمليات: ${stats.totalOps.toLocaleString()}`;
+      document.getElementById("kpiCancelled").textContent = stats.cancelledCount.toLocaleString();
+      document.getElementById("kpiCancelRate").textContent = `نسبة الإلغاء: ${stats.cancelRate}%`;
+
+      renderBreakdownTable(filtered, stats.profit);
+      renderProductsTable(filtered);
+      renderDetailsTable(filtered);
+      renderAllFourCharts(filtered);
+    }
+
+    function renderBreakdownTable(rows, totalProfit) {
+      const tbody = document.querySelector("#breakdownTable tbody");
+      const thPeriod = document.getElementById("thPeriodName");
+      const monthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+
+      let groups = {};
+
+      if (currentViewMode === "annual") {
+        thPeriod.textContent = "الشهر";
+        document.getElementById("trendChartTitle").textContent = "📈 مسار الأرباح والمبيعات عبر شهور السنة";
+        document.getElementById("statusChartTitle").textContent = "📊 معدل العمليات الناجحة والملغية شهرياً";
+        for (let m = 1; m <= 12; m++) {
+          const mRows = (cachedMonthSheets[`${m}${currentYear}`] || []).filter(r => rows.includes(r));
+          groups[monthsNames[m - 1]] = mRows;
+        }
+      } else if (currentViewMode === "monthly") {
+        thPeriod.textContent = "الأسبوع";
+        document.getElementById("trendChartTitle").textContent = "📈 مسار الأرباح والمبيعات عبر أسابيع الشهر";
+        document.getElementById("statusChartTitle").textContent = "📊 معدل العمليات الناجحة والملغية أسبوعياً";
+        groups = {
+          "الأسبوع 1 (1 - 7)": [],
+          "الأسبوع 2 (8 - 14)": [],
+          "الأسبوع 3 (15 - 21)": [],
+          "الأسبوع 4 (22 - 28)": [],
+          "الأسبوع 5 (29 - 31)": []
+        };
+        rows.forEach(r => {
+          const dt = new Date(String(r[0]).split("T")[0]);
+          const d = dt.getDate();
+          if (d <= 7) groups["الأسبوع 1 (1 - 7)"].push(r);
+          else if (d <= 14) groups["الأسبوع 2 (8 - 14)"].push(r);
+          else if (d <= 21) groups["الأسبوع 3 (15 - 21)"].push(r);
+          else if (d <= 28) groups["الأسبوع 4 (22 - 28)"].push(r);
+          else groups["الأسبوع 5 (29 - 31)"].push(r);
+        });
+      } else {
+        thPeriod.textContent = "اليوم / التاريخ";
+        document.getElementById("trendChartTitle").textContent = "📈 مسار الأرباح والمبيعات اليومي";
+        document.getElementById("statusChartTitle").textContent = "📊 معدل العمليات الناجحة والملغية يومياً";
+        rows.forEach(r => {
+          const dtStr = String(r[0]).split("T")[0] || "غير محدد";
+          if (!groups[dtStr]) groups[dtStr] = [];
+          groups[dtStr].push(r);
+        });
+      }
+
+      let html = "";
+      let sumOps = 0, sumSales = 0, sumCancelled = 0, sumNet = 0, sumProfit = 0;
+
+      Object.entries(groups).forEach(([periodName, pRows]) => {
+        const st = calculateAccurateStats(pRows);
+        const share = totalProfit > 0 ? ((st.profit / totalProfit) * 100).toFixed(1) : "0.0";
+
+        sumOps += st.totalOps;
+        sumSales += st.amount;
+        sumCancelled += st.cancelledCount;
+        sumNet += st.netCodes;
+        sumProfit += st.profit;
+
+        html += `
+          <tr>
+            <td><strong>${periodName}</strong></td>
+            <td>${st.totalOps.toLocaleString()}</td>
+            <td>${formatNumber(st.amount)}</td>
+            <td class="text-danger">${st.cancelledCount}</td>
+            <td class="text-success">${st.netCodes.toLocaleString()}</td>
+            <td class="${st.profit < 0 ? 'text-danger' : 'text-success'}">${formatNumber(st.profit)}</td>
+            <td><strong>${share}%</strong></td>
+          </tr>
+        `;
+      });
+
+      html += `
+        <tr class="total-row">
+          <td><strong>الإجمالي الكلي</strong></td>
+          <td><strong>${sumOps.toLocaleString()}</strong></td>
+          <td><strong>${formatNumber(sumSales)}</strong></td>
+          <td class="text-danger"><strong>${sumCancelled}</strong></td>
+          <td class="text-success"><strong>${sumNet.toLocaleString()}</strong></td>
+          <td><strong>${formatNumber(sumProfit)}</strong></td>
+          <td><strong>100%</strong></td>
+        </tr>
+      `;
+
+      tbody.innerHTML = html;
+    }
+
+    function renderProductsTable(rows) {
+      const tbody = document.querySelector("#productsTable tbody");
+      if (rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="padding:20px; color:var(--text-muted);">لا توجد مبيعات في هذه الفترة</td></tr>`;
+        return;
+      }
+
+      const pMap = {};
+      rows.forEach(r => {
+        const prod = String(r[1] || "غير محدد").trim();
+        if (!pMap[prod]) pMap[prod] = [];
+        pMap[prod].push(r);
+      });
+
+      const sorted = Object.entries(pMap).sort((a, b) => calculateAccurateStats(b[1]).profit - calculateAccurateStats(a[1]).profit);
+
+      let html = "";
+      sorted.forEach(([prod, pRows]) => {
+        const st = calculateAccurateStats(pRows);
+        html += `
+          <tr>
+            <td style="text-align:start;"><strong>${prod}</strong></td>
+            <td>${st.salesCount.toLocaleString()}</td>
+            <td class="text-danger">${st.cancelledCount}</td>
+            <td class="text-success">${st.netCodes.toLocaleString()}</td>
+            <td class="${st.profit < 0 ? 'text-danger' : 'text-success'}">${formatNumber(st.profit)}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function renderDetailsTable(rows) {
+      const tbody = document.querySelector("#detailsTable tbody");
+      if (rows.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding:20px; color:var(--text-muted);">لا توجد عمليات مسجلة</td></tr>`;
+        return;
+      }
+
+      let html = "";
+      rows.forEach(r => {
+        const p = parseNum(r[5]);
+        const amt = Math.abs(parseNum(r[2]));
+        const dt = String(r[0]).split("T")[0];
+        const status = r[6] || "";
+
+        html += `
+          <tr>
+            <td>${dt}</td>
+            <td><strong>${r[1]}</strong></td>
+            <td>${formatNumber(amt)}</td>
+            <td>${r[3]}</td>
+            <td><code>${r[4]}</code></td>
+            <td class="${p < 0 ? 'text-danger' : 'text-success'}">${formatNumber(p)}</td>
+            <td>${status}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    /* ========================================================
+       رسم المخططات البيانية الأربعة بدقة وتوافق كامل مع الطباعة
+       ======================================================== */
+    function renderAllFourCharts(rows) {
+      const monthsNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+      
+      let periodLabels = [];
+      let periodProfits = [];
+      let periodSales = [];
+      let periodCompleted = [];
+      let periodCancelled = [];
+
+      if (currentViewMode === "annual") {
+        for (let m = 1; m <= 12; m++) {
+          const mRows = (cachedMonthSheets[`${m}${currentYear}`] || []).filter(r => rows.includes(r));
+          const st = calculateAccurateStats(mRows);
+          periodLabels.push(monthsNames[m - 1]);
+          periodProfits.push(Number(st.profit.toFixed(3)));
+          periodSales.push(Number(st.amount.toFixed(3)));
+          periodCompleted.push(st.salesCount);
+          periodCancelled.push(st.cancelledCount);
+        }
+      } else if (currentViewMode === "monthly") {
+        const weekLabels = ["الأسبوع 1", "الأسبوع 2", "الأسبوع 3", "الأسبوع 4", "الأسبوع 5"];
+        const weekGroups = [[], [], [], [], []];
+        rows.forEach(r => {
+          const dt = new Date(String(r[0]).split("T")[0]);
+          const d = dt.getDate();
+          if (d <= 7) weekGroups[0].push(r);
+          else if (d <= 14) weekGroups[1].push(r);
+          else if (d <= 21) weekGroups[2].push(r);
+          else if (d <= 28) weekGroups[3].push(r);
+          else weekGroups[4].push(r);
+        });
+
+        for (let i = 0; i < 5; i++) {
+          const st = calculateAccurateStats(weekGroups[i]);
+          periodLabels.push(weekLabels[i]);
+          periodProfits.push(Number(st.profit.toFixed(3)));
+          periodSales.push(Number(st.amount.toFixed(3)));
+          periodCompleted.push(st.salesCount);
+          periodCancelled.push(st.cancelledCount);
+        }
+      } else {
+        const daysMap = {};
+        rows.forEach(r => {
+          const dtStr = String(r[0]).split("T")[0] || "غير محدد";
+          if (!daysMap[dtStr]) daysMap[dtStr] = [];
+          daysMap[dtStr].push(r);
+        });
+
+        Object.keys(daysMap).sort().slice(-7).forEach(d => {
+          const st = calculateAccurateStats(daysMap[d]);
+          periodLabels.push(d);
+          periodProfits.push(Number(st.profit.toFixed(3)));
+          periodSales.push(Number(st.amount.toFixed(3)));
+          periodCompleted.push(st.salesCount);
+          periodCancelled.push(st.cancelledCount);
+        });
+      }
+
+      // 1. مسار الأرباح والمبيعات
+      if (trendChartObj) trendChartObj.destroy();
+      const ctxTrend = document.getElementById("trendChart").getContext("2d");
+      trendChartObj = new Chart(ctxTrend, {
+        type: "bar",
+        data: {
+          labels: periodLabels.length ? periodLabels : ["لا توجد بيانات"],
+          datasets: [
+            {
+              label: "إجمالي المبيعات",
+              data: periodSales,
+              backgroundColor: "rgba(37, 99, 235, 0.65)",
+              borderColor: "#2563eb",
+              borderWidth: 1.5,
+              borderRadius: 5
+            },
+            {
+              label: "إجمالي الربح",
+              data: periodProfits,
+              type: "line",
+              borderColor: "#10b981",
+              backgroundColor: "rgba(16, 185, 129, 0.15)",
+              borderWidth: 2.5,
+              tension: 0.25,
+              fill: true
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { legend: { position: "top" } }
+        }
+      });
+
+      // 2. توزيع المبيعات حسب المنتجات (Doughnut)
+      const pCounts = {};
+      rows.forEach(r => {
+        const p = String(r[1] || "غير محدد").trim();
+        pCounts[p] = (pCounts[p] || 0) + 1;
+      });
+      const topP = Object.entries(pCounts).sort((a, b) => b[1] - a[1]).slice(0, 6);
+
+      if (productsChartObj) productsChartObj.destroy();
+      const ctxPie = document.getElementById("productsPieChart").getContext("2d");
+      productsChartObj = new Chart(ctxPie, {
+        type: "doughnut",
+        data: {
+          labels: topP.map(x => x[0]),
+          datasets: [{
+            data: topP.map(x => x[1]),
+            backgroundColor: ["#2563eb", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#06b6d4"]
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { legend: { position: "bottom" } }
+        }
+      });
+
+      // 3. أفضل المستخدمين / الموزعين أداءً (Horizontal Bar)
+      const userProfits = {};
+      rows.forEach(r => {
+        const u = String(r[3] || "غير محدد").trim();
+        userProfits[u] = (userProfits[u] || 0) + (parseNum(r[5]));
+      });
+      const topUsers = Object.entries(userProfits).sort((a, b) => b[1] - a[1]).slice(0, 7);
+
+      if (usersChartObj) usersChartObj.destroy();
+      const ctxUsers = document.getElementById("topUsersChart").getContext("2d");
+      usersChartObj = new Chart(ctxUsers, {
+        type: "bar",
+        data: {
+          labels: topUsers.map(x => x[0]),
+          datasets: [{
+            axis: "y",
+            label: "أرباح المستخدم (مانجو)",
+            data: topUsers.map(x => Number(x[1].toFixed(2))),
+            backgroundColor: "rgba(139, 92, 246, 0.75)",
+            borderColor: "#8b5cf6",
+            borderWidth: 1.5,
+            borderRadius: 5
+          }]
+        },
+        options: {
+          indexAxis: "y",
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { legend: { position: "top" } }
+        }
+      });
+
+      // 4. معدل العمليات الناجحة والملغية (Stacked Bar)
+      if (statusChartObj) statusChartObj.destroy();
+      const ctxStatus = document.getElementById("statusChart").getContext("2d");
+      statusChartObj = new Chart(ctxStatus, {
+        type: "bar",
+        data: {
+          labels: periodLabels.length ? periodLabels : ["لا توجد بيانات"],
+          datasets: [
+            {
+              label: "عمليات ناجحة",
+              data: periodCompleted,
+              backgroundColor: "#10b981",
+              borderRadius: 4
+            },
+            {
+              label: "عمليات ملغية",
+              data: periodCancelled,
+              backgroundColor: "#ef4444",
+              borderRadius: 4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          scales: { x: { stacked: true }, y: { stacked: true } },
+          plugins: { legend: { position: "top" } }
+        }
+      });
+    }
+
+    /* ==========================================
+       وظائف نافذة وخيارات الطباعة الـ PDF
+       ========================================== */
+    function openPrintModal() {
+      document.getElementById("printModal").classList.add("active");
+    }
+
+    function closePrintModal() {
+      document.getElementById("printModal").classList.remove("active");
+    }
+
+    function executePrint(type) {
+      document.body.classList.remove("print-all", "print-summary-only", "print-details-only");
+      if (type === "summary") document.body.classList.add("print-summary-only");
+      else if (type === "details") document.body.classList.add("print-details-only");
+      else document.body.classList.add("print-all");
+
+      const user = document.getElementById("userFilter").value || "جميع المستخدمين";
+      const year = document.getElementById("yearSelect").value;
+      const month = document.getElementById("monthSelect").value;
+      const week = document.getElementById("weekSelect").value;
+
+      document.getElementById("printUser").textContent = user;
+      document.getElementById("printDate").textContent = new Date().toLocaleString("ar-EG");
+
+      if (currentViewMode === "annual") {
+        document.getElementById("printReportType").textContent = "تقرير سنوي شامل";
+        document.getElementById("printPeriod").textContent = `سنة ${year}`;
+      } else if (currentViewMode === "monthly") {
+        document.getElementById("printReportType").textContent = "تقرير شهري";
+        document.getElementById("printPeriod").textContent = `شهر ${month} / ${year}`;
+      } else {
+        document.getElementById("printReportType").textContent = "تقرير أسبوعي";
+        document.getElementById("printPeriod").textContent = `الأسبوع (${week}) - شهر ${month} / ${year}`;
+      }
+
+      closePrintModal();
+
+      setTimeout(() => {
+        window.print();
+        document.body.classList.remove("print-all", "print-summary-only", "print-details-only");
+      }, 150);
+    }
+
+    function onYearChange() {
+      currentYear = document.getElementById("yearSelect").value;
+      loadAndRenderModeData();
+    }
+
+    function onMonthChange() {
+      loadAndRenderModeData();
+    }
+
+    function reloadCurrentData() {
+      const sheet = `${document.getElementById("monthSelect").value}${currentYear}`;
+      delete cachedMonthSheets[sheet];
+      loadAndRenderModeData();
+    }
+
+    function resetFilters() {
+      document.getElementById("userFilter").value = "";
+      document.getElementById("productFilter").value = "";
+      if (document.getElementById("weekSelect")) document.getElementById("weekSelect").value = "all";
+      applyFiltersAndRender();
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const now = new Date();
+      const currentMonth = now.getMonth() + 1;
+      const monthSelect = document.getElementById("monthSelect");
+      if (monthSelect) monthSelect.value = String(currentMonth);
+
+      switchViewMode("annual");
+    });
+</script>
+</body>
+</html>
