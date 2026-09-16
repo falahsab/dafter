@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>استيراد بيانات المبيعات - الإكسل</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- مكتبة قراءة ملفات Excel بالمتصفح -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: "Tajawal", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    *, *::before, *::after { box-sizing: inherit; }
+    .container { max-width: 900px; margin: 0 auto; }
+
+    .header {
+      background: var(--card-bg);
+      padding: 16px 24px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h2 { margin: 0; font-size: 20px; font-weight: 800; color: var(--primary); }
+    .back-btn {
+      background: #f1f5f9;
+      color: var(--text);
+      text-decoration: none;
+      padding: 9px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      border: 1px solid var(--border);
+      transition: 0.2s;
+    }
+    .back-btn:hover { background: #e2e8f0; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-family: inherit;
+      font-size: 15px;
+      background: #fff;
+      outline: none;
+    }
+
+    /* منطقة سحب وإفلات الملف */
+    .drop-zone {
+      border: 2px dashed #93c5fd;
+      background: #eff6ff;
+      border-radius: var(--radius);
+      padding: 35px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .drop-zone:hover, .drop-zone.dragover {
+      background: #dbeafe;
+      border-color: var(--primary);
+    }
+    .drop-zone-icon { font-size: 40px; margin-bottom: 10px; }
+    .drop-zone p { margin: 5px 0; color: var(--muted); font-size: 14px; }
+    .drop-zone strong { color: var(--primary); }
+
+    /* تنبيه التحذير */
+    .alert-warning {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      color: #92400e;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* زر بدء الترحيل */
+    .btn-submit {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: 800;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+    .btn-submit:hover { background: var(--primary-dark); }
+    .btn-submit:disabled { background: #94a3b8; cursor: not-allowed; }
+
+    /* صندوق المعاينة */
+    .preview-box {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      max-height: 280px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: center;
+    }
+    th {
+      background: #f1f5f9;
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      position: sticky;
+      top: 0;
+    }
+    td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    /* شاشات التحميل والحالة */
+    .status-msg {
+      display: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 15px;
+    }
+    .status-success { background: #dcfce7; color: #166534; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <header class="header">
+      <h2>📥 لوحة استيراد بيانات الشهر من إكسل</h2>
+      <a href="index.html" class="back-btn">⬅ العودة للرئيسية</a>
+    </header>
+
+    <div class="card">
+      
+      <!-- اختيار ورقة الشهر -->
+      <div class="form-group">
+        <label for="monthSelect">📅 اختر الشهر الذي ستستورد البيانات إليه:</label>
+        <select id="monthSelect"></select>
+      </div>
+
+      <!-- منطقة اختيار ملف الإكسل -->
+      <div class="form-group">
+        <label>📂 حدد ملف الإكسل (.xlsx أو .csv):</label>
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+          <div class="drop-zone-icon">📊</div>
+          <p><strong>اضغط هنا لاختيار الملف</strong> أو اسحبه وأفلته هنا</p>
+          <p id="fileName" style="font-weight: bold; color: var(--primary); margin-top: 8px;"></p>
+        </div>
+        <input type="file" id="fileInput" accept=".xlsx, .xls, .csv" style="display: none;" onchange="handleFile(this.files[0])">
+      </div>
+
+      <!-- تنبيه المسح -->
+      <div class="alert-warning">
+        ⚠️ <strong>تنبيه هام:</strong> سيتم مسح كافة البيانات السابقة في ورقة الشهر المختار وكتابة البيانات الجديدة بدلاً منها.
+      </div>
+
+      <!-- صندوق المعاينة -->
+      <div class="preview-box" id="previewBox">
+        <div class="preview-header">
+          <strong style="color: var(--primary);">👀 معاينة أول 5 سجلات (إجمالي السجلات: <span id="rowCount">0</span>):</strong>
+          <span id="colStatus" style="font-size: 13px; font-weight: bold; color: var(--success);">✅ الأعمدة الـ 8 متطابقة</span>
+        </div>
+        <div class="table-container">
+          <table id="previewTable">
+            <thead>
+              <tr>
+                <th>Time</th><th>Product</th><th>Amount</th><th>Users</th>
+                <th>SN</th><th>Profit</th><th>Status</th><th>Remark</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- زر التنفيذ -->
+      <div style="margin-top: 20px;">
+        <button id="submitBtn" class="btn-submit" disabled onclick="uploadData()">🚀 بدء استيراد واستبدال البيانات</button>
+      </div>
+
+      <!-- رسالة النتيجة -->
+      <div id="statusMsg" class="status-msg"></div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // رابط الـ Web App الخاص بك في Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbzslXvpaKBOxXxfYNHCse69mMyV7LWgdtiToUfnT8-cfW_6sbFWJ4Zhtnz5M3SdtjmU3Q/exec";
+
+    const arabicMonths = [
+      "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+      "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+    ];
+
+    let parsedRows = [];
+
+    /* ==========================================
+       1. توليد قائمة الشهور
+       ========================================== */
+    function setupMonthSelector() {
+      const select = document.getElementById("monthSelect");
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+
+      select.innerHTML = "";
+
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(currentYear, currentMonth - i, 1);
+        const year = date.getFullYear();
+        const monthIndex = date.getMonth();
+        const monthNumber = monthIndex + 1;
+
+        const sheetName = `${monthNumber}${year}`; // مثل 92026
+
+        const option = document.createElement("option");
+        option.value = sheetName;
+        option.textContent = `${arabicMonths[monthIndex]} ${year} (اسم الورقة: ${sheetName})`;
+
+        select.appendChild(option);
+      }
+    }
+
+    /* ==========================================
+       2. قراءة ملف الإكسل ومعاينته
+       ========================================== */
+    function handleFile(file) {
+      if (!file) return;
+
+      document.getElementById("fileName").textContent = `الملف المختار: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array", cellDates: true });
+
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+
+        // تحويل محتوى الإكسل لمصفوفة أسطر
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
+
+        if (jsonData.length < 2) {
+          alert("الملف لا يحتوي على بيانات كافية أو فارغ!");
+          return;
+        }
+
+        // استخراج العناوين وتجاهل السطر الأول في البيانات
+        const headers = jsonData[0].map(h => String(h || "").trim());
+        const dataRows = jsonData.slice(1).filter(r => r.some(cell => cell !== undefined && cell !== ""));
+
+        // خريطة الأعمدة المطلوبة
+        const expectedCols = ["Time", "Product", "Amount", "Users", "SN", "Profit", "Status", "Remark"];
+        const colIndices = expectedCols.map(col => {
+          return headers.findIndex(h => h.toLowerCase() === col.toLowerCase());
+        });
+
+        // ترتيب البيانات وفق الأعمدة الـ 8 بدقة
+        parsedRows = dataRows.map(row => {
+          return colIndices.map(idx => (idx !== -1 && row[idx] !== undefined) ? row[idx] : "");
+        });
+
+        // عرض المعاينة لأول 5 أسطر
+        showPreview(parsedRows);
+      };
+
+      reader.readAsArrayBuffer(file);
+    }
+
+    function showPreview(rows) {
+      const tbody = document.querySelector("#previewTable tbody");
+      tbody.innerHTML = "";
+
+      const sample = rows.slice(0, 5);
+      sample.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
+          <td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td>${r[7]}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("rowCount").textContent = rows.length;
+      document.getElementById("previewBox").style.display = "block";
+      document.getElementById("submitBtn").disabled = false;
+    }
+
+    /* ==========================================
+       3. إرسال البيانات للـ Google Sheet
+       ========================================== */
+    async function uploadData() {
+      const monthSheet = document.getElementById("monthSelect").value;
+      const submitBtn = document.getElementById("submitBtn");
+      const statusMsg = document.getElementById("statusMsg");
+
+      if (!confirm(`⚠️ تأكيد نهائي:\nهل أنت متأكد من مسح كافة بيانات الورقة [${monthSheet}] واستبدالها بـ ${parsedRows.length} سجل جديد؟`)) {
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "⏳ جاري مسح القديم وكتابة البيانات الجديدة...";
+      statusMsg.style.display = "none";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({
+            action: "import",
+            monthSheet: monthSheet,
+            rows: parsedRows
+          })
+        });
+
+        const json = await res.json();
+
+        if (json.success) {
+          statusMsg.className = "status-msg status-success";
+          statusMsg.innerHTML = `🎉 <strong>نجاح:</strong> ${json.message} (تمت إضافة ${json.count} صف إلى ورقة ${json.sheetName}).`;
+          statusMsg.style.display = "block";
+          submitBtn.textContent = "✅ تم الاستيراد بنجاح";
+        } else {
+          throw new Error(json.error || "خطأ غير معروف");
+        }
+
+      } catch (err) {
+        statusMsg.className = "status-msg status-error";
+        statusMsg.innerHTML = `❌ <strong>حدث خطأ:</strong> ${err.message}`;
+        statusMsg.style.display = "block";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "🚀 إعادة المحاولة";
+      }
+    }
+
+    // دعم السحب والإفلات للملفات
+    const dropZone = document.getElementById("dropZone");
+    dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("dragover"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("dragover"));
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("dragover");
+      if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+    });
+
+    window.onload = setupMonthSelector;
+  </script>
+</body>
+</html>
