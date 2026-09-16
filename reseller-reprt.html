@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">لوحة الموزع المعتمد</title>
+  
+  <!-- استدعاء خط Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+    /* ==============================
+       المتغيرات والتصميم العام
+       ============================== */
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #10b981;
+      --success-light: #dcfce7;
+      --danger: #ef4444;
+      --danger-light: #fee2e2;
+      --warning: #f59e0b;
+      --warning-light: #fef3c7;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    body {
+      font-family: "Tajawal", sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      -webkit-font-smoothing: antialiased;
+      transition: direction 0.3s;
+    }
+
+    *, *::before, *::after {
+      box-sizing: inherit;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ==============================
+       الهيدر (Header)
+       ============================== */
+    .header {
+      background: var(--card-bg);
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .month-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .month-selector label {
+      font-weight: 700;
+      color: var(--text-main);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+
+    .month-selector select {
+      min-width: 170px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .month-selector select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-refresh {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-refresh:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .print-btn {
+      background: #059669;
+      color: #ffffff;
+      padding: 9px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .print-btn:hover { background: #047857; }
+    .print-btn:active { transform: scale(0.97); }
+
+    .lang-btn {
+      background: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid var(--border);
+      padding: 9px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+
+    .lang-btn:hover {
+      background: #e2e8f0;
+    }
+
+    .logout-btn {
+      background: var(--danger);
+      color: #ffffff;
+      padding: 9px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      transition: background-color 0.2s, transform 0.1s;
+    }
+
+    .logout-btn:hover { background: #dc2626; }
+    .logout-btn:active { transform: scale(0.97); }
+
+    /* ==============================
+       شبكة الإحصائيات (KPI Cards)
+       ============================== */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 3px;
+      background: transparent;
+    }
+
+    .card.profit-card::before { background: var(--primary); }
+    .card.half-profit-card::before { background: #0ea5e9; }
+    .card.sales-card::before { background: var(--success); }
+    .card.user-card::before { background: #8b5cf6; }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .card-value-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .card-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .currency {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* ==============================
+       صندوق العمولات
+       ============================== */
+    .commission-box {
+      background: #fdfdfd;
+      border: 1px dashed #cbd5e1;
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .commission-box h4 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .commission-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .comm-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comm-item span {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .comm-item strong {
+      font-size: 15px;
+      color: var(--primary-dark);
+    }
+
+    /* ==============================
+       لوحة الفلاتر
+       ============================== */
+    .filter-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-group label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .filter-group input,
+    .filter-group select {
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .filter-group input[type="date"],
+    input[type="date"] {
+      direction: ltr !important;
+      text-align: center !important;
+    }
+
+    .filter-group input:focus,
+    .filter-group select:focus {
+      border-color: var(--primary);
+    }
+
+    .filter-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .filter-actions button {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .btn-apply {
+      background: var(--primary);
+      color: #ffffff;
+    }
+    .btn-apply:hover { background: var(--primary-dark); }
+
+    .btn-reset {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      border: 1px solid var(--border) !important;
+    }
+    .btn-reset:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    /* ==============================
+       الجداول وتنسيقها
+       ============================== */
+    .section-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 25px 0 12px 0;
+    }
+
+    .table-container {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      margin-bottom: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      padding: 12px 14px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+      color: var(--text-main);
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f8fafc; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .status-Completed { background: var(--success-light); color: #15803d; }
+    .status-Refund { background: var(--danger-light); color: #b91c1c; }
+    .status-Pending { background: var(--warning-light); color: #b45309; }
+
+    .text-danger { color: var(--danger); font-weight: 700; }
+    .text-success { color: var(--success); font-weight: 700; }
+
+    /* ==============================
+       جدول إحصائيات المنتجات المدمج
+       ============================== */
+    #productSummaryTable th:first-child,
+    #productSummaryTable td:first-child {
+      text-align: start;
+    }
+
+    #productSummaryTable th:not(:first-child),
+    #productSummaryTable td:not(:first-child) {
+      width: 1%;
+      white-space: nowrap;
+      padding: 10px 18px;
+    }
+
+    #productSummaryTable .product-total-row {
+      background: #f8fafc !important;
+      font-weight: 800;
+      border-top: 2px solid var(--border);
+    }
+
+    #productSummaryTable .product-total-row td {
+      color: var(--primary-dark);
+    }
+
+    @media (max-width: 650px) {
+      #productSummaryTable th, 
+      #productSummaryTable td {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      #productSummaryTable th:not(:first-child),
+      #productSummaryTable td:not(:first-child) {
+        padding: 8px 10px;
+        font-size: 13px;
+      }
+
+      #productSummaryTable td:first-child {
+        font-weight: 600;
+        white-space: normal;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .header { flex-direction: column; align-items: stretch; }
+      .month-selector { justify-content: space-between; }
+      .month-selector select { flex: 1; }
+      .header-actions { justify-content: space-between; }
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .summary-grid { grid-template-columns: 1fr; }
+    }
+
+    /* تضليل الرقم وحماية الخصوصية */
+    .blur-val.revealed {
+      filter: blur(7px);
+      cursor: pointer;
+      user-select: none;
+      transition: filter 0.25s ease;
+    }
+
+    .blur-val {
+      filter: blur(0);
+      user-select: auto;
+    }
+
+    /* ===================================================
+       نافذة خيارات الطباعة المنبثقة (Print Modal)
+       =================================================== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+
+    .print-modal {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 440px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-header h3 {
+      margin: 0 0 6px 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .modal-header p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .print-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .print-option-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #ffffff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: start;
+    }
+
+    .print-option-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .print-option-btn.primary-option {
+      border-color: #bfdbfe;
+      background: #f8fafc;
+    }
+
+    .print-option-btn.primary-option:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .modal-close-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-close-btn:hover {
+      background: #e2e8f0;
+      color: var(--text-main);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* ===================================================
+       تنسيقات الطباعة كـ PDF احترافي (Print Stylesheet)
+       =================================================== */
+    .print-only {
+      display: none;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 12mm 10mm 12mm 10mm;
+      }
+
+      body {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 11pt;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      .container {
+        max-width: 100% !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      /* إخفاء الهيدر والمودال وعناصر التحكم أثناء الطباعة */
+      .header,
+      .summary-grid,
+      .commission-box,
+      .filter-panel,
+      .btn-refresh,
+      .header-actions,
+      .modal-overlay {
+        display: none !important;
+      }
+
+      /* إظهار ترويسة التقرير المطبوع أعلى الصفحة */
+      .print-only {
+        display: block !important;
+      }
+
+      .print-header {
+        border-bottom: 2px solid #2563eb;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .print-title {
+        font-size: 18pt;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+      }
+
+      .print-meta {
+        display: flex;
+        gap: 16px;
+        font-size: 10pt;
+        color: #475569;
+        flex-wrap: wrap;
+      }
+
+      .print-meta span strong {
+        color: #0f172a;
+      }
+
+      .section-title {
+        font-size: 13pt !important;
+        font-weight: 800 !important;
+        margin: 18px 0 8px 0 !important;
+        color: #1e293b !important;
+        border-bottom: 1.5px solid #cbd5e1;
+        padding-bottom: 5px;
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      .table-container {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        margin-bottom: 20px !important;
+        overflow: visible !important;
+      }
+
+      table {
+        width: 100% !important;
+        font-size: 9.5pt !important;
+        border-collapse: collapse !important;
+        page-break-inside: auto;
+      }
+
+      /* تكرار صف عناوين الأعمدة في أعلى كل صفحة جديدة */
+      thead {
+        display: table-header-group !important;
+      }
+
+      tfoot {
+        display: table-footer-group !important;
+      }
+
+      /* منع انقسام أي صف بين صفحتين */
+      tbody tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      th {
+        background: #f1f5f9 !important;
+        color: #1e293b !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 7px 8px !important;
+        font-weight: 700 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+
+      td {
+        border: 1px solid #e2e8f0 !important;
+        padding: 7px 8px !important;
+        color: #0f172a !important;
+      }
+
+      #productSummaryTable .product-total-row {
+        background: #f8fafc !important;
+        font-weight: 800 !important;
+      }
+
+      .blur-val {
+        filter: none !important;
+      }
+
+      .status-badge {
+        border: 1px solid currentColor !important;
+        padding: 2px 6px !important;
+        font-size: 8pt !important;
+      }
+
+      .text-danger { color: #dc2626 !important; }
+      .text-success { color: #16a34a !important; }
+
+      /* ========================================================
+         التحكم بإظهار/إخفاء الأقسام بناءً على خيار الطباعة المحدد
+         ======================================================== */
+      /* 1. خيار إحصائيات المنتجات فقط: إخفاء جدول وتفاصيل العمليات */
+      body.print-summary-only #sectionDataTableTitle,
+      body.print-summary-only #sectionDataTable {
+        display: none !important;
+      }
+
+      /* 2. خيار تفاصيل العمليات فقط: إخفاء جدول وتفاصيل الإحصائيات */
+      body.print-details-only #sectionProductSummaryTitle,
+      body.print-details-only #sectionProductSummary {
+        display: none !important;
+      }
+    }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- هيدر رسمي مخصص لملف الـ PDF المطبوع فقط -->
+    <div class="print-header print-only">
+      <div class="print-title" id="printTitle" data-i18n="printReportTitleAll">📄 تقرير عمليات الموزع المعتمد</div>
+      <div class="print-meta">
+        <span><strong data-i18n="monthLabel">📅 الشهر:</strong> <span id="printMonth">-</span></span>
+        <span><strong data-i18n="lblUser">👤 المستخدم:</strong> <span id="printUser">-</span></span>
+        <span><strong data-i18n="lblPrintDate">🕒 تاريخ الطباعة:</strong> <span id="printDate">-</span></span>
+      </div>
+    </div>
+
+    <!-- شريط التنقل العلوي -->
+    <header class="header">
+      <div class="month-selector">
+        <label for="monthSelect" data-i18n="monthLabel">📅 الشهر:</label>
+        <select id="monthSelect" onchange="changeMonth()"></select>
+        <button type="button" class="btn-refresh" onclick="refreshCurrentMonth()" title="تحديث البيانات" data-i18n-title="btnRefresh">🔄</button>
+      </div>
+
+      <div class="header-actions">
+        <!-- زر فتح نافذة خيارات الطباعة -->
+        <button type="button" class="print-btn" onclick="openPrintModal()" data-i18n="btnPrint">🖨️ طباعة تقرير PDF</button>
+        <button type="button" class="lang-btn" onclick="window.location.href='resellercontrool.html'">control</button>
+        <button id="langBtn" type="button" class="lang-btn" onclick="toggleLanguage()">EN</button>
+        <button type="button" class="logout-btn" onclick="window.location.href='/admin.html'" data-i18n="homeBtn">الرئيسية</button>
+      </div>
+    </header>
+
+    <main>
+      
+      <!-- شبكة المؤشرات الإحصائية الرئيسية (KPIs) -->
+      <section class="summary-grid">
+        <div class="card user-card">
+          <span class="card-title" data-i18n="lblUser">👤 المستخدم الحالي</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="selectedUser">الكل</span>
+          </div>
+        </div>
+
+        <div class="card profit-card" id="cardTotalProfit">
+          <span class="card-title" data-i18n="lblProfit">💰 إجمالي الربح</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="totalProfit">0.00</span>
+            <span class="currency" data-i18n="currency">مانجو</span>
+          </div>
+        </div>
+
+        <div class="card half-profit-card" id="cardHalfProfit" style="display: none;">
+          <span class="card-title" data-i18n="lblHalfProfit">💰Total Profit (50%)</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="halfProfit" style="color: #0284c7;">0.00</span>
+            <span class="currency" data-i18n="currency">Mango</span>
+          </div>
+        </div>
+
+        <div class="card sales-card">
+          <span class="card-title" data-i18n="lblSales">🛒 إجمالي المبيعات</span>
+          <div class="card-value-wrap">
+            <span class="card-value blur-val" id="totalAmount" onclick="toggleBlur(this)" title="انقر للإظهار / الإخفاء">0.00</span>
+            <span class="currency" data-i18n="currency">مانجو</span>
+          </div>
+        </div>
+
+        <div class="card" id="cardTotalCodes" style="display: none;">
+          <span class="card-title" data-i18n="lblOperations">🔢 إجمالي العمليات</span>
+          <div class="card-value-wrap">
+            <span class="card-value" id="totalCodes">0</span>
+          </div>
+        </div>
+
+        <div class="card" id="cardCancelledCodes" style="display: none;">
+          <span class="card-title" data-i18n="lblCancelled">❌ العمليات الملغية</span>
+          <div class="card-value-wrap">
+            <span class="card-value text-danger" id="cancelledCodes">0</span>
+          </div>
+        </div>
+
+        <div class="card" id="cardNetCodes" style="display: none;">
+          <span class="card-title" data-i18n="lblNet">✅ صافي الأكواد المباعة</span>
+          <div class="card-value-wrap">
+            <span class="card-value text-success" id="netCodes">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- صندوق العمولات -->
+      <section class="commission-box" id="commissionBox" style="display: none;">
+        <h4 data-i18n="lblCommissionHeading">👑 تفاصيل العمولات للمستخدم المختار:</h4>
+        <div class="commission-grid">
+          <div class="comm-item">
+            <span data-i18n="lblSubDealer">👤 الوكيل الفرعي (25%):</span>
+            <strong id="subDealerCommission">-</strong>
+          </div>
+          <div class="comm-item">
+            <span><span data-i18n="lblMainDealer">👑 الوكيل الرئيسي</span> (<span id="mainDealerRate">-</span>%):</span>
+            <strong id="mainDealerCommission">-</strong>
+          </div>
+          <div class="comm-item">
+            <span data-i18n="lblTotalCommission">💰 إجمالي العمولتين:</span>
+            <strong id="totalCommission" style="color: var(--success);">-</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- لوحة الفلاتر -->
+      <section class="filter-panel">
+        <div class="filter-row">
+          <div class="filter-group">
+            <label for="filterUser" data-i18n="lblFilterUser">👤 فلترة بالمستخدم:</label>
+            <select id="filterUser">
+              <option value="" data-i18n="optAllUsers">جميع المستخدمين</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="startDate" data-i18n="lblStartDate">📅 من تاريخ:</label>
+            <input type="date" id="startDate">
+          </div>
+
+          <div class="filter-group">
+            <label for="endDate" data-i18n="lblEndDate">📅 إلى تاريخ:</label>
+            <input type="date" id="endDate">
+          </div>
+
+          <div class="filter-actions">
+            <button type="button" class="btn-apply" onclick="applyFilters()" data-i18n="btnApply">تطبيق الفلترة</button>
+            <button type="button" class="btn-reset" onclick="resetFilters()" data-i18n="btnReset">إلغاء الفلترة</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1. إحصائيات المنتجات المباعة -->
+      <h3 class="section-title" id="sectionProductSummaryTitle" data-i18n="titleProductSummary">📦 إحصائيات المنتجات المباعة</h3>
+      <section class="table-container" id="sectionProductSummary">
+        <table id="productSummaryTable">
+          <thead>
+            <tr>
+              <th data-i18n="thProduct">المنتج</th>
+              <th data-i18n="thSales">المبيعات</th>
+              <th data-i18n="thCancelled">الملغي</th>
+              <th data-i18n="thNet">الصافي</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+      <!-- 2. جدول تفاصيل جميع العمليات -->
+      <h3 class="section-title" id="sectionDataTableTitle" data-i18n="titleDataTable">📋 تفاصيل جميع العمليات</h3>
+      <section class="table-container" id="sectionDataTable">
+        <table id="dataTable">
+          <thead>
+            <tr>
+              <th data-i18n="thDate">التاريخ</th>
+              <th data-i18n="thProduct">المنتج</th>
+              <th data-i18n="thAmount">المبلغ</th>
+              <th data-i18n="thUser">المستخدم</th>
+              <th data-i18n="thSN">الرقم التسلسلي (SN)</th>
+              <th data-i18n="thProfit">الربح</th>
+              <th data-i18n="thStatus">الحالة</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- نافذة منبثقة لاختيار نوع الطباعة (Print Options Modal) -->
+  <div class="modal-overlay" id="printModal" onclick="handleModalBackdropClick(event)">
+    <div class="print-modal">
+      <div class="modal-header">
+        <h3 data-i18n="printModalTitle">🖨️ خيارات طباعة التقرير</h3>
+        <p data-i18n="printModalSubtitle">اختر ما ترغب في تضمينه في تقرير الـ PDF المطبوع:</p>
+      </div>
+
+      <div class="print-options-list">
+        <!-- الخيار 1: إحصائيات المنتجات المباعة فقط -->
+        <button type="button" class="print-option-btn" onclick="executePrint('summary')">
+          <span>📦</span>
+          <span data-i18n="optPrintSummary">إحصائيات المنتجات المباعة فقط</span>
+        </button>
+
+        <!-- الخيار 2: تفاصيل جميع العمليات فقط -->
+        <button type="button" class="print-option-btn" onclick="executePrint('details')">
+          <span>📋</span>
+          <span data-i18n="optPrintDetails">تفاصيل جميع العمليات فقط</span>
+        </button>
+
+        <!-- الخيار 3: طباعة التقرير بالكامل -->
+        <button type="button" class="print-option-btn primary-option" onclick="executePrint('all')">
+          <span>📑</span>
+          <span data-i18n="optPrintAll">طباعة التقرير بالكامل (الكل)</span>
+        </button>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="modal-close-btn" onclick="closePrintModal()" data-i18n="btnCancel">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwmNfmyYczC73kfkJMr2d_qK5gXKyNy82bodx54rDyCdKFjdtU0xMW3r-Ci3BWmrJ2Bgg/exec";
+
+    let allData = [];
+    let filteredData = [];
+    let selectedMonthSheet = "";
+    let currentLang = localStorage.getItem("app_lang") || "ar";
+
+    const monthsDataCache = {};
+
+    /* ==========================================
+       دالة تنسيق الأرقام بدون تقريب المنازل
+       ========================================== */
+    function formatNumber(val, maxDecimals = 6) {
+      if (val === null || val === undefined || isNaN(val)) return "0.00";
+      const num = Number(val);
+      const cleanNum = Number(Math.round(num + "e" + maxDecimals) + "e-" + maxDecimals);
+      return cleanNum.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: maxDecimals
+      });
+    }
+
+    /* ==========================================
+       قاموس الترجمة الشامل (i18n Dictionary)
+       ========================================== */
+    const translations = {
+      ar: {
+        pageTitle: "لوحة الموزع المعتمد",
+        homeBtn: "الرئيسية",
+        monthLabel: "📅 الشهر:",
+        lblUser: "👤 المستخدم الحالي",
+        lblProfit: "💰 إجمالي الربح",
+        lblHalfProfit: "💰 نصف إجمالي الربح (50%)",
+        lblSales: "🛒 إجمالي المبيعات",
+        lblOperations: "🔢 إجمالي العمليات",
+        lblCancelled: "❌ العمليات الملغية",
+        lblNet: "✅ صافي الأكواد المباعة",
+        lblCommissionHeading: "👑 تفاصيل العمولات للمستخدم المختار:",
+        lblSubDealer: "👤 الوكيل الفرعي (25%):",
+        lblMainDealer: "👑 الوكيل الرئيسي",
+        lblTotalCommission: "💰 إجمالي العمولتين:",
+        lblFilterUser: "👤 فلترة بالمستخدم:",
+        optAllUsers: "جميع المستخدمين",
+        lblStartDate: "📅 من تاريخ:",
+        lblEndDate: "📅 إلى تاريخ:",
+        btnApply: "تطبيق الفلترة",
+        btnReset: "إلغاء الفلترة",
+        btnPrint: "🖨️ طباعة تقرير PDF",
+        printModalTitle: "🖨️ خيارات طباعة التقرير",
+        printModalSubtitle: "اختر ما ترغب في تضمينه في تقرير الـ PDF المطبوع:",
+        optPrintAll: "📑 طباعة التقرير بالكامل (الكل)",
+        optPrintSummary: "📦 إحصائيات المنتجات المباعة فقط",
+        optPrintDetails: "📋 تفاصيل جميع العمليات فقط",
+        btnCancel: "إلغاء",
+        printReportTitleAll: "📄 تقرير عمليات الموزع المعتمد (شامل)",
+        printReportTitleSummary: "📄 تقرير إحصائيات المنتجات المباعة",
+        printReportTitleDetails: "📄 تقرير تفاصيل جميع العمليات",
+        lblPrintDate: "🕒 تاريخ الطباعة:",
+        titleProductSummary: "📦 إحصائيات المنتجات المباعة",
+        titleDataTable: "📋 تفاصيل جميع العمليات",
+        thDate: "التاريخ",
+        thProduct: "المنتج",
+        thAmount: "المبلغ",
+        thUser: "المستخدم",
+        thSN: "الرقم التسلسلي (SN)",
+        thProfit: "الربح",
+        thStatus: "الحالة",
+        thSales: "المبيعات",
+        thCancelled: "الملغي",
+        thNet: "الصافي",
+        currency: "مانجو",
+        allUsersLabel: "الكل",
+        totalRowLabel: "الإجمالي الكلي",
+        loading: "⏳ جاري تحميل بيانات الشهر...",
+        noData: "لا توجد عمليات مسجلة لهذا الاختيار",
+        noProducts: "لا توجد منتجات مسجلة",
+        errorLoading: "حدث خطأ أثناء تحميل البيانات من الخادم، يرجى المحاولة مجدداً.",
+        btnRetry: "🔄 إعادة المحاولة",
+        btnRefresh: "تحديث البيانات",
+        months: [
+          "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+          "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+        ]
+      },
+      en: {
+        pageTitle: "Authorized Reseller Dashboard",
+        homeBtn: "Home",
+        monthLabel: "📅 Month:",
+        lblUser: "👤 Current User",
+        lblProfit: "💰 Total Profit",
+        lblHalfProfit: "💰 Total Profit (50%)",
+        lblSales: "🛒 Total Sales",
+        lblOperations: "🔢 Total Transactions",
+        lblCancelled: "❌ Cancelled Codes",
+        lblNet: "✅ Net Sold Codes",
+        lblCommissionHeading: "👑 Commission Breakdown for Selected User:",
+        lblSubDealer: "👤 Sub Dealer (25%):",
+        lblMainDealer: "👑 Main Dealer",
+        lblTotalCommission: "💰 Total Commissions:",
+        lblFilterUser: "👤 Filter by User:",
+        optAllUsers: "All Users",
+        lblStartDate: "📅 From Date:",
+        lblEndDate: "📅 To Date:",
+        btnApply: "Apply Filters",
+        btnReset: "Reset Filters",
+        btnPrint: "🖨️ Print PDF Report",
+        printModalTitle: "🖨️ Print Report Options",
+        printModalSubtitle: "Choose what to include in the printed PDF report:",
+        optPrintAll: "📑 Full Report (All)",
+        optPrintSummary: "📦 Sold Products Statistics Only",
+        optPrintDetails: "📋 All Transactions Details Only",
+        btnCancel: "Cancel",
+        printReportTitleAll: "📄 Authorized Reseller Report (Comprehensive)",
+        printReportTitleSummary: "📄 Sold Products Statistics Report",
+        printReportTitleDetails: "📄 Transactions Details Report",
+        lblPrintDate: "🕒 Print Date:",
+        titleProductSummary: "📦 Sold Products Statistics",
+        titleDataTable: "📋 All Transactions Details",
+        thDate: "Date",
+        thProduct: "Product",
+        thAmount: "Amount",
+        thUser: "User",
+        thSN: "Serial Number (SN)",
+        thProfit: "Profit",
+        thStatus: "Status",
+        thSales: "Sales",
+        thCancelled: "Cancelled",
+        thNet: "Net",
+        currency: "Mango",
+        allUsersLabel: "All",
+        totalRowLabel: "Total Summary",
+        loading: "⏳ Loading month data...",
+        noData: "No transactions recorded for this selection",
+        noProducts: "No products recorded",
+        errorLoading: "An error occurred while loading data. Please try again.",
+        btnRetry: "🔄 Retry",
+        btnRefresh: "Refresh Data",
+        months: [
+          "January", "February", "March", "April", "May", "June",
+          "July", "August", "September", "October", "November", "December"
+        ]
+      }
+    };
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    /* ==========================================
+       1. تطبيق اللغة والتحكم بالبطاقات
+       ========================================== */
+    function applyLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("app_lang", lang);
+
+      const t = translations[lang];
+      const isAr = lang === "ar";
+
+      document.documentElement.lang = lang;
+      document.documentElement.dir = isAr ? "rtl" : "ltr";
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (t[key]) {
+          el.textContent = t[key];
+        }
+      });
+
+      document.querySelectorAll("[data-i18n-title]").forEach(el => {
+        const key = el.getAttribute("data-i18n-title");
+        if (t[key]) {
+          el.setAttribute("title", t[key]);
+        }
+      });
+
+      document.getElementById("langBtn").textContent = isAr ? "EN" : "AR";
+      updateMonthSelectorLabels();
+
+      const cardTotalProfit = document.getElementById("cardTotalProfit");
+      const cardHalfProfit = document.getElementById("cardHalfProfit");
+
+      if (isAr) {
+        if (cardTotalProfit) cardTotalProfit.style.display = "flex";
+        if (cardHalfProfit) cardHalfProfit.style.display = "none";
+      } else {
+        if (cardTotalProfit) cardTotalProfit.style.display = "none";
+        if (cardHalfProfit) cardHalfProfit.style.display = "flex";
+      }
+
+      if (filteredData.length > 0 || allData.length > 0) {
+        renderTable(filteredData);
+      }
+    }
+
+    function toggleLanguage() {
+      applyLanguage(currentLang === "ar" ? "en" : "ar");
+    }
+
+    /* ==========================================
+       2. إعداد قائمة الأشهر
+       ========================================== */
+    function setupMonthSelector() {
+      const select = document.getElementById("monthSelect");
+      if (!select) return;
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+
+      select.innerHTML = "";
+
+      for (let i = 0; i < 12; i++) {
+        const date = new Date(currentYear, currentMonth - i, 1);
+        const year = date.getFullYear();
+        const monthIndex = date.getMonth();
+        const monthNumber = monthIndex + 1;
+
+        const sheetName = `${monthNumber}${year}`;
+
+        const option = document.createElement("option");
+        option.value = sheetName;
+        option.setAttribute("data-month-index", monthIndex);
+        option.setAttribute("data-year", year);
+        option.textContent = `${translations[currentLang].months[monthIndex]} ${year}`;
+
+        if (i === 0) {
+          option.selected = true;
+          selectedMonthSheet = sheetName;
+        }
+
+        select.appendChild(option);
+      }
+    }
+
+    function updateMonthSelectorLabels() {
+      const select = document.getElementById("monthSelect");
+      if (!select) return;
+
+      Array.from(select.options).forEach(option => {
+        const monthIdx = option.getAttribute("data-month-index");
+        const year = option.getAttribute("data-year");
+        if (monthIdx !== null && year !== null) {
+          option.textContent = `${translations[currentLang].months[monthIdx]} ${year}`;
+        }
+      });
+    }
+
+    /* ==========================================
+       3. تغيير الشهر والتحديث
+       ========================================== */
+    async function changeMonth() {
+      const monthSelect = document.getElementById("monthSelect");
+      if (!monthSelect) return;
+
+      selectedMonthSheet = monthSelect.value;
+
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      document.getElementById("filterUser").value = "";
+
+      await loadData();
+    }
+
+    async function refreshCurrentMonth() {
+      delete monthsDataCache[selectedMonthSheet];
+      await loadData(true);
+    }
+
+    /* ==========================================
+       4. جلب البيانات من السيرفر مع إعادة المحاولة
+       ========================================== */
+    async function loadData(forceRefresh = false) {
+      if (!forceRefresh && monthsDataCache[selectedMonthSheet]) {
+        allData = monthsDataCache[selectedMonthSheet];
+        filteredData = [...allData];
+        fillUserFilter(allData);
+        renderTable(filteredData);
+        return;
+      }
+
+      const tbody = document.querySelector("#dataTable tbody");
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="padding: 30px; color: var(--text-muted);">
+              ${translations[currentLang].loading}
+            </td>
+          </tr>
+        `;
+      }
+
+      const MAX_RETRIES = 3;
+      let lastError = null;
+
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+          const res = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({ monthSheet: selectedMonthSheet }),
+            signal: controller.signal
+          });
+
+          clearTimeout(timeoutId);
+
+          if (!res.ok) {
+            throw new Error(`HTTP status: ${res.status}`);
+          }
+
+          const rawText = await res.text();
+          let json;
+          try {
+            json = JSON.parse(rawText);
+          } catch (err) {
+            throw new Error("Invalid response format (HTML error page from Google)");
+          }
+
+          if (!json.success) {
+            allData = [];
+            filteredData = [];
+            renderTable([]);
+            return;
+          }
+
+          allData = json.data || [];
+          monthsDataCache[selectedMonthSheet] = allData;
+          filteredData = [...allData];
+
+          fillUserFilter(allData);
+          renderTable(filteredData);
+          return;
+
+        } catch (error) {
+          console.warn(`Load attempt ${attempt} failed:`, error.message);
+          lastError = error;
+
+          if (attempt < MAX_RETRIES) {
+            if (tbody) {
+              tbody.innerHTML = `
+                <tr>
+                  <td colspan="7" style="padding: 30px; color: var(--text-muted);">
+                    ⏳ جاري إعادة المحاولة تلقائياً (${attempt}/${MAX_RETRIES})...
+                  </td>
+                </tr>
+              `;
+            }
+            await new Promise(res => setTimeout(res, attempt * 1200));
+          }
+        }
+      }
+
+      console.error("All load attempts failed:", lastError);
+      allData = [];
+      filteredData = [];
+      renderTable([]);
+
+      if (tbody) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="padding: 25px; color: var(--danger); text-align: center;">
+              <div style="font-weight: 700; margin-bottom: 10px;">⚠️ ${translations[currentLang].errorLoading}</div>
+              <button type="button" onclick="loadData(true)" style="padding: 8px 18px; border-radius: 8px; background: var(--primary); color: #fff; border: none; cursor: pointer; font-family: inherit; font-weight: 700;">
+                ${translations[currentLang].btnRetry}
+              </button>
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    /* ==========================================
+       5. تعبئة قائمة المستخدمين
+       ========================================== */
+    function fillUserFilter(data) {
+      const filter = document.getElementById("filterUser");
+      if (!filter) return;
+
+      const currentVal = filter.value;
+      filter.innerHTML = `<option value="">${translations[currentLang].optAllUsers}</option>`;
+
+      const users = [...new Set(data.map(r => r[3]))].filter(Boolean);
+      users.sort().forEach(u => {
+        const option = document.createElement("option");
+        option.value = u;
+        option.textContent = u;
+        if (u === currentVal) option.selected = true;
+        filter.appendChild(option);
+      });
+    }
+
+    /* ==========================================
+       6. تطبيق وإلغاء الفلاتر
+       ========================================== */
+    function applyFilters() {
+      const start = document.getElementById("startDate")?.value || "";
+      const end = document.getElementById("endDate")?.value || "";
+      const user = document.getElementById("filterUser")?.value || "";
+
+      filteredData = allData.filter(r => {
+        const dateStr = String(r[0]).split("T")[0];
+        const matchStart = !start || dateStr >= start;
+        const matchEnd = !end || dateStr <= end;
+        const matchUser = !user || String(r[3]) === user;
+
+        return matchStart && matchEnd && matchUser;
+      });
+
+      renderTable(filteredData);
+    }
+
+    function resetFilters() {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      document.getElementById("filterUser").value = "";
+
+      filteredData = [...allData];
+      renderTable(filteredData);
+    }
+
+    /* ==========================================
+       7. عرض الجدول الرئيسي والإحصائيات
+       ========================================== */
+    function renderTable(data) {
+      const tbody = document.querySelector("#dataTable tbody");
+      if (!tbody) return;
+
+      const t = translations[currentLang];
+
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" style="padding: 30px; color: var(--text-muted);">
+              ${t.noData}
+            </td>
+          </tr>
+        `;
+        updateSummaryStats(0, 0, 0, 0, 0);
+        renderProductSummary([]);
+        return;
+      }
+
+      let profit = 0;
+      let amount = 0;
+      let salesCount = 0;
+      let cancelledCount = 0;
+      let html = "";
+
+      data.forEach(r => {
+        const p = Number(r[5]) || 0;
+        const itemAmount = Math.abs(Number(r[2]) || 0);
+
+        profit += p;
+
+        if (p < 0) {
+          amount -= itemAmount;
+          cancelledCount++;
+        } else {
+          amount += itemAmount;
+          salesCount++;
+        }
+
+        const dateOnly = String(r[0]).split("T")[0];
+        const rawStatus = escapeHtml(r[6]);
+
+        html += `
+          <tr>
+            <td>${escapeHtml(dateOnly)}</td>
+            <td><strong>${escapeHtml(r[1])}</strong></td>
+            <td>${formatNumber(itemAmount)}</td>
+            <td>${escapeHtml(r[3])}</td>
+            <td><code>${escapeHtml(r[4])}</code></td>
+            <td class="${p < 0 ? 'text-danger' : 'text-success'}">${formatNumber(p)}</td>
+            <td><span class="status-badge status-${rawStatus}">${rawStatus}</span></td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+
+      const totalCodes = data.length;
+      const netCodes = salesCount - cancelledCount;
+      updateSummaryStats(profit, amount, totalCodes, cancelledCount, netCodes);
+      renderProductSummary(data);
+    }
+
+    function updateSummaryStats(profit, amount, totalCodes, cancelledCodes, netCodes) {
+      const t = translations[currentLang];
+      const halfProfit = profit / 2;
+
+      document.getElementById("totalProfit").textContent = formatNumber(profit);
+      document.getElementById("halfProfit").textContent = formatNumber(halfProfit);
+      document.getElementById("totalAmount").textContent = formatNumber(amount);
+      document.getElementById("totalCodes").textContent = totalCodes;
+      document.getElementById("cancelledCodes").textContent = cancelledCodes;
+      document.getElementById("netCodes").textContent = netCodes;
+
+      const user = document.getElementById("filterUser");
+      const isSpecificUser = Boolean(user && user.value);
+      document.getElementById("selectedUser").textContent = isSpecificUser ? user.value : t.allUsersLabel;
+
+      calculateCommissions(profit, cancelledCodes, isSpecificUser);
+    }
+
+    function calculateCommissions(profit, cancelledCount, isSpecificUser) {
+      const t = translations[currentLang];
+      const mainDealerRateEl = document.getElementById("mainDealerRate");
+      const subDealerCommissionEl = document.getElementById("subDealerCommission");
+      const mainDealerCommissionEl = document.getElementById("mainDealerCommission");
+      const totalCommissionEl = document.getElementById("totalCommission");
+
+      if (isSpecificUser) {
+        const subDealerRate = 25;
+        const mainRate = Math.max(0, 25 - cancelledCount);
+
+        const subCommission = (profit * subDealerRate) / 100;
+        const mainCommission = (profit * mainRate) / 100;
+        const total = subCommission + mainCommission;
+
+        mainDealerRateEl.textContent = mainRate;
+        subDealerCommissionEl.textContent = `${formatNumber(subCommission)} ${t.currency}`;
+        mainDealerCommissionEl.textContent = `${formatNumber(mainCommission)} ${t.currency}`;
+        totalCommissionEl.textContent = `${formatNumber(total)} ${t.currency}`;
+      } else {
+        mainDealerRateEl.textContent = "-";
+        subDealerCommissionEl.textContent = "-";
+        mainDealerCommissionEl.textContent = "-";
+        totalCommissionEl.textContent = "-";
+      }
+    }
+
+    /* ==========================================
+       8. جدول ملخص المنتجات
+       ========================================== */
+    function renderProductSummary(data) {
+      const tbody = document.querySelector("#productSummaryTable tbody");
+      if (!tbody) return;
+
+      const t = translations[currentLang];
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="padding: 20px; color: var(--text-muted); text-align: center;">${t.noProducts}</td></tr>`;
+        return;
+      }
+
+      const productStats = {};
+      let totalSales = 0;
+      let totalCancelled = 0;
+
+      data.forEach(r => {
+        const product = String(r[1] || "غير محدد").trim();
+        const profit = Number(r[5]) || 0;
+
+        if (!productStats[product]) {
+          productStats[product] = { sales: 0, cancelled: 0 };
+        }
+
+        if (profit < 0) {
+          productStats[product].cancelled++;
+          totalCancelled++;
+        } else {
+          productStats[product].sales++;
+          totalSales++;
+        }
+      });
+
+      const totalNet = totalSales - totalCancelled;
+      let html = "";
+
+      Object.entries(productStats).forEach(([product, stats]) => {
+        const net = stats.sales - stats.cancelled;
+        html += `
+          <tr>
+            <td><strong>${escapeHtml(product)}</strong></td>
+            <td>${stats.sales}</td>
+            <td class="text-danger">${stats.cancelled}</td>
+            <td class="text-success">${net}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+        <tr class="product-total-row">
+          <td><strong>${t.totalRowLabel}</strong></td>
+          <td><strong>${totalSales}</strong></td>
+          <td class="text-danger"><strong>${totalCancelled}</strong></td>
+          <td class="text-success"><strong>${totalNet}</strong></td>
+        </tr>
+      `;
+
+      tbody.innerHTML = html;
+    }
+
+    /* ==========================================
+       9. وظائف نافذة وطباعة تقرير الـ PDF
+       ========================================== */
+    function openPrintModal() {
+      const modal = document.getElementById("printModal");
+      if (modal) {
+        modal.classList.add("active");
+      }
+    }
+
+    function closePrintModal() {
+      const modal = document.getElementById("printModal");
+      if (modal) {
+        modal.classList.remove("active");
+      }
+    }
+
+    function handleModalBackdropClick(event) {
+      if (event.target === document.getElementById("printModal")) {
+        closePrintModal();
+      }
+    }
+
+    // إغلاق النافذة بزر Esc
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePrintModal();
+    });
+
+    function updatePrintHeaderData(printType = 'all') {
+      const monthSelect = document.getElementById("monthSelect");
+      const filterUser = document.getElementById("filterUser");
+      const selectedMonthText = monthSelect ? monthSelect.options[monthSelect.selectedIndex]?.text || "" : "";
+      const selectedUserText = filterUser && filterUser.value ? filterUser.value : translations[currentLang].allUsersLabel;
+      
+      const now = new Date();
+      const dateStr = now.toLocaleDateString(currentLang === "ar" ? "ar-EG" : "en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      const pm = document.getElementById("printMonth");
+      const pu = document.getElementById("printUser");
+      const pd = document.getElementById("printDate");
+      const pt = document.getElementById("printTitle");
+
+      if (pm) pm.textContent = selectedMonthText;
+      if (pu) pu.textContent = selectedUserText;
+      if (pd) pd.textContent = dateStr;
+
+      if (pt) {
+        const t = translations[currentLang];
+        if (printType === 'summary') {
+          pt.textContent = t.printReportTitleSummary;
+        } else if (printType === 'details') {
+          pt.textContent = t.printReportTitleDetails;
+        } else {
+          pt.textContent = t.printReportTitleAll;
+        }
+      }
+    }
+
+    // تنفيذ الطباعة حسب الخيار المختار
+    function executePrint(printType) {
+      // إزالة أي كلاسات طباعة قديمة
+      document.body.classList.remove('print-all', 'print-summary-only', 'print-details-only');
+
+      // تعيين الكلاس المناسب بناءً على اختيار المستخدم
+      if (printType === 'summary') {
+        document.body.classList.add('print-summary-only');
+      } else if (printType === 'details') {
+        document.body.classList.add('print-details-only');
+      } else {
+        document.body.classList.add('print-all');
+      }
+
+      updatePrintHeaderData(printType);
+      closePrintModal();
+
+      // مهلة زمنية قصيرة لإغلاق المودال بسلاسة ثم إطلاق شاشة الطباعة
+      setTimeout(() => {
+        window.print();
+        // إزالة الكلاس بعد الانتهاء من أمر الطباعة
+        document.body.classList.remove('print-all', 'print-summary-only', 'print-details-only');
+      }, 180);
+    }
+
+    // إذا ضغط المستخدم Ctrl+P مباشرة يطبع التقرير بالكامل افتراضياً
+    window.addEventListener("beforeprint", () => {
+      if (!document.body.classList.contains('print-summary-only') && !document.body.classList.contains('print-details-only')) {
+        updatePrintHeaderData('all');
+      }
+    });
+
+    /* ==========================================
+       10. الإقلاع والربط
+       ========================================== */
+    window.addEventListener("DOMContentLoaded", () => {
+      setupMonthSelector();
+
+      const filterUser = document.getElementById("filterUser");
+      if (filterUser) {
+        filterUser.addEventListener("change", applyFilters);
+      }
+
+      applyLanguage(currentLang);
+      loadData();
+    });
+
+    function toggleBlur(el) {
+      el.classList.toggle("revealed");
+    }
+</script>
+</body>
+</html>
