@@ -1110,7 +1110,7 @@ function setClientModalMode(mode, clientId = null) {
     allClients.forEach(c => {
         const op = document.createElement("option");
         op.value = c.client_id;
-        op.textContent = `${c.name} (${c.mobile || '-'}) ${c.mango_user ? '[Mango: ' + c.mango_user + ']' : ''}`;
+        op.textContent = c.name;
         modalSelect.appendChild(op);
     });
 
