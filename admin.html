@@ -577,6 +577,118 @@ tbody tr:hover {
     font-size: 0.9rem;
     display: none;
 }
+
+/* الزر البديل للقائمة القديمة */
+.custom-select-btn {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 13px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+    user-select: none;
+}
+.custom-select-btn:active {
+    background: #f8fafc;
+    border-color: var(--primary);
+}
+.dropdown-arrow {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* النافذة المنبثقة السفلية (Bottom Sheet) */
+.picker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 3000;
+    display: none;
+    align-items: flex-end; /* تفتح من الأسفل في الجوال */
+    justify-content: center;
+}
+.picker-overlay.show {
+    display: flex;
+}
+.picker-sheet {
+    background: #ffffff;
+    width: 100%;
+    max-width: 550px;
+    max-height: 80vh;
+    border-radius: 20px 20px 0 0;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+.picker-header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.picker-drag-handle {
+    width: 40px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+.picker-header h3 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    font-weight: 800;
+}
+.picker-list {
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.picker-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.15s;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.picker-item:hover, .picker-item:active {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+.picker-item.selected {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+@media (min-width: 641px) {
+    .picker-overlay {
+        align-items: center;
+    }
+    .picker-sheet {
+        border-radius: var(--radius-lg);
+        max-height: 70vh;
+    }
+}
 </style>
 </head>
 
@@ -629,16 +741,35 @@ tbody tr:hover {
             </div>
         </div>
 
-        <!-- اختيار العميل والبحث السريع مع زر التعديل المباشر -->
-        <div class="search-select-box">
-            <input id="client_search" class="search-input" type="text" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango User..." oninput="filterClientSelect()">
-            <div style="display: flex; gap: 8px;">
-                <select id="client_select" style="flex: 1;">
-                    <option value="">-- اختر العميل --</option>
-                </select>
-                <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
-            </div>
+<!-- زر اختيار العميل العصري (بديل القائمة القديمة) -->
+<div class="search-select-box">
+    <div style="display: flex; gap: 8px;">
+        <div id="customSelectTrigger" class="custom-select-btn" onclick="openClientPicker()">
+            <span id="selectedClientText">👤 اضغط هنا لاختيار العميل...</span>
+            <span class="dropdown-arrow">▼</span>
         </div>
+        <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
+    </div>
+    <!-- عنصر مخفي للاحتفاظ بالقيمة المختارة -->
+    <input type="hidden" id="client_select" value="">
+</div>
+
+<!-- نافذة اختيار العميل المنبثقة من الأسفل للجوال (Bottom Sheet) -->
+<div id="clientPickerModal" class="picker-overlay" onclick="closeClientPicker(event)">
+    <div class="picker-sheet" onclick="event.stopPropagation()">
+        <div class="picker-header">
+            <div class="picker-drag-handle"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <h3>اختر العميل</h3>
+                <button type="button" class="icon-btn" style="width:32px;height:32px;" onclick="closeClientPicker()">✕</button>
+            </div>
+            <input id="pickerSearch" type="text" class="search-input" style="margin-top:12px; margin-bottom:0;" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango..." oninput="filterPickerList()">
+        </div>
+        <div id="pickerList" class="picker-list">
+            <!-- تتعبأ بأسماء العملاء ديناميكياً -->
+        </div>
+    </div>
+</div>
 
         <!-- مدخلات العملية المالية -->
         <div class="form-group">
@@ -1986,6 +2117,84 @@ function printClientsList() {
 // بدء التشغيل
 loadDashboardData();
 qs("client_select").addEventListener("change", () => loadTransactions(false));
+
+// فتح وإغلاق قائمة اختيار العميل
+function openClientPicker() {
+    renderPickerList(allClients);
+    qs("pickerSearch").value = "";
+    qs("clientPickerModal").classList.add("show");
+    setTimeout(() => qs("pickerSearch").focus(), 150);
+}
+
+function closeClientPicker() {
+    qs("clientPickerModal").classList.remove("show");
+}
+
+// رسم عناصر القائمة في النافذة المنبثقة
+function renderPickerList(clients) {
+    const container = qs("pickerList");
+    container.innerHTML = "";
+
+    if (!clients.length) {
+        container.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد نتائج مطابقة</div>`;
+        return;
+    }
+
+    const currentVal = qs("client_select").value;
+    const frag = document.createDocumentFragment();
+
+    clients.forEach(c => {
+        const item = document.createElement("div");
+        item.className = `picker-item ${String(c.client_id) === String(currentVal) ? 'selected' : ''}`;
+        
+        // عرض اسم العميل
+        item.innerHTML = `
+            <span>${escapeHtml(c.name)}</span>
+            <span style="font-size:0.8rem; font-weight:normal; opacity:0.75;">${c.mobile ? c.mobile : ''}</span>
+        `;
+
+        item.onclick = () => {
+            selectClient(c);
+            closeClientPicker();
+        };
+
+        frag.appendChild(item);
+    });
+
+    container.appendChild(frag);
+}
+
+// عند اختيار عميل
+function selectClient(client) {
+    qs("client_select").value = client.client_id;
+    qs("selectedClientText").textContent = client.name;
+    toggleEditSelectedBtn();
+    loadTransactions(false);
+}
+
+// بحث سريع داخل النافذة المنبثقة
+function filterPickerList() {
+    const q = qs("pickerSearch").value.trim().toLowerCase();
+    const filtered = allClients.filter(c => {
+        const name = String(c.name || "").toLowerCase();
+        const mobile = String(c.mobile || "");
+        const mango = String(c.mango_user || "").toLowerCase();
+        return name.includes(q) || mobile.includes(q) || mango.includes(q);
+    });
+    renderPickerList(filtered);
+}
+
+// دالة renderClientsDropdown الأصلية تصبح مجرد تحديث للنص إن وُجد
+function renderClientsDropdown() {
+    const currentId = qs("client_select").value;
+    if (currentId) {
+        const client = allClients.find(c => String(c.client_id) === String(currentId));
+        if (client) qs("selectedClientText").textContent = client.name;
+    } else {
+        qs("selectedClientText").textContent = "👤 اضغط هنا لاختيار العميل...";
+    }
+    toggleEditSelectedBtn();
+}
 </script>
 </body>
 </html>
