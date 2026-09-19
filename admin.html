@@ -1008,6 +1008,7 @@ async function loadDashboardData(forceRefresh = false) {
 }
 
 // تعبئة القائمة المنسدلة للعملاء
+// تعبئة القائمة المنسدلة للعملاء (يظهر اسم العميل فقط)
 function renderClientsDropdown() {
     const select = qs("client_select");
     const prevSelected = select.value;
@@ -1017,10 +1018,11 @@ function renderClientsDropdown() {
     allClients.forEach(c => {
         const op = document.createElement("option");
         op.value = c.client_id;
-        const details = [c.name];
-        if (c.mobile) details.push(c.mobile);
-        if (c.mango_user) details.push(`Mango: ${c.mango_user}`);
-        op.textContent = details.join(" | ");
+        
+        // التعديل هنا: اسم العميل فقط
+        op.textContent = c.name;
+
+        // الاحتفاظ ببيانات الهاتف والمانجو للبحث السريع في الخلفية
         op.dataset.name = String(c.name || "").toLowerCase();
         op.dataset.mobile = String(c.mobile || "");
         op.dataset.mango = String(c.mango_user || "").toLowerCase();
@@ -1031,7 +1033,6 @@ function renderClientsDropdown() {
     if (prevSelected) select.value = prevSelected;
     toggleEditSelectedBtn();
 }
-
 function toggleEditSelectedBtn() {
     const hasClient = !!qs("client_select").value;
     qs("editCurrentClientBtn").style.display = hasClient ? "flex" : "none";
@@ -1110,7 +1111,7 @@ function setClientModalMode(mode, clientId = null) {
     allClients.forEach(c => {
         const op = document.createElement("option");
         op.value = c.client_id;
-        op.textContent = c.name;
+        op.textContent = `${c.name} (${c.mobile || '-'}) ${c.mango_user ? '[Mango: ' + c.mango_user + ']' : ''}`;
         modalSelect.appendChild(op);
     });
 
