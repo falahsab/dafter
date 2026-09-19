@@ -4,59 +4,373 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>دفتر يمن ستلايت</title>
- <!-- وصف الموقع -->
-  <meta name="description" content="دفتر عملاء يمن ستلايت">
+<title>بوابة يمن ستلايت | الرئيسية</title>
+<!-- وصف الموقع -->
+<meta name="description" content="البوابة الرئيسية ودفتر حسابات عملاء يمن ستلايت">
 
-  <!-- Open Graph tags -->
-  <meta property="og:title" content="دفتر يمن ستلايت" />
-  <meta property="og:description" content="دفتر يمن ستلايت السحابي يمكن لعملائنا رؤية ومتابعة حساباتهم اون لاين في اي وقت" />
-  <meta property="og:image" content="yemen-sat.png" />
-  <meta property="og:url" content="https://jedwal.yemensat.com/" />
-  <meta property="og:type" content="website" />
- <link rel="manifest" href="manifest.json">
-<!-- =======================  CSS  ======================= -->
-<link rel="stylesheet" href="style.css">
-</head>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    const user = localStorage.getItem("user_type"); // client | admin | null
+<!-- Open Graph tags -->
+<meta property="og:title" content="بوابة يمن ستلايت" />
+<meta property="og:description" content="دفتر يمن ستلايت السحابي لمتابعة الحسابات، إحصائيات التجديد، ومشتركي المانجو" />
+<meta property="og:image" content="yemen-sat.png" />
+<meta property="og:url" content="https://jedwal.yemensat.com/" />
+<meta property="og:type" content="website" />
+<link rel="manifest" href="manifest.json">
 
-    if (user === "client") {
-        window.location.href = "client.html";
-    } 
-    else if (user === "admin") {
-        window.location.href = "admin.html";
+<!-- استدعاء خط Tajawal من Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #047857;
+    --primary-hover: #065f46;
+    --primary-light: #ecfdf5;
+    --secondary: #10b981;
+    --accent: #0284c7;
+    --warning: #f59e0b;
+    --mango: #ea580c;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --shadow-sm: 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-md: 0 8px 20px rgba(0,0,0,0.06);
+    --shadow-hover: 0 14px 28px rgba(4, 120, 87, 0.12);
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "Tajawal", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px;
+    background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+/* الترويسة والشعار */
+.header-section {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeInDown 0.6s ease;
+}
+
+.logo-wrapper {
+    width: 110px;
+    height: 110px;
+    background: #ffffff;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: var(--shadow-md);
+    border: 3px solid #ffffff;
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.logo-wrapper:hover {
+    transform: scale(1.05);
+}
+
+.logo {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.header-title {
+    font-size: 1.85rem;
+    font-weight: 900;
+    color: var(--primary);
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+
+.header-subtitle {
+    font-size: 0.98rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    max-width: 500px;
+    line-height: 1.6;
+}
+
+/* شبكة البطاقات (Cards Grid) */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+/* تصميم البطاقة كزر رابط بالكامل */
+.portal-card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.portal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: var(--card-accent, var(--primary));
+    opacity: 0.8;
+}
+
+.portal-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(4, 120, 87, 0.3);
+}
+
+.card-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.card-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: var(--radius-md);
+    background: var(--icon-bg, var(--primary-light));
+    color: var(--card-accent, var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+}
+
+.card-tag {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: var(--text-muted);
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 8px;
+}
+
+.card-desc {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.card-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--card-accent, var(--primary));
+}
+
+.card-arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--icon-bg, var(--primary-light));
+    transition: transform 0.2s ease;
+}
+
+.portal-card:hover .card-arrow {
+    transform: translateX(-4px);
+}
+
+/* تخصيص ألوان البطاقات */
+.card-ledger {
+    --card-accent: #047857;
+    --icon-bg: #ecfdf5;
+}
+
+.card-stats {
+    --card-accent: #0284c7;
+    --icon-bg: #e0f2fe;
+}
+
+.card-mango {
+    --card-accent: #ea580c;
+    --icon-bg: #ffedd5;
+}
+
+.card-client {
+    --card-accent: #7c3aed;
+    --icon-bg: #f5f3ff;
+}
+
+/* الفوتر */
+.footer {
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    padding: 16px 0;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
     }
-});
-</script>
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 640px) {
+    body { padding: 16px 12px; }
+    .header-title { font-size: 1.55rem; }
+    .logo-wrapper { width: 95px; height: 95px; }
+    .cards-grid { grid-template-columns: 1fr; gap: 14px; }
+}
+</style>
+</head>
 
 <body>
 
-<!-- =======================  HTML  ======================= -->
-<div class="card">
-    <!-- شعار الصفحة -->
-    <img src="yemen-sat.png" alt="يمن ستلايت" class="logo">
+<div class="container">
+    <!-- الترويسة الرئيسية -->
+    <header class="header-section">
+        <div class="logo-wrapper">
+            <img src="yemen-sat.png" alt="شعار يمن ستلايت" class="logo" onerror="this.src='https://placehold.co/110x110/047857/ffffff?text=YemenSat'">
+        </div>
+        <h1 class="header-title">يمن ستلايت</h1>
+        <p class="header-subtitle">البوابة الإلكترونية الموحدة لإدارة الحسابات، الإحصائيات، وخدمات المانجو</p>
+    </header>
 
-    <h2>دفتر يمن ستلايت</h2>
-<form id="loginForm" onsubmit="login(); return false;">
-    <input id="username" name="username" placeholder="اسم المستخدم" autocomplete="username">
-    <input id="password" name="password" type="password" placeholder="كلمة المرور" autocomplete="current-password">
-    <button type="submit">دخول</button>
-</form>
-    <p id="msg"></p>
+    <!-- شبكة البطاقات -->
+    <main class="cards-grid">
+        
+        <!-- بطاقة: دفتر الحسابات -->
+        <a href="admin.html" class="portal-card card-ledger">
+            <div class="card-top">
+                <div class="card-icon">📒</div>
+                <span class="card-tag">الإدارة</span>
+            </div>
+            <h2 class="card-title">دفتر الحسابات</h2>
+            <p class="card-desc">إدارة القيود المالية (مدين / دائن)، متابعة أرصدة العملاء، وتسجيل العمليات والطباعة الفورية.</p>
+            <div class="card-footer">
+                <span>فتح الدفتر</span>
+                <span class="card-arrow">←</span>
+            </div>
+        </a>
+
+        <!-- بطاقة: إحصائيات العملاء والتجديد -->
+        <a href="reseller-reprt.html" class="portal-card card-stats">
+            <div class="card-top">
+                <div class="card-icon">📊</div>
+                <span class="card-tag">التقارير</span>
+            </div>
+            <h2 class="card-title">إحصائيات العملاء</h2>
+            <p class="card-desc">متابعة إحصائيات التجديد، الاشتراكات الدورية، وكشوفات التقرير الشهري والسنوي.</p>
+            <div class="card-footer">
+                <span>عرض الإحصائيات</span>
+                <span class="card-arrow">←</span>
+            </div>
+        </a>
+
+        <!-- بطاقة: المانجو (Mango Users) -->
+        <a href="admin.html#mango" class="portal-card card-mango" onclick="localStorage.setItem('openMangoModal', 'true');">
+            <div class="card-top">
+                <div class="card-icon">🥭</div>
+                <span class="card-tag">المستخدمين</span>
+            </div>
+            <h2 class="card-title">مشتركي Mango</h2>
+            <p class="card-desc">سجل حسابات Mango Users، نسخ أسماء المستخدمين والبحث السريع وإدارة بيانات المشتركين.</p>
+            <div class="card-footer">
+                <span>عرض قائمة المانجو</span>
+                <span class="card-arrow">←</span>
+            </div>
+        </a>
+
+        <!-- بطاقة: بوابة استعلام العميل -->
+        <a href="client.html" class="portal-card card-client">
+            <div class="card-top">
+                <div class="card-icon">👤</div>
+                <span class="card-tag">العملاء</span>
+            </div>
+            <h2 class="card-title">بوابة العملاء</h2>
+            <p class="card-desc">صفحة مخصصة للعملاء لمتابعة كشف الحساب الشخصي ومطابقة الرصيد والعمليات أونلاين.</p>
+            <div class="card-footer">
+                <span>دخول بوابة العميل</span>
+                <span class="card-arrow">←</span>
+            </div>
+        </a>
+
+    </main>
+
+    <!-- الفوتر -->
+    <footer class="footer">
+        <p>جميع الحقوق محفوظة &copy; شركة يمن ستلايت | هاتف: 738092209</p>
+    </footer>
 </div>
-<!-- سكربت الرئيسي -->
-<script src="script.js"></script>
- <script>
+
+<script>
+// تسجيل الـ Service Worker ليعمل التطبيق بدون إنترنت (PWA)
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
-    .then(reg => console.log("Service Worker Registered", reg))
+    .then(reg => console.log("SW Registered", reg))
     .catch(err => console.error("SW Registration Failed", err));
 }
 </script>
 
 </body>
 </html>
-
-
