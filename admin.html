@@ -791,6 +791,15 @@ tbody tr:hover {
 .calc-btn.ok-btn:active {
     transform: scale(0.96);
 }
+
+/* تعطيل النقر ومؤشر الماوس عند الإرسال */
+.trans-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none !important;
+    box-shadow: none !important;
+}
 </style>
 </head>
 
@@ -887,17 +896,17 @@ tbody tr:hover {
             <datalist id="notesList"></datalist>
         </div>
 
-        <!-- أزرار الإضافة السريعة -->
-        <div class="action-buttons">
-            <button type="button" class="trans-btn credit-btn" onclick="addTransType('credit')">
-                <span>⬇</span>
-                <span>إضافة له (دائن)</span>
-            </button>
-            <button type="button" class="trans-btn debit-btn" onclick="addTransType('debit')">
-                <span>⬆</span>
-                <span>إضافة عليه (مدين)</span>
-            </button>
-        </div>
+<!-- أزرار الإضافة السريعة -->
+<div class="action-buttons">
+    <button type="button" id="btnCredit" class="trans-btn credit-btn" onclick="addTransType('credit')">
+        <span>⬇</span>
+        <span>إضافة له (دائن)</span>
+    </button>
+    <button type="button" id="btnDebit" class="trans-btn debit-btn" onclick="addTransType('debit')">
+        <span>⬆</span>
+        <span>إضافة عليه (مدين)</span>
+    </button>
+</div>
 
         <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
 
@@ -1607,7 +1616,13 @@ async function showAllTransactions() {
 }
 
 // إضافة عملية مالية جديدة
+// إضافة عملية مالية جديدة مع حماية ضد النقر المتكرر
+let isSubmittingTrans = false;
+
 async function addTrans() {
+    // إذا كانت هناك عملية قيد التنفيذ، يتم تجاهل النقرات الإضافية فوراً
+    if (isSubmittingTrans) return;
+
     const client_id = qs("client_select").value;
     let amount = Number(qs("amount").value);
     const type = qs("type").value;
@@ -1616,6 +1631,13 @@ async function addTrans() {
     if (!client_id) { showToast("يرجى اختيار العميل أولاً", "error"); return; }
     if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
     if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
+
+    // تفعيل القفل وتعطيل الأزرار
+    isSubmittingTrans = true;
+    const btnCredit = qs("btnCredit");
+    const btnDebit = qs("btnDebit");
+    if (btnCredit) btnCredit.disabled = true;
+    if (btnDebit) btnDebit.disabled = true;
 
     qs("loading").style.display = "block";
 
@@ -1634,23 +1656,27 @@ async function addTrans() {
             
             // تحديث العميل المختار واللوحة بالتوازي
             await loadTransactions(true);
-            loadDashboardData(true); // تحديث إجمالي اللوحة بالخلفية
+            loadDashboardData(true);
         } else {
-            showToast("حدث خطأ أثناء إضافة العملية", "error");
+            showToast(data.message || "حدث خطأ أثناء إضافة العملية", "error");
         }
     } catch (e) {
         showToast("تعذر الاتصال بالخادم", "error");
     } finally {
         qs("loading").style.display = "none";
+        // فك القفل وإعادة تفعيل الأزرار بعد انتهاء الطلب
+        isSubmittingTrans = false;
+        if (btnCredit) btnCredit.disabled = false;
+        if (btnDebit) btnDebit.disabled = false;
     }
 }
 
 function addTransType(type) {
+    if (isSubmittingTrans) return;
     saveNoteSuggestion();
     qs("type").value = type;
     addTrans();
 }
-
 // رسم جدول العمليات
 function renderTransactions(transactions) {
     const tbody = qs("transBody");
