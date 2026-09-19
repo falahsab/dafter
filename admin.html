@@ -289,10 +289,12 @@ input:focus, select:focus {
 }
 
 /* الأزرار */
+
 .action-buttons {
     display: flex;
     gap: 10px;
     margin-top: 14px;
+    touch-action: manipulation; /* يمنع تأخير وتكرار نقرات اللمس في الجوال */
 }
 
 .trans-btn {
@@ -310,6 +312,10 @@ input:focus, select:focus {
     color: #ffffff;
     transition: all 0.2s;
     box-shadow: var(--shadow-sm);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .trans-btn:hover {
@@ -1616,29 +1622,80 @@ async function showAllTransactions() {
 }
 
 // إضافة عملية مالية جديدة
-// إضافة عملية مالية جديدة مع حماية ضد النقر المتكرر
+// ==========================================
+// إضافة عملية مالية مع حماية ضد النقر المزدوج والسريع (للجوال والكمبيوتر)
+// ==========================================
 let isSubmittingTrans = false;
+let lastTransSubmitTime = 0;
 
-async function addTrans() {
-    // إذا كانت هناك عملية قيد التنفيذ، يتم تجاهل النقرات الإضافية فوراً
-    if (isSubmittingTrans) return;
+function resetTransButtons() {
+    isSubmittingTrans = false;
+    const actionBox = document.querySelector(".action-buttons");
+    if (actionBox) {
+        actionBox.style.pointerEvents = "";
+        actionBox.style.opacity = "";
+    }
+    const btnCredit = qs("btnCredit");
+    const btnDebit = qs("btnDebit");
+    if (btnCredit) {
+        btnCredit.disabled = false;
+        btnCredit.innerHTML = `<span>⬇</span> <span>إضافة له (دائن)</span>`;
+    }
+    if (btnDebit) {
+        btnDebit.disabled = false;
+        btnDebit.innerHTML = `<span>⬆</span> <span>إضافة عليه (مدين)</span>`;
+    }
+}
+
+async function addTransType(type) {
+    const now = Date.now();
+    // 1. فحص القفل المزدوج: متغير الحالة + الفارق الزمني (يمنع أي نقرات متتالية خلال 2.5 ثانية)
+    if (isSubmittingTrans || (now - lastTransSubmitTime < 2500)) {
+        return;
+    }
 
     const client_id = qs("client_select").value;
-    let amount = Number(qs("amount").value);
-    const type = qs("type").value;
+    const amountVal = qs("amount").value;
+    const amount = Number(amountVal);
     const note = qs("note").value.trim();
 
-    if (!client_id) { showToast("يرجى اختيار العميل أولاً", "error"); return; }
-    if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
-    if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
+    if (!client_id) { 
+        showToast("يرجى اختيار العميل أولاً", "error"); 
+        return; 
+    }
+    if (!amount || isNaN(amount) || amount <= 0) { 
+        showToast("يرجى إدخال مبلغ صحيح", "error"); 
+        return; 
+    }
+    if (!note) { 
+        showToast("يرجى كتابة البيان", "error"); 
+        return; 
+    }
 
-    // تفعيل القفل وتعطيل الأزرار
+    // 2. تفعيل القفل فوراً وبشكل متزامن لمنع أي نقرات لاحقة
     isSubmittingTrans = true;
+    lastTransSubmitTime = now;
+
+    // 3. تعطيل حاوية الأزرار بالكامل لمنع أحداث اللمس (Touch Events) في الهواتف
+    const actionBox = document.querySelector(".action-buttons");
+    if (actionBox) {
+        actionBox.style.pointerEvents = "none";
+        actionBox.style.opacity = "0.6";
+    }
+
     const btnCredit = qs("btnCredit");
     const btnDebit = qs("btnDebit");
     if (btnCredit) btnCredit.disabled = true;
     if (btnDebit) btnDebit.disabled = true;
 
+    // إظهار مؤشر التحميل على الزر المختار فوراً
+    const activeBtn = (type === 'credit') ? btnCredit : btnDebit;
+    if (activeBtn) {
+        activeBtn.innerHTML = `<span>⏳</span> <span>جاري الإرسال...</span>`;
+    }
+
+    qs("type").value = type;
+    saveNoteSuggestion();
     qs("loading").style.display = "block";
 
     try {
@@ -1656,7 +1713,7 @@ async function addTrans() {
             
             // تحديث العميل المختار واللوحة بالتوازي
             await loadTransactions(true);
-            loadDashboardData(true);
+            loadDashboardData(true); // تحديث إجمالي اللوحة بالخلفية
         } else {
             showToast(data.message || "حدث خطأ أثناء إضافة العملية", "error");
         }
@@ -1664,18 +1721,17 @@ async function addTrans() {
         showToast("تعذر الاتصال بالخادم", "error");
     } finally {
         qs("loading").style.display = "none";
-        // فك القفل وإعادة تفعيل الأزرار بعد انتهاء الطلب
-        isSubmittingTrans = false;
-        if (btnCredit) btnCredit.disabled = false;
-        if (btnDebit) btnDebit.disabled = false;
+        // مهلة حماية إضافية (1 ثانية) بعد استجابة الخادم لضمان تفريغ أي لمسات متراكمة في الجوال
+        setTimeout(() => {
+            resetTransButtons();
+        }, 1000);
     }
 }
 
-function addTransType(type) {
-    if (isSubmittingTrans) return;
-    saveNoteSuggestion();
-    qs("type").value = type;
-    addTrans();
+// دالة متوافقة في حال تم استدعاء addTrans مباشرة من أي مكان
+async function addTrans() {
+    const type = qs("type").value || 'debit';
+    return addTransType(type);
 }
 // رسم جدول العمليات
 function renderTransactions(transactions) {
