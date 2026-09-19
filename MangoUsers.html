@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشتركي Mango | يمن ستلايت</title>
+
+<!-- استدعاء خط Tajawal من Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #047857;
+    --primary-light: #ecfdf5;
+    --mango: #ea580c;
+    --mango-light: #ffedd5;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "Tajawal", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    padding: 16px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+}
+
+/* الترويسة */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-title h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--mango);
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn {
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: #065f46; }
+
+.btn-secondary { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border-color); }
+.btn-secondary:hover { background: #e2e8f0; }
+
+.btn-mango { background: var(--mango); color: white; }
+.btn-mango:hover { background: #c2410c; }
+
+/* شريط الإحصائيات السريع */
+.stats-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--mango-light);
+    border: 1px solid #fed7aa;
+    border-radius: var(--radius-md);
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    font-weight: 700;
+    color: #9a3412;
+    font-size: 0.92rem;
+}
+
+/* شريط البحث */
+.search-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    background-color: #ffffff;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%2394a3b8" viewBox="0 0 24 24"><path d="M21.71 20.29l-5.01-5.01A7.95 7.95 0 0 0 18 10a8 8 0 1 0-8 8 7.95 7.95 0 0 0 5.28-1.7l5.01 5.01a1 1 0 0 0 1.42-1.42zM4 10a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: left 14px center;
+    background-size: 18px;
+    outline: none;
+    transition: all 0.2s;
+    margin-bottom: 16px;
+}
+
+.search-input:focus {
+    border-color: var(--mango);
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+}
+
+/* الجدول */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    text-align: center;
+}
+
+th {
+    background: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+tbody tr:hover {
+    background-color: #fff7ed;
+}
+
+.mango-tag {
+    font-family: monospace;
+    direction: ltr;
+    font-weight: 800;
+    color: #c2410c;
+    background: #ffedd5;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    font-size: 0.95rem;
+}
+
+.actions-group {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+.copy-btn {
+    background: #f1f5f9;
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.copy-btn:hover {
+    background: #e2e8f0;
+}
+
+.wa-btn {
+    background: #25d366;
+    color: white;
+    border: none;
+    padding: 5px 9px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.wa-btn:hover {
+    background: #1eb857;
+}
+
+/* Toast Notification */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
+
+.toast {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.25s ease;
+}
+
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: #059669; }
+
+.loading-indicator {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+@media (max-width: 640px) {
+    body { padding: 10px; }
+    .card { padding: 16px 12px; }
+    .header { flex-direction: column; align-items: flex-start; }
+    .header-actions { width: 100%; justify-content: space-between; }
+    table { font-size: 0.82rem; }
+    th, td { padding: 8px 4px; }
+    .mango-tag { font-size: 0.85rem; padding: 2px 6px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="container">
+    <div class="card">
+        <!-- الترويسة -->
+        <div class="header">
+            <div class="header-title">
+                <h2>🥭 مشتركي Mango Users</h2>
+            </div>
+            <div class="header-actions">
+                <a href="index.html" class="btn btn-secondary">🏠 الرئيسية</a>
+                <button type="button" class="btn btn-primary" onclick="loadMangoData()">🔄 تحديث</button>
+                <button type="button" class="btn btn-mango" onclick="printMangoList()">🖨️ طباعة</button>
+            </div>
+        </div>
+
+        <!-- شريط الإحصائيات -->
+        <div class="stats-bar">
+            <span>إجمالي المشتركين المسجلين: <span id="totalMangoCount">0</span></span>
+            <span id="filteredMangoCount" style="color: var(--text-muted); font-size: 0.85rem;"></span>
+        </div>
+
+        <!-- البحث الفوري -->
+        <input id="mangoSearch" class="search-input" type="text" placeholder="🔍 بحث باسم العميل، رقم الهاتف، أو اسم المستخدم Mango..." oninput="filterMangoTable()">
+
+        <!-- الجدول -->
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>اسم العميل</th>
+                        <th>رقم الجوال</th>
+                        <th>Mango User</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="mangoBody">
+                    <tr><td colspan="5" class="loading-indicator">جاري تحميل المشتركين...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzlIZwRFU_DDybSsctadNxrgwaJtnNyzcgCrlAj9H1l4GoPmSXGLQZ7o5xsG7PpG1-d/exec";
+
+let allMangoClients = [];
+
+const qs = id => document.getElementById(id);
+
+function showToast(message, type = "success") {
+    const container = qs("toastContainer");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${type === 'success' ? '✓' : '⚠'}</span> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("show"));
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+    }, 2200);
+}
+
+// جلب المشتركين
+async function loadMangoData() {
+    qs("mangoBody").innerHTML = `<tr><td colspan="5" class="loading-indicator">جاري تحديث البيانات...</td></tr>`;
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClients" })
+        });
+        const data = await res.json();
+        
+        if (!Array.isArray(data)) {
+            qs("mangoBody").innerHTML = `<tr><td colspan="5" style="padding:20px; color:red;">تعذر جلب البيانات من الخادم</td></tr>`;
+            return;
+        }
+
+        // تصفية العملاء الذين لديهم mango_user فقط
+        allMangoClients = data
+            .filter(c => c.mango_user && String(c.mango_user).trim() !== "")
+            .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
+
+        qs("totalMangoCount").textContent = allMangoClients.length;
+        renderMangoTable(allMangoClients);
+
+    } catch (e) {
+        qs("mangoBody").innerHTML = `<tr><td colspan="5" style="padding:20px; color:red;">فشل الاتصال بالخادم، تأكد من الإنترنت</td></tr>`;
+    }
+}
+
+// رسم الجدول
+function renderMangoTable(clients) {
+    const tbody = qs("mangoBody");
+    tbody.innerHTML = "";
+
+    if (!clients.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted); padding:24px;">لا يوجد مشتركي Mango مطابقين</td></tr>`;
+        return;
+    }
+
+    const frag = document.createDocumentFragment();
+
+    clients.forEach((c, index) => {
+        const tr = document.createElement("tr");
+
+        // تنظيف رقم الهاتف للواتساب
+        let waNumber = String(c.mobile || "").replace(/[^0-9]/g, "");
+        if (waNumber.startsWith("00967")) waNumber = waNumber.substring(2);
+        else if (waNumber.startsWith("0")) waNumber = "967" + waNumber.substring(1);
+        else if (!waNumber.startsWith("967") && waNumber.length > 0) waNumber = "967" + waNumber;
+
+        tr.innerHTML = `
+            <td>${index + 1}</td>
+            <td><strong>${escapeHtml(c.name)}</strong></td>
+            <td>${escapeHtml(c.mobile || '-')}</td>
+            <td><span class="mango-tag">${escapeHtml(c.mango_user)}</span></td>
+            <td>
+                <div class="actions-group">
+                    <button type="button" class="copy-btn" title="نسخ اسم المستخدم">📋 نسخ</button>
+                    ${c.mobile ? `<a href="https://wa.me/${waNumber}?text=${encodeURIComponent('مرحباً بك، اسم المستخدم الخاص بك في Mango هو: ' + c.mango_user)}" target="_blank" class="wa-btn" title="مراسلة واتساب">واتساب</a>` : ''}
+                </div>
+            </td>
+        `;
+
+        const copyBtn = tr.querySelector(".copy-btn");
+        copyBtn.onclick = () => copyText(c.mango_user, copyBtn);
+
+        frag.appendChild(tr);
+    });
+
+    tbody.appendChild(frag);
+}
+
+// دالة النسخ السريع
+async function copyText(text, btn) {
+    try {
+        await navigator.clipboard.writeText(String(text));
+        const oldText = btn.textContent;
+        btn.textContent = "✓ تم";
+        btn.style.background = "#dcfce7";
+        btn.style.color = "#15803d";
+        setTimeout(() => {
+            btn.textContent = oldText;
+            btn.style.background = "";
+            btn.style.color = "";
+        }, 1200);
+        showToast(`تم نسخ: ${text}`);
+    } catch {
+        showToast("تعذر النسخ التلقائي", "error");
+    }
+}
+
+// البحث الفوري
+function filterMangoTable() {
+    const q = qs("mangoSearch").value.trim().toLowerCase();
+    const filtered = allMangoClients.filter(c => {
+        const name = String(c.name || "").toLowerCase();
+        const mobile = String(c.mobile || "");
+        const mango = String(c.mango_user || "").toLowerCase();
+        return name.includes(q) || mobile.includes(q) || mango.includes(q);
+    });
+
+    qs("filteredMangoCount").textContent = q ? `(المطابق للبحث: ${filtered.length})` : '';
+    renderMangoTable(filtered);
+}
+
+// حماية XSS
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+// طباعة قائمة المشتركين
+function printMangoList() {
+    const q = qs("mangoSearch").value.trim();
+    const rows = allMangoClients.map((c, i) => `
+        <tr>
+            <td>${i + 1}</td>
+            <td>${c.name}</td>
+            <td>${c.mobile || '-'}</td>
+            <td style="font-family:monospace; direction:ltr; font-weight:bold;">${c.mango_user}</td>
+        </tr>
+    `).join('');
+
+    const today = new Date().toLocaleDateString('ar-EG');
+    const html = `
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>قائمة مشتركي Mango - يمن ستلايت</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+        <style>
+            body { font-family: "Tajawal", sans-serif; margin: 20px; direction: rtl; color: #0f172a; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ea580c; padding-bottom: 10px; margin-bottom: 15px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; }
+            th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: center; }
+            th { background: #ea580c; color: white; }
+            tr:nth-child(even) { background: #f8fafc; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div>
+                <h2>شركة يمن ستلايت</h2>
+                <p>كشف بأسماء مشتركي Mango Users</p>
+            </div>
+            <div>تاريخ التقرير: ${today} | العدد: ${allMangoClients.length}</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>اسم العميل</th>
+                    <th>رقم الجوال</th>
+                    <th>Mango User</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+    </body>
+    </html>`;
+
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 350);
+}
+
+// بدء التحميل
+loadMangoData();
+</script>
+</body>
+</html>
