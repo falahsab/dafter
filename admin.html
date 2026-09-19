@@ -443,7 +443,7 @@ tbody tr:hover {
 }
 
 .modal-large {
-    max-width: 800px;
+    max-width: 850px;
 }
 
 @keyframes modalScale {
@@ -572,7 +572,8 @@ tbody tr:hover {
 .loading-indicator {
     text-align: center;
     padding: 10px;
-    color: var(--text-muted);
+    color: var(--primary);
+    font-weight: 700;
     font-size: 0.9rem;
     display: none;
 }
@@ -647,7 +648,7 @@ if (localStorage.getItem("role") !== "admin") {
 
         <!-- مدخلات العملية المالية -->
         <div class="form-group">
-            <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any">
+            <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any" min="0">
         </div>
         <input type="hidden" id="type" value="debit">
 
@@ -679,7 +680,7 @@ if (localStorage.getItem("role") !== "admin") {
             </div>
             <div class="summary-item">
                 <span class="label">رصيد العميل الحالي</span>
-                <span class="value" id="stat_total">0 ر.ي</span>
+                <span class="value" id="stat_total">اختر عميلاً</span>
             </div>
             <div class="summary-item">
                 <span class="label">آخر عملية</span>
@@ -776,7 +777,7 @@ if (localStorage.getItem("role") !== "admin") {
             <input id="new_password" type="text" placeholder="كلمة المرور">
         </div>
 
-        <!-- حقل Mango User المضاف -->
+        <!-- حقل Mango User -->
         <div class="form-group">
             <label class="input-label">اسم المستخدم Mango User (اختياري)</label>
             <input id="new_mango_user" placeholder="Mango User (مثال: user123)">
@@ -797,7 +798,7 @@ if (localStorage.getItem("role") !== "admin") {
     <div class="modal-body">
         <div class="form-group">
             <label class="input-label">المبلغ</label>
-            <input id="modal_amount" type="number" placeholder="المبلغ">
+            <input id="modal_amount" type="number" placeholder="المبلغ" step="any" min="0">
         </div>
         <div class="form-group">
             <label class="input-label">النوع</label>
@@ -899,12 +900,10 @@ let allClients = [], clientTransactions = [], currentClientId = "", currentTrans
 let currentClientModalMode = 'new';
 let cachedBalancesList = [];
 
-// ==========================================
-// محرك الكاش المحلي فائق السرعة (0 ثانية استجابة)
-// ==========================================
+// كاش محلي
 const transCache = {}; // { [clientId]: { list: [], total: number, isPartial: boolean } }
 
-// نظام الإشعارات Toast
+// إشعارات Toast
 function showToast(message, type = "success") {
     const container = qs("toastContainer");
     const toast = document.createElement("div");
@@ -940,8 +939,24 @@ function closeMenu() {
     qs("menuOverlay").classList.remove("show");
 }
 
+function formatDateSafe(d) {
+    if (!d) return "-";
+    const date = new Date(d);
+    return isNaN(date.getTime()) ? String(d) : date.toLocaleDateString('en-GB');
+}
+
+// تنسيق هاتف الواتساب دولياً لليمن 967
+function formatWhatsAppPhone(phone) {
+    if (!phone) return "";
+    let p = String(phone).replace(/[^0-9]/g, "");
+    if (p.startsWith("00967")) p = p.substring(2);
+    else if (p.startsWith("0")) p = "967" + p.substring(1);
+    else if (!p.startsWith("967")) p = "967" + p;
+    return p;
+}
+
 // ==========================================
-// التحميل الموحد السريع للوحة التحكم
+// التحميل الموحد للوحة التحكم
 // ==========================================
 async function loadDashboardData(forceRefresh = false) {
     qs("loading").style.display = "block";
@@ -952,26 +967,26 @@ async function loadDashboardData(forceRefresh = false) {
         });
         const data = await res.json();
 
-        if (data.status !== "success") throw new Error(data.message);
+        if (data.status !== "success") throw new Error(data.message || "خطأ غير معروف");
 
         // 1. العملاء
         allClients = Array.isArray(data.clients) ? data.clients : [];
         renderClientsDropdown();
 
-        // 2. ملخص الحسابات الإجمالي
+        // 2. الملخص الإجمالي العام
         if (data.totals) {
             qs("totalCredit").textContent = Number(data.totals.totalCredit || 0).toLocaleString() + " ر.ي";
             qs("totalDebit").textContent = Number(data.totals.totalDebit || 0).toLocaleString() + " ر.ي";
             const net = Number(data.totals.netBalance || 0);
-            qs("netBalance").textContent = net >= 0 
+            qs("netBalance").textContent = net > 0 
                 ? `لكم ${net.toLocaleString()} ر.ي` 
-                : `عليكم ${Math.abs(net).toLocaleString()} ر.ي`;
+                : (net < 0 ? `عليكم ${Math.abs(net).toLocaleString()} ر.ي` : "0 ر.ي");
         }
 
-        // 3. الأرصدة لقائمة العملاء
+        // 3. أرصدة العملاء
         cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
 
-        // 4. تسخين الكاش لعمليات العملاء مسبقاً (Preloading)
+        // 4. تسخين الكاش لعمليات العملاء
         if (data.recentMap && typeof data.recentMap === "object") {
             Object.keys(data.recentMap).forEach(cid => {
                 const balObj = cachedBalancesList.find(b => String(b.client_id) === String(cid));
@@ -985,7 +1000,7 @@ async function loadDashboardData(forceRefresh = false) {
 
         updateStats();
 
-        // إذا كان هناك عميل مختار، اعرض عملياته فوراً من الكاش المحدث
+        // تحديث عمليات العميل المختار إن وجد
         if (currentClientId) {
             loadTransactions(false);
         }
@@ -1008,8 +1023,13 @@ function renderClientsDropdown() {
     allClients.forEach(c => {
         const op = document.createElement("option");
         op.value = c.client_id;
-        const mangoText = c.mango_user ? ` [Mango: ${c.mango_user}]` : '';
-        op.textContent = `${c.name}`;
+        const details = [c.name];
+        if (c.mobile) details.push(c.mobile);
+        if (c.mango_user) details.push(`Mango: ${c.mango_user}`);
+        op.textContent = details.join(" | ");
+        op.dataset.name = String(c.name || "").toLowerCase();
+        op.dataset.mobile = String(c.mobile || "");
+        op.dataset.mango = String(c.mango_user || "").toLowerCase();
         frag.appendChild(op);
     });
     select.appendChild(frag);
@@ -1018,7 +1038,6 @@ function renderClientsDropdown() {
     toggleEditSelectedBtn();
 }
 
-// إظهار زر التعديل المباشر عند تحديد عميل
 function toggleEditSelectedBtn() {
     const hasClient = !!qs("client_select").value;
     qs("editCurrentClientBtn").style.display = hasClient ? "flex" : "none";
@@ -1029,7 +1048,7 @@ function editCurrentlySelectedClient() {
     if (clientId) openEditClientModal(clientId);
 }
 
-// بحث سريع بالاسم أو الهاتف أو Mango User
+// بحث متكامل وشامل بالاسم، الهاتف، و Mango User
 function filterClientSelect() {
     const q = qs("client_search").value.trim().toLowerCase();
     const select = qs("client_select");
@@ -1037,20 +1056,33 @@ function filterClientSelect() {
 
     Array.from(select.options).forEach((op, index) => {
         if (index === 0) return;
-        const match = op.textContent.toLowerCase().includes(q);
+        const name = op.dataset.name || "";
+        const mobile = op.dataset.mobile || "";
+        const mango = op.dataset.mango || "";
+
+        const match = !q || name.includes(q) || mobile.includes(q) || mango.includes(q);
         op.style.display = match ? "" : "none";
+
         if (match && !foundFirst && q !== "") {
             select.value = op.value;
             foundFirst = true;
         }
     });
 
+    if (!q) {
+        // إذا مسح البحث أعد ضبط التحديد
+        toggleEditSelectedBtn();
+        return;
+    }
+
     toggleEditSelectedBtn();
-    if (foundFirst) loadTransactions(false);
+    if (foundFirst) {
+        loadTransactions(false);
+    }
 }
 
 // ==========================================
-// إدارة نافذة العميل (إضافة جديد / تعديل حالي)
+// إدارة نافذة العميل (إضافة / تعديل)
 // ==========================================
 function openNewClientModal() {
     setClientModalMode('new');
@@ -1084,7 +1116,7 @@ function setClientModalMode(mode, clientId = null) {
     allClients.forEach(c => {
         const op = document.createElement("option");
         op.value = c.client_id;
-        op.textContent = `${c.name} (${c.mobile || '-'})`;
+        op.textContent = `${c.name} (${c.mobile || '-'}) ${c.mango_user ? '[Mango: ' + c.mango_user + ']' : ''}`;
         modalSelect.appendChild(op);
     });
 
@@ -1123,7 +1155,7 @@ function onSelectClientToEdit() {
     qs("new_mango_user").value = client.mango_user || "";
 }
 
-// حفظ العميل (إضافة أو تعديل مع mango_user)
+// حفظ بيانات العميل
 async function saveClientData() {
     const clientId = qs("edit_client_id").value;
     const name = qs("new_name").value.trim();
@@ -1183,7 +1215,7 @@ async function saveClientData() {
 }
 
 // ==========================================
-// جلب وعرض العمليات المالية فائق السرعة
+// جلب وعرض العمليات المالية
 // ==========================================
 async function loadTransactions(forceRefresh = false) {
     currentClientId = qs("client_select").value;
@@ -1191,26 +1223,25 @@ async function loadTransactions(forceRefresh = false) {
 
     if (!currentClientId) {
         qs("transBody").innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">اختر عميلاً لعرض عملياته فوراً</td></tr>`;
-        qs("stat_total").textContent = "0 ر.ي";
-        qs("stat_last").textContent = "-";
+        updateStats();
         return;
     }
 
-    // 1. العرض الفوري من الكاش المحلي إن وجد (0 ثانية استجابة)
+    // 1. العرض الفوري من الكاش
     const cached = transCache[currentClientId];
     if (cached && !forceRefresh) {
         clientTransactions = cached.list || [];
         updateStats(cached.total);
         renderTransactions(clientTransactions.slice(0, 5));
         
-        // إذا كان الكاش جزئياً فقط (أول 10 عمليات)، قم بجلب البقية في الخلفية بهدوء
+        // جلب العمليات كاملة في الخلفية بهدوء
         if (cached.isPartial) {
             fetchFullTransactionsBackground(currentClientId);
         }
         return;
     }
 
-    // 2. إذا لم تكن العمليات في الكاش أو طُلب التحديث الإجباري
+    // 2. جلب العمليات من السيرفر
     qs("loading").style.display = "block";
     try {
         const res = await fetch(API, {
@@ -1224,7 +1255,9 @@ async function loadTransactions(forceRefresh = false) {
         const data = await res.json();
 
         if (data.status === "success") {
-            clientTransactions = (data.list || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+            clientTransactions = (data.list || []).sort((a, b) => 
+                (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0) || Number(b.trans_id) - Number(a.trans_id)
+            );
             transCache[currentClientId] = {
                 list: clientTransactions,
                 total: data.total,
@@ -1240,7 +1273,6 @@ async function loadTransactions(forceRefresh = false) {
     }
 }
 
-// جلب العمليات كاملة في الخلفية دون تعطيل واجهة المستخدم
 async function fetchFullTransactionsBackground(cid) {
     try {
         const res = await fetch(API, {
@@ -1249,14 +1281,15 @@ async function fetchFullTransactionsBackground(cid) {
         });
         const data = await res.json();
         if (data.status === "success" && currentClientId === cid) {
-            clientTransactions = (data.list || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+            clientTransactions = (data.list || []).sort((a, b) => 
+                (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0) || Number(b.trans_id) - Number(a.trans_id)
+            );
             transCache[cid] = {
                 list: clientTransactions,
                 total: data.total,
                 isPartial: false
             };
             updateStats(data.total);
-            renderTransactions(clientTransactions.slice(0, 5));
         }
     } catch (e) {}
 }
@@ -1281,7 +1314,9 @@ async function showAllTransactions() {
         });
         const data = await res.json();
         if (data.status === "success") {
-            clientTransactions = (data.list || []).sort((a, b) => new Date(b.date) - new Date(a.date));
+            clientTransactions = (data.list || []).sort((a, b) => 
+                (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0) || Number(b.trans_id) - Number(a.trans_id)
+            );
             transCache[currentClientId] = {
                 list: clientTransactions,
                 total: data.total,
@@ -1307,7 +1342,6 @@ async function addTrans() {
     if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
     if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
 
-    amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
     qs("loading").style.display = "block";
 
     try {
@@ -1321,8 +1355,11 @@ async function addTrans() {
             showToast("تم تسجيل العملية بنجاح");
             qs("amount").value = "";
             qs("note").value = "";
-            delete transCache[client_id]; // مسح كاش العميل للتحديث
-            await Promise.all([loadTransactions(true), loadDashboardData(true)]);
+            delete transCache[client_id];
+            
+            // تحديث العميل المختار واللوحة بالتوازي
+            await loadTransactions(true);
+            loadDashboardData(true); // تحديث إجمالي اللوحة بالخلفية
         } else {
             showToast("حدث خطأ أثناء إضافة العملية", "error");
         }
@@ -1344,7 +1381,7 @@ function renderTransactions(transactions) {
     const tbody = qs("transBody");
     tbody.innerHTML = "";
 
-    if (!transactions.length) {
+    if (!transactions || !transactions.length) {
         tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">لا توجد عمليات مسجلة لهذا العميل</td></tr>`;
         return;
     }
@@ -1362,7 +1399,7 @@ function renderTransactions(transactions) {
         tr.onclick = () => openTransModal(t.trans_id);
 
         const isDebit = t.type === "debit";
-        const dateStr = t.date ? new Date(t.date).toLocaleDateString('ar-EG') : '-';
+        const dateStr = formatDateSafe(t.date);
 
         tr.innerHTML = `
             <td class="${isDebit ? 'debit-text' : 'credit-text'}">${Math.abs(t.amount).toLocaleString()}</td>
@@ -1371,8 +1408,8 @@ function renderTransactions(transactions) {
             <td>${dateStr}</td>
             <td>
                 <div class="wa-sms-group">
-                    <button class="wa-btn" title="إرسال عبر واتساب">${waSvgIcon} واتساب</button>
-                    <button class="sms-btn" title="إرسال عبر SMS">SMS</button>
+                    <button type="button" class="wa-btn" title="إرسال عبر واتساب">${waSvgIcon} واتساب</button>
+                    <button type="button" class="sms-btn" title="إرسال عبر SMS">SMS</button>
                 </div>
             </td>
         `;
@@ -1396,40 +1433,52 @@ function renderTransactions(transactions) {
     tbody.appendChild(frag);
 }
 
+// رسائل الواتساب مع رقم دولي ورصيد دقيق 100%
 function sendWhatsAppMsg(t, clientName, clientMobile) {
-    const sorted = [...clientTransactions].sort((a,b) => new Date(a.date) - new Date(b.date));
-    const index = sorted.findIndex(x => x.trans_id == t.trans_id);
-    let balanceUntil = 0;
-    for (let i = 0; i <= index; i++) balanceUntil += Number(sorted[i].amount);
+    const targetMobile = formatWhatsAppPhone(clientMobile);
+    if (!targetMobile) {
+        showToast("لا يوجد رقم جوال مسجل لهذا العميل", "error");
+        return;
+    }
+
+    // الاعتماد على الرصيد التراكمي الدقيق المحسوب من السيرفر
+    const bal = (t.balance_after !== undefined && t.balance_after !== null) 
+        ? Number(t.balance_after) 
+        : (transCache[currentClientId]?.total || 0);
 
     const typeText = t.type === "debit" ? "عليك" : "لك";
-    const totalText = balanceUntil >= 0 ? `عليك ${balanceUntil.toLocaleString()}` : `لك ${Math.abs(balanceUntil).toLocaleString()}`;
+    const totalText = bal > 0 
+        ? `عليك ${bal.toLocaleString()} ريال` 
+        : (bal < 0 ? `لك ${Math.abs(bal).toLocaleString()} ريال` : "خالص (0 ريال)");
 
-    const msg = `👤 *الأخ:* ${clientName}\n💰 *قيد ${typeText} مبلغ:* ${Math.abs(t.amount).toLocaleString()} ريال\n📝 *البيان:* ${t.note}\n---------------\n📊 *رصيدك بعد هذه العملية:*\n       ${totalText} ريال`;
-    window.open(`https://wa.me/${clientMobile}?text=${encodeURIComponent(msg)}`, "_blank");
+    const msg = `👤 *الأخ:* ${clientName}\n💰 *قيد ${typeText} مبلغ:* ${Math.abs(t.amount).toLocaleString()} ريال\n📝 *البيان:* ${t.note}\n---------------\n📊 *رصيدك بعد هذه العملية:*\n       ${totalText}`;
+    window.open(`https://wa.me/${targetMobile}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
+// رسائل SMS بدقة تامة
 function sendSmsMsg(t, clientName, smsNumber) {
     if (!smsNumber) {
         showToast("لا يوجد رقم SMS مسجل لهذا العميل", "error");
         return;
     }
-    const sorted = [...clientTransactions].sort((a,b) => new Date(a.date) - new Date(b.date));
-    const index = sorted.findIndex(x => x.trans_id == t.trans_id);
-    let balanceUntil = 0;
-    for (let i = 0; i <= index; i++) balanceUntil += Number(sorted[i].amount);
+
+    const bal = (t.balance_after !== undefined && t.balance_after !== null) 
+        ? Number(t.balance_after) 
+        : (transCache[currentClientId]?.total || 0);
 
     const typeText = t.type === "debit" ? "عليك" : "لك";
-    const totalText = balanceUntil >= 0 ? `عليك ${balanceUntil.toLocaleString()}` : `لك ${Math.abs(balanceUntil).toLocaleString()}`;
+    const totalText = bal > 0 
+        ? `عليك ${bal.toLocaleString()}` 
+        : (bal < 0 ? `لك ${Math.abs(bal).toLocaleString()}` : "خالص");
 
-    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount)}\nالإجمالي: ${totalText}`;
-    window.open(`sms:${smsNumber}?body=${encodeURIComponent(msg)}`, "_blank");
+    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount)}\nالبيان: ${t.note}\nالإجمالي: ${totalText}`;
+    window.location.href = `sms:${encodeURIComponent(smsNumber)}?body=${encodeURIComponent(msg)}`;
 }
 
-// تعديل وحذف العملية المالية
+// تعديل وحذف العملية
 function openTransModal(id) {
     currentTransId = id;
-    const t = clientTransactions.find(x => x.trans_id == id);
+    const t = clientTransactions.find(x => String(x.trans_id) === String(id));
     if (!t) return;
     qs("modal_amount").value = Math.abs(t.amount);
     qs("modal_type").value = t.type;
@@ -1441,8 +1490,12 @@ async function saveTransModal() {
     if (!currentTransId) return;
     let amount = Number(qs("modal_amount").value);
     const type = qs("modal_type").value;
-    const note = qs("modal_note").value;
-    amount = type === "credit" ? -Math.abs(amount) : Math.abs(amount);
+    const note = qs("modal_note").value.trim();
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+        showToast("يرجى إدخال مبلغ صحيح", "error");
+        return;
+    }
 
     try {
         await fetch(API, { 
@@ -1452,7 +1505,8 @@ async function saveTransModal() {
         closeModal("transModal");
         showToast("تم تحديث العملية بنجاح");
         delete transCache[currentClientId];
-        await Promise.all([loadTransactions(true), loadDashboardData(true)]);
+        await loadTransactions(true);
+        loadDashboardData(true);
     } catch (e) {
         showToast("فشل تحديث العملية", "error");
     }
@@ -1468,14 +1522,27 @@ async function deleteTransModal() {
         closeModal("transModal");
         showToast("تم حذف العملية");
         delete transCache[currentClientId];
-        await Promise.all([loadTransactions(true), loadDashboardData(true)]);
+        await loadTransactions(true);
+        loadDashboardData(true);
     } catch (e) {
         showToast("فشل حذف العملية", "error");
     }
 }
 
-// طباعة كشف حساب عميل
-function printTransactions() {
+// طباعة كشف حساب مع ضمان تحميل كافة العمليات مسبقاً
+async function printTransactions() {
+    if (!currentClientId) {
+        showToast("يرجى اختيار العميل أولاً", "error");
+        return;
+    }
+
+    // التأكد من جلب كامل العمليات قبل الطباعة
+    const cached = transCache[currentClientId];
+    if (cached && cached.isPartial) {
+        showToast("جاري تجهيز كشف الحساب بالكامل...");
+        await showAllTransactions();
+    }
+
     if (!clientTransactions.length) {
         showToast("لا توجد عمليات لطباعتها", "error");
         return;
@@ -1486,25 +1553,23 @@ function printTransactions() {
     const total = clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
     const today = new Date().toLocaleDateString('ar-EG');
 
-    const sorted = [...clientTransactions].sort((a,b) => new Date(a.date) - new Date(b.date));
-    let runBalance = 0;
-    const balances = {};
-    sorted.forEach(t => {
-        runBalance += Number(t.amount);
-        balances[t.trans_id] = runBalance;
-    });
+    // ترتيب العمليات تصاعدياً (من الأقدم للأحدث) لكشف الحساب المحاسبي
+    const sorted = [...clientTransactions].sort((a, b) => 
+        (new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0) || Number(a.trans_id) - Number(b.trans_id)
+    );
 
-    const rowsHtml = clientTransactions.map(t => {
-        const bal = balances[t.trans_id];
+    let runBalance = 0;
+    const rowsHtml = sorted.map(t => {
+        runBalance += Number(t.amount);
         const isDebit = t.type === "debit";
-        const date = t.date ? new Date(t.date).toLocaleDateString('ar-EG') : '-';
+        const date = formatDateSafe(t.date);
         return `
             <tr>
                 <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${Math.abs(t.amount).toLocaleString()}</td>
                 <td>${isDebit ? 'عليه' : 'له'}</td>
-                <td>${t.note}</td>
+                <td>${escapeHtml(t.note)}</td>
                 <td>${date}</td>
-                <td style="color:${bal >= 0 ? '#dc2626' : '#16a34a'}; font-weight:bold;">${bal >= 0 ? `عليه ${bal.toLocaleString()}` : `له ${Math.abs(bal).toLocaleString()}`}</td>
+                <td style="color:${runBalance >= 0 ? '#dc2626' : '#16a34a'}; font-weight:bold;">${runBalance > 0 ? `عليه ${runBalance.toLocaleString()}` : (runBalance < 0 ? `له ${Math.abs(runBalance).toLocaleString()}` : 'خالص')}</td>
             </tr>
         `;
     }).join('');
@@ -1514,7 +1579,7 @@ function printTransactions() {
     <html lang="ar" dir="rtl">
     <head>
         <meta charset="UTF-8">
-        <title>كشف حساب - ${clientName}</title>
+        <title>كشف حساب - ${escapeHtml(clientName)}</title>
         <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
         <style>
             body { font-family: "Tajawal", sans-serif; margin: 20px; color: #0f172a; direction: rtl; }
@@ -1542,7 +1607,7 @@ function printTransactions() {
         </div>
 
         <div class="client-card">
-            <strong>اسم العميل:</strong> ${clientName} | <strong>رقم الهاتف:</strong> ${client.mobile || '-'}
+            <strong>اسم العميل:</strong> ${escapeHtml(clientName)} | <strong>رقم الهاتف:</strong> ${escapeHtml(client.mobile || '-')}
         </div>
 
         <table>
@@ -1560,7 +1625,7 @@ function printTransactions() {
                 <tr style="background:#f1f5f9; font-weight:bold;">
                     <td colspan="2" style="text-align:right;">الرصيد الصافي النهائي:</td>
                     <td colspan="3" style="color:${total >= 0 ? '#dc2626' : '#16a34a'}; font-size:1.1rem;">
-                        ${total >= 0 ? `عليه ${total.toLocaleString()} ريال` : `له ${Math.abs(total).toLocaleString()} ريال`}
+                        ${total > 0 ? `عليه ${total.toLocaleString()} ريال` : (total < 0 ? `له ${Math.abs(total).toLocaleString()} ريال` : 'خالص (0 ريال)')}
                     </td>
                 </tr>
             </tfoot>
@@ -1600,13 +1665,13 @@ function showClientsBalances() {
             <td><strong>${escapeHtml(c.name)}</strong></td>
             <td>${escapeHtml(c.mobile || '-')}</td>
             <td style="font-family:monospace; direction:ltr; font-weight:bold;">${escapeHtml(c.mango_user || '-')}</td>
-            <td style="font-weight:bold; color:${tot >= 0 ? '#dc2626' : '#16a34a'}">
-                ${tot >= 0 ? `عليه ${tot.toLocaleString()}` : `له ${Math.abs(tot).toLocaleString()}`}
+            <td style="font-weight:bold; color:${tot > 0 ? '#dc2626' : (tot < 0 ? '#16a34a' : 'inherit')}">
+                ${tot > 0 ? `عليه ${tot.toLocaleString()}` : (tot < 0 ? `له ${Math.abs(tot).toLocaleString()}` : 'خالص')}
             </td>
             <td>
                 <div style="display: flex; gap: 4px; justify-content: center;">
-                    <button class="trans-btn btn-accent edit-btn" style="padding: 4px 8px; font-size: 0.75rem;">تعديل</button>
-                    <button class="trans-btn debit-btn del-btn" style="padding: 4px 8px; font-size: 0.75rem;">حذف</button>
+                    <button type="button" class="trans-btn btn-accent edit-btn" style="padding: 4px 8px; font-size: 0.75rem;">تعديل</button>
+                    <button type="button" class="trans-btn debit-btn del-btn" style="padding: 4px 8px; font-size: 0.75rem;">حذف</button>
                 </div>
             </td>
         `;
@@ -1643,7 +1708,7 @@ function showClientsBalances() {
         </div>
         <div class="summary-item">
             <span class="label">الصافي</span>
-            <span class="value balance-value">${diff >= 0 ? `لكم ${diff.toLocaleString()}` : `عليكم ${Math.abs(diff).toLocaleString()}`}</span>
+            <span class="value balance-value">${diff > 0 ? `لكم ${diff.toLocaleString()}` : (diff < 0 ? `عليكم ${Math.abs(diff).toLocaleString()}` : '0')} ر.ي</span>
         </div>
     `;
 
@@ -1663,20 +1728,31 @@ function filterClientsTable() {
 // تحديث الإحصائيات في الشاشة الرئيسية
 function updateStats(explicitTotal = null) {
     qs("stat_clients").textContent = allClients.length;
+
+    if (!currentClientId) {
+        qs("stat_total").textContent = "اختر عميلاً";
+        qs("stat_total").className = "value";
+        qs("stat_last").textContent = "-";
+        return;
+    }
+
     if (clientTransactions.length && clientTransactions[0].date) {
-        qs("stat_last").textContent = new Date(clientTransactions[0].date).toLocaleDateString('ar-EG');
+        qs("stat_last").textContent = formatDateSafe(clientTransactions[0].date);
     } else {
         qs("stat_last").textContent = "لا توجد";
     }
 
     const sum = explicitTotal !== null ? explicitTotal : clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
     const totalEl = qs("stat_total");
-    if (sum >= 0) {
+    if (sum > 0) {
         totalEl.textContent = `عليه ${sum.toLocaleString()} ر.ي`;
         totalEl.className = "value debit-value";
-    } else {
+    } else if (sum < 0) {
         totalEl.textContent = `له ${Math.abs(sum).toLocaleString()} ر.ي`;
         totalEl.className = "value credit-value";
+    } else {
+        totalEl.textContent = "خالص (0 ر.ي)";
+        totalEl.className = "value balance-value";
     }
 }
 
@@ -1723,7 +1799,7 @@ qs("pickContact").addEventListener("click", async () => {
     }
 });
 
-// التعامل مع الحافظة ولصق البيان
+// التعامل مع الحافظة
 async function pasteFromClipboard() {
     try {
         const text = await navigator.clipboard.readText();
@@ -1734,7 +1810,7 @@ async function pasteFromClipboard() {
     }
 }
 
-// حفظ سجل البيانات المقترحة
+// سجل البيانات المقترحة
 let savedNotes = JSON.parse(localStorage.getItem("savedNotes") || "[]");
 function refreshNotes() {
     const list = qs("notesList");
@@ -1759,7 +1835,7 @@ function saveNoteSuggestion() {
     }
 }
 
-// عرض Mango Users مع زر تعديل فوري
+// عرض Mango Users
 function showMangoUsers() {
     const tbody = qs("mangoUsersBody");
     tbody.innerHTML = "";
@@ -1779,8 +1855,8 @@ function showMangoUsers() {
                 <td style="direction:ltr; font-family:monospace; font-weight:bold;">${escapeHtml(c.mango_user)}</td>
                 <td>
                     <div style="display:flex; gap:6px; justify-content:center;">
-                        <button class="trans-btn btn-accent copy-btn" style="padding:4px 8px; font-size:0.8rem;">📋 نسخ</button>
-                        <button class="trans-btn credit-btn edit-mango-btn" style="padding:4px 8px; font-size:0.8rem;">✏️ تعديل</button>
+                        <button type="button" class="trans-btn btn-accent copy-btn" style="padding:4px 8px; font-size:0.8rem;">📋 نسخ</button>
+                        <button type="button" class="trans-btn credit-btn edit-mango-btn" style="padding:4px 8px; font-size:0.8rem;">✏️ تعديل</button>
                     </div>
                 </td>
             `;
@@ -1848,19 +1924,22 @@ function printClientsList() {
     }
 
     const today = new Date().toLocaleDateString('ar-EG');
+    let totalSumDebit = 0, totalSumCredit = 0;
+
     const tableRows = rows.map(r => {
         const name = r.children[1]?.textContent || "";
         const mobile = r.children[2]?.textContent || "";
         const mango = r.children[3]?.textContent || "";
         const total = r.children[4]?.textContent || "";
         const isDebit = total.includes("عليه");
+        const isCredit = total.includes("له");
 
         return `
             <tr>
                 <td>${name}</td>
                 <td>${mobile}</td>
                 <td style="direction:ltr; font-family:monospace;">${mango}</td>
-                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${total}</td>
+                <td style="color:${isDebit ? '#dc2626' : (isCredit ? '#16a34a' : '#0f172a')}; font-weight:bold;">${total}</td>
             </tr>
         `;
     }).join('');
@@ -1909,7 +1988,7 @@ function printClientsList() {
     setTimeout(() => win.print(), 350);
 }
 
-// بدء التشغيل السريع
+// بدء التشغيل
 loadDashboardData();
 qs("client_select").addEventListener("change", () => loadTransactions(false));
 </script>
