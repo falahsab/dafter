@@ -53,6 +53,7 @@ body {
     flex-direction: column;
     align-items: center;
     padding: 20px 14px;
+    position: relative;
 }
 
 .container {
@@ -62,6 +63,47 @@ body {
     flex-direction: column;
     align-items: center;
     margin: 0 auto;
+    position: relative;
+}
+
+/* زر مسح الكاش وتحديث الصفحة */
+.clear-cache-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.25s ease;
+    z-index: 10;
+    outline: none;
+}
+
+.clear-cache-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: rotate(90deg);
+    box-shadow: var(--shadow-md);
+}
+
+.clear-cache-btn.spinning {
+    animation: spinRotate 0.7s linear infinite;
+    pointer-events: none;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+@keyframes spinRotate {
+    100% { transform: rotate(360deg); }
 }
 
 /* الترويسة */
@@ -250,16 +292,17 @@ body {
     padding: 12px 0;
 }
 
-/* تنظيم الجوال في عمودين */
+/* تنظيم الجوال */
 @media (max-width: 640px) {
-    body { padding: 16px 10px; }
+    body { padding: 14px 10px; }
+    .clear-cache-btn { top: 0; left: 2px; width: 34px; height: 34px; }
     .header-section { margin-bottom: 18px; }
     .logo-wrapper { width: 75px; height: 75px; margin-bottom: 8px; }
     .header-title { font-size: 1.3rem; }
     .header-subtitle { font-size: 0.8rem; }
     
     .cards-grid {
-        grid-template-columns: repeat(2, 1fr); /* عمودين في الجوال */
+        grid-template-columns: repeat(2, 1fr);
         gap: 10px;
     }
 
@@ -287,7 +330,7 @@ body {
     }
 
     .card-footer span:first-child {
-        display: none; /* إخفاء النص الطويل بالفوتر على الجوال لإبقاء الزر أنيقاً */
+        display: none;
     }
     
     .card-footer {
@@ -301,6 +344,13 @@ body {
 <body>
 
 <div class="container">
+    <!-- زر مسح الكاش وتحديث الصفحة -->
+    <button type="button" id="clearCacheBtn" class="clear-cache-btn" onclick="clearCacheAndReload()" title="مسح الكاش وتحديث الصفحة">
+        <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24">
+            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        </svg>
+    </button>
+
     <!-- الترويسة -->
     <header class="header-section">
         <div class="logo-wrapper">
@@ -378,6 +428,48 @@ body {
 </div>
 
 <script>
+// دالة مسح الكاش بالكامل وإعادة التحميل الفوري
+async function clearCacheAndReload() {
+    const btn = document.getElementById("clearCacheBtn");
+    if (btn) btn.classList.add("spinning");
+
+    try {
+        // 1. مسح كاش المتصفح التخزيني (CacheStorage)
+        if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+        }
+
+        // 2. تحديث Service Worker لطلب أحدث نسخة من الملفات
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (let reg of registrations) {
+                await reg.update();
+            }
+        }
+
+        // 3. مسح كاش البيانات المؤقتة مع الاحتفاظ بصلاحيات الدخول
+        const role = localStorage.getItem("role");
+        const userType = localStorage.getItem("user_type");
+        
+        sessionStorage.clear();
+        localStorage.clear();
+
+        // إعادة تثبيت الصلاحية حتى لا يتم إخراج المستخدم
+        if (role) localStorage.setItem("role", role);
+        if (userType) localStorage.setItem("user_type", userType);
+
+    } catch (err) {
+        console.warn("خطأ أثناء تنظيف الكاش:", err);
+    }
+
+    // إعادة تحميل الصفحة فوراً
+    setTimeout(() => {
+        window.location.reload();
+    }, 350);
+}
+
+// تسجيل الـ Service Worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js')
     .then(reg => console.log("SW Registered", reg))
