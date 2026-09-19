@@ -689,6 +689,99 @@ tbody tr:hover {
         max-height: 70vh;
     }
 }
+
+/* تصميم الآلة الحاسبة المدمجة */
+.modal-calc {
+    max-width: 330px;
+    width: 95%;
+    border-radius: var(--radius-lg);
+}
+
+.calc-display {
+    background: #0f172a;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: left;
+    direction: ltr;
+    margin-bottom: 12px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.calc-expr {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    min-height: 22px;
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+}
+
+.calc-result {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #34d399;
+    min-height: 38px;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.calc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.calc-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 13px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #f1f5f9;
+    color: var(--text-main);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.calc-btn:active {
+    transform: scale(0.94);
+    background: #e2e8f0;
+}
+
+.calc-btn.op {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 1.3rem;
+}
+
+.calc-btn.op:active {
+    background: #bae6fd;
+}
+
+.calc-btn.clear {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.calc-btn.clear:active {
+    background: #fecaca;
+}
+
+.calc-btn.ok-btn {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #ffffff;
+    font-size: 1.05rem;
+    grid-column: span 2;
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+}
+
+.calc-btn.ok-btn:active {
+    transform: scale(0.96);
+}
 </style>
 </head>
 
@@ -772,9 +865,11 @@ tbody tr:hover {
 </div>
 
         <!-- مدخلات العملية المالية -->
-        <div class="form-group">
-            <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any" min="0">
-        </div>
+        <!-- مدخلات العملية المالية مع زر الآلة الحاسبة المدمجة -->
+<div class="form-group" style="display: flex; gap: 8px; align-items: stretch;">
+    <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any" min="0" style="flex: 1;">
+    <button type="button" class="icon-btn" onclick="openCalcModal('amount')" title="آلة حاسبة لجمع المبالغ" style="background: var(--primary-light); color: var(--primary); font-size: 1.25rem; width: 46px; height: 46px; flex-shrink: 0; border: 1px solid var(--border-color);">🔢</button>
+</div>
         <input type="hidden" id="type" value="debit">
 
         <div class="form-group note-wrapper">
@@ -1014,6 +1109,48 @@ tbody tr:hover {
     </div>
 </div>
 
+<!-- مودال الآلة الحاسبة لجمع المبالغ -->
+<div id="calcModal" class="modal">
+  <div class="modal-content modal-calc">
+    <div class="modal-header">
+        <h3>🧮 حاسبة المبالغ</h3>
+        <button class="modal-close" onclick="closeModal('calcModal')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 16px;">
+        <!-- شاشة العرض -->
+        <div class="calc-display">
+            <div class="calc-expr" id="calcExprText">0</div>
+            <div class="calc-result" id="calcLiveResult">= 0</div>
+        </div>
+        <!-- لوحة الأزرار -->
+        <div class="calc-grid">
+            <button type="button" class="calc-btn clear" onclick="calcClear()">C</button>
+            <button type="button" class="calc-btn" onclick="calcBackspace()">⌫</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('÷')">÷</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('×')">×</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('7')">7</button>
+            <button type="button" class="calc-btn" onclick="calcInput('8')">8</button>
+            <button type="button" class="calc-btn" onclick="calcInput('9')">9</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('-')">-</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('4')">4</button>
+            <button type="button" class="calc-btn" onclick="calcInput('5')">5</button>
+            <button type="button" class="calc-btn" onclick="calcInput('6')">6</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('+')">+</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('1')">1</button>
+            <button type="button" class="calc-btn" onclick="calcInput('2')">2</button>
+            <button type="button" class="calc-btn" onclick="calcInput('3')">3</button>
+            <button type="button" class="calc-btn op" onclick="calcEqual()">=</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('0')">0</button>
+            <button type="button" class="calc-btn" onclick="calcInput('.')">.</button>
+            <button type="button" class="calc-btn ok-btn" onclick="calcApplyResult()">✓ اعتماد (OK)</button>
+        </div>
+    </div>
+  </div>
+</div>
 <script>
 const API = "https://script.google.com/macros/s/AKfycby0MNbRU_JqajrNoNBP2FU5HOnXN1LFAOU_RJJxmWW5XSN0s5c1VELrcYIaGZ1ce7Jo/exec";
 
@@ -2200,6 +2337,151 @@ function renderClientsDropdown() {
     }
     toggleEditSelectedBtn();
 }
+// ==========================================
+// نظام الآلة الحاسبة لجمع واعتماد المبالغ
+// ==========================================
+let calcExpr = "";
+let calcTargetId = "amount";
+
+function openCalcModal(targetId = 'amount') {
+    calcTargetId = targetId;
+    const currentVal = qs(targetId) ? qs(targetId).value.trim() : "";
+    if (currentVal && !isNaN(Number(currentVal)) && Number(currentVal) > 0) {
+        calcExpr = currentVal;
+    } else {
+        calcExpr = "";
+    }
+    updateCalcDisplay();
+    openModal("calcModal");
+}
+
+function calcInput(char) {
+    const isOp = ['+', '-', '×', '÷'].includes(char);
+    if (isOp) {
+        if (!calcExpr) {
+            if (char === '-') calcExpr = '-';
+            updateCalcDisplay();
+            return;
+        }
+        const lastChar = calcExpr.trim().slice(-1);
+        if (['+', '-', '×', '÷'].includes(lastChar)) {
+            calcExpr = calcExpr.trim().slice(0, -1) + ' ' + char + ' ';
+            updateCalcDisplay();
+            return;
+        }
+        calcExpr += ' ' + char + ' ';
+    } else if (char === '.') {
+        const parts = calcExpr.split(/[+\-×÷]/);
+        const lastPart = parts[parts.length - 1];
+        if (lastPart.includes('.')) return;
+        calcExpr += '.';
+    } else {
+        calcExpr += char;
+    }
+    updateCalcDisplay();
+}
+
+function calcBackspace() {
+    calcExpr = calcExpr.trimEnd();
+    if (calcExpr.length > 0) {
+        calcExpr = calcExpr.slice(0, -1).trimEnd();
+    }
+    updateCalcDisplay();
+}
+
+function calcClear() {
+    calcExpr = "";
+    updateCalcDisplay();
+}
+
+function getCalcResult() {
+    if (!calcExpr.trim()) return 0;
+    let clean = calcExpr.replace(/×/g, '*').replace(/÷/g, '/');
+    clean = clean.trim().replace(/[+\-*/]+$/, '');
+    if (!clean) return 0;
+    if (!/^[0-9+\-*/.\s()]+$/.test(clean)) return null;
+    try {
+        const fn = new Function(`'use strict'; return (${clean})`);
+        const res = fn();
+        if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+            return Math.round((res + Number.EPSILON) * 100) / 100;
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function updateCalcDisplay() {
+    const exprEl = qs("calcExprText");
+    const resultEl = qs("calcLiveResult");
+    if (!exprEl || !resultEl) return;
+    
+    exprEl.textContent = calcExpr || "0";
+    const res = getCalcResult();
+    if (res !== null) {
+        resultEl.textContent = "= " + res.toLocaleString();
+        resultEl.style.color = "#34d399";
+    } else {
+        resultEl.textContent = "خطأ في الصيغة";
+        resultEl.style.color = "#f87171";
+    }
+}
+
+function calcEqual() {
+    const res = getCalcResult();
+    if (res !== null) {
+        calcExpr = String(res);
+        updateCalcDisplay();
+    }
+}
+
+function calcApplyResult() {
+    const res = getCalcResult();
+    if (res !== null && !isNaN(res) && res > 0) {
+        const target = qs(calcTargetId) || qs("amount");
+        if (target) {
+            target.value = res;
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        closeModal("calcModal");
+        showToast(`تم إدراج المبلغ: ${res.toLocaleString()} ر.ي`);
+    } else if (res === 0) {
+        showToast("يرجى إدخال مبلغ أكبر من صفر", "error");
+    } else {
+        showToast("يرجى إدخال أرقام صحيحة", "error");
+    }
+}
+
+// دعم الكتابة المباشرة من لوحة المفاتيح
+window.addEventListener("keydown", (e) => {
+    const modal = qs("calcModal");
+    if (!modal || modal.style.display !== "flex") return;
+
+    if (e.key >= '0' && e.key <= '9') {
+        calcInput(e.key);
+    } else if (e.key === '+') {
+        calcInput('+');
+    } else if (e.key === '-') {
+        calcInput('-');
+    } else if (e.key === '*') {
+        calcInput('×');
+    } else if (e.key === '/') {
+        e.preventDefault();
+        calcInput('÷');
+    } else if (e.key === '.') {
+        calcInput('.');
+    } else if (e.key === 'Backspace') {
+        calcBackspace();
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        calcApplyResult();
+    } else if (e.key === 'Escape') {
+        closeModal('calcModal');
+    } else if (e.key === 'c' || e.key === 'C') {
+        calcClear();
+    }
+});
 </script>
 </body>
 </html>
