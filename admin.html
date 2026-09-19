@@ -763,7 +763,7 @@ tbody tr:hover {
                 <h3>اختر العميل</h3>
                 <button type="button" class="icon-btn" style="width:32px;height:32px;" onclick="closeClientPicker()">✕</button>
             </div>
-            <input id="pickerSearch" type="text" class="search-input" style="margin-top:12px; margin-bottom:0;" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango..." oninput="filterPickerList()">
+<input id="pickerSearch" type="text" class="search-input" style="margin-top:12px; margin-bottom:0;" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango..." oninput="filterPickerList()">            
         </div>
         <div id="pickerList" class="picker-list">
             <!-- تتعبأ بأسماء العملاء ديناميكياً -->
@@ -2119,11 +2119,16 @@ loadDashboardData();
 qs("client_select").addEventListener("change", () => loadTransactions(false));
 
 // فتح وإغلاق قائمة اختيار العميل
+// فتح قائمة اختيار العميل بدون فتح الكيبورد تلقائياً
 function openClientPicker() {
     renderPickerList(allClients);
-    qs("pickerSearch").value = "";
+    const searchInput = qs("pickerSearch");
+    searchInput.value = "";
+    
+    // إزالة التركيز عن حقل البحث لضمان عدم ظهور الكيبورد في الجوال
+    searchInput.blur(); 
+    
     qs("clientPickerModal").classList.add("show");
-    setTimeout(() => qs("pickerSearch").focus(), 150);
 }
 
 function closeClientPicker() {
