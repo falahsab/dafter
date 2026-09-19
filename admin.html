@@ -783,6 +783,9 @@ tbody tr:hover {
 .calc-btn.ok-btn:active {
     transform: scale(0.96);
 }
+#calcModal {
+    z-index: 2500; /* يضمن ظهور الآلة الحاسبة فوق نافذة التعديل */
+}
 </style>
 </head>
 
@@ -1018,9 +1021,13 @@ tbody tr:hover {
     </div>
     <div class="modal-body">
         <div class="form-group">
-            <label class="input-label">المبلغ</label>
-            <input id="modal_amount" type="number" placeholder="المبلغ" step="any" min="0">
-        </div>
+<div class="form-group">
+    <label class="input-label">المبلغ</label>
+    <div style="display: flex; gap: 8px; align-items: stretch;">
+        <input id="modal_amount" type="number" placeholder="المبلغ" step="any" min="0" style="flex: 1;">
+        <button type="button" class="icon-btn" onclick="openCalcModal('modal_amount')" title="آلة حاسبة لجمع المبالغ" style="background: var(--primary-light); color: var(--primary); font-size: 1.25rem; width: 42px; height: 42px; flex-shrink: 0;">🔢</button>
+    </div>
+</div>
         <div class="form-group">
             <label class="input-label">النوع</label>
             <select id="modal_type">
