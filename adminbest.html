@@ -1,0 +1,2581 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة | يمن ستلايت</title>
+
+<!-- استدعاء خط Tajawal من Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --primary: #047857;
+    --primary-hover: #065f46;
+    --primary-light: #ecfdf5;
+    --secondary: #10b981;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+    --danger: #ef4444;
+    --danger-bg: #fef2f2;
+    --warning: #f59e0b;
+    --info: #2563eb;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.05);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "Tajawal", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    padding: 16px;
+    min-height: 100vh;
+}
+
+.main-wrapper {
+    max-width: 950px;
+    margin: 0 auto;
+}
+
+.card {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 24px;
+    border: 1px solid var(--border-color);
+}
+
+/* الترويسة */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.card-title h2 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--primary);
+}
+
+.icon-btn {
+    background: #f1f5f9;
+    color: var(--text-main);
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: #e2e8f0;
+    transform: translateY(-1px);
+}
+
+.icon-btn.logout {
+    color: var(--danger);
+}
+.icon-btn.logout:hover {
+    background: var(--danger-bg);
+}
+
+/* القائمة الجانبية */
+.side-menu {
+    position: fixed;
+    top: 0;
+    right: -290px;
+    width: 280px;
+    height: 100%;
+    background: #ffffff;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1002;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.side-menu.open {
+    right: 0;
+}
+
+.side-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.side-menu-header h3 {
+    font-size: 1.1rem;
+    color: var(--primary);
+}
+
+.side-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    transition: 0.2s;
+}
+
+.side-menu a:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.menu-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    display: none;
+    z-index: 1000;
+}
+
+.menu-overlay.show {
+    display: block;
+}
+
+/* ملخص الحسابات الإجمالي */
+.account-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.summary-item:not(:last-child) {
+    border-left: 1px solid var(--border-color);
+}
+
+.summary-item .label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.summary-item .value {
+    font-size: 1.15rem;
+    font-weight: 800;
+}
+
+.credit-value { color: var(--primary); }
+.debit-value { color: #dc2626; }
+.balance-value { color: var(--info); }
+
+/* الحقول والمدخلات */
+.form-group {
+    margin-bottom: 14px;
+}
+
+.input-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    display: block;
+}
+
+input, select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    background: #ffffff;
+    color: var(--text-main);
+    transition: all 0.2s;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(4, 120, 87, 0.12);
+}
+
+.search-select-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+
+.search-input {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" fill="%2394a3b8" viewBox="0 0 24 24"><path d="M21.71 20.29l-5.01-5.01A7.95 7.95 0 0 0 18 10a8 8 0 1 0-8 8 7.95 7.95 0 0 0 5.28-1.7l5.01 5.01a1 1 0 0 0 1.42-1.42zM4 10a6 6 0 1 1 6 6 6 6 0 0 1-6-6z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    background-size: 18px;
+    padding-left: 38px;
+}
+
+.note-wrapper {
+    position: relative;
+}
+
+.note-wrapper input {
+    padding-left: 48px;
+}
+
+.paste-btn {
+    position: absolute;
+    left: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.paste-btn:hover {
+    background: #e2e8f0;
+}
+
+/* الأزرار */
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    touch-action: manipulation; /* يمنع تأخير وتكرار نقرات اللمس في الجوال */
+}
+
+.trans-btn {
+    flex: 1;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 13px 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ffffff;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.trans-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.trans-btn:active {
+    transform: translateY(0);
+}
+
+.credit-btn {
+    background: linear-gradient(135deg, #059669, #10b981);
+}
+
+.debit-btn {
+    background: linear-gradient(135deg, #e11d48, #f43f5e);
+}
+
+.btn-secondary {
+    background: #475569;
+}
+.btn-accent {
+    background: #0284c7;
+}
+
+/* الجداول */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+th {
+    background: #f8fafc;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px 10px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr {
+    transition: background-color 0.15s;
+}
+
+tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.badge-debit { background: #fee2e2; color: #b91c1c; }
+.badge-credit { background: #dcfce7; color: #15803d; }
+
+.debit-text { color: #dc2626; font-weight: 700; }
+.credit-text { color: #16a34a; font-weight: 700; }
+
+/* أزرار الإشعارات */
+.wa-sms-group {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+}
+
+.wa-sms-group button {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: 0.2s;
+}
+
+.wa-btn { background: #25d366; }
+.wa-btn:hover { background: #1eb857; }
+.sms-btn { background: #3b82f6; }
+.sms-btn:hover { background: #2563eb; }
+
+/* النوافذ المنبثقة (Modals) */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 440px;
+    overflow: hidden;
+    animation: modalScale 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-large {
+    max-width: 850px;
+}
+
+@keyframes modalScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--danger);
+}
+
+.modal-body {
+    padding: 20px;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px;
+    background: #f8fafc;
+    border-top: 1px solid var(--border-color);
+}
+
+/* تبويبات نمط الإضافة / التعديل */
+.mode-tabs {
+    display: flex;
+    gap: 6px;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 15px;
+}
+
+.mode-tab-btn {
+    flex: 1;
+    border: none;
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.mode-tab-btn.active {
+    background: var(--primary);
+    color: #ffffff;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Toast Notification */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+}
+
+.toast {
+    background: #1e293b;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: all 0.25s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success { background: #059669; }
+.toast.error { background: #dc2626; }
+
+@media (max-width: 640px) {
+    body { padding: 8px; }
+    .card { padding: 16px 12px; }
+    .account-summary { padding: 12px 6px; }
+    .summary-item .value { font-size: 0.95rem; }
+    .summary-item .label { font-size: 0.72rem; }
+    .trans-btn { font-size: 0.88rem; padding: 11px 8px; }
+    table { font-size: 0.8rem; }
+    th, td { padding: 8px 4px; }
+}
+
+.loading-indicator {
+    text-align: center;
+    padding: 10px;
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: none;
+}
+
+/* الزر البديل للقائمة القديمة */
+.custom-select-btn {
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 13px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+    user-select: none;
+}
+.custom-select-btn:active {
+    background: #f8fafc;
+    border-color: var(--primary);
+}
+.dropdown-arrow {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* النافذة المنبثقة السفلية (Bottom Sheet) */
+.picker-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 3000;
+    display: none;
+    align-items: flex-end; /* تفتح من الأسفل في الجوال */
+    justify-content: center;
+}
+.picker-overlay.show {
+    display: flex;
+}
+.picker-sheet {
+    background: #ffffff;
+    width: 100%;
+    max-width: 550px;
+    max-height: 80vh;
+    border-radius: 20px 20px 0 0;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+.picker-header {
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.picker-drag-handle {
+    width: 40px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    margin-bottom: 10px;
+}
+.picker-header h3 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    font-weight: 800;
+}
+.picker-list {
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.picker-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.15s;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.picker-item:hover, .picker-item:active {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+.picker-item.selected {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+@media (min-width: 641px) {
+    .picker-overlay {
+        align-items: center;
+    }
+    .picker-sheet {
+        border-radius: var(--radius-lg);
+        max-height: 70vh;
+    }
+}
+
+/* تصميم الآلة الحاسبة المدمجة */
+#calcModal {
+    z-index: 2500; /* تفتح فوق نافذة التعديل */
+}
+
+.modal-calc {
+    max-width: 330px;
+    width: 95%;
+    border-radius: var(--radius-lg);
+}
+
+.calc-display {
+    background: #0f172a;
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    text-align: right;
+    direction: ltr;
+    margin-bottom: 12px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);
+}
+
+.calc-expr {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    min-height: 22px;
+    overflow-x: auto;
+    white-space: nowrap;
+    word-break: break-all;
+    direction: ltr;
+    text-align: right;
+}
+
+.calc-result {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #34d399;
+    min-height: 38px;
+    overflow-x: auto;
+    white-space: nowrap;
+    direction: ltr;
+    text-align: right;
+}
+
+.calc-grid {
+    direction: ltr; /* ترتيب الأزرار من اليسار لليمين */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.calc-btn {
+    border: none;
+    border-radius: 10px;
+    padding: 13px 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: #f1f5f9;
+    color: var(--text-main);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.calc-btn:active {
+    transform: scale(0.94);
+    background: #e2e8f0;
+}
+
+.calc-btn.op {
+    background: #e0f2fe;
+    color: #0284c7;
+    font-size: 1.3rem;
+}
+
+.calc-btn.op:active {
+    background: #bae6fd;
+}
+
+.calc-btn.clear {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.calc-btn.clear:active {
+    background: #fecaca;
+}
+
+.calc-btn.ok-btn {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: #ffffff;
+    font-size: 1.05rem;
+    grid-column: span 2;
+    box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+}
+
+.calc-btn.ok-btn:active {
+    transform: scale(0.96);
+}
+
+/* تعطيل النقر ومؤشر الماوس عند الإرسال */
+.trans-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none !important;
+    box-shadow: none !important;
+}
+</style>
+</head>
+
+<body>
+
+
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="main-wrapper">
+    <div class="card">
+        <!-- ترويسة الصفحة -->
+        <div class="card-header">
+            <button class="icon-btn" onclick="toggleMenu()" title="القائمة">☰</button>
+
+            <div class="card-title">
+                <h2>لوحة الإدارة | يمن ستلايت</h2>
+            </div>
+
+            <button class="icon-btn logout" onclick="logout()" title="تسجيل الخروج">🚪</button>
+        </div>
+
+        <!-- القائمة الجانبية -->
+        <div id="sideMenu" class="side-menu">
+            <div class="side-menu-header">
+                <h3>القائمة الرئيسية</h3>
+                <button class="icon-btn" onclick="closeMenu()">✕</button>
+            </div>
+            <a href="#" onclick="showMangoUsers(); closeMenu(); return false;">👤 أسماء Mango Users</a>
+            <a href="#" onclick="openNewClientModal(); closeMenu(); return false;">➕ إضافة عميل جديد</a>
+            <a href="#" onclick="showClientsBalances(); closeMenu(); return false;">👥 حسابات العملاء</a>
+            <a href="/reseller-reprt.html">📊 إحصائيات التجديد</a>
+            <a href="#" onclick="logout(); closeMenu(); return false;" style="color: var(--danger);">🚪 تسجيل الخروج</a>
+        </div>
+        <div id="menuOverlay" class="menu-overlay" onclick="toggleMenu()"></div>
+
+        <!-- ملخص الحسابات الإجمالي العام -->
+        <div class="account-summary">
+            <div class="summary-item">
+                <span class="label">إجمالي ما لكم (مدين)</span>
+                <span class="value debit-value" id="totalDebit">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">إجمالي ما عليكم (دائن)</span>
+                <span class="value credit-value" id="totalCredit">0 ر.ي</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">الصافي الكلي</span>
+                <span class="value balance-value" id="netBalance">0 ر.ي</span>
+            </div>
+        </div>
+
+<!-- زر اختيار العميل العصري (بديل القائمة القديمة) -->
+<div class="search-select-box">
+    <div style="display: flex; gap: 8px;">
+        <div id="customSelectTrigger" class="custom-select-btn" onclick="openClientPicker()">
+            <span id="selectedClientText">👤 اضغط هنا لاختيار العميل...</span>
+            <span class="dropdown-arrow">▼</span>
+        </div>
+        <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
+    </div>
+    <!-- عنصر مخفي للاحتفاظ بالقيمة المختارة -->
+    <input type="hidden" id="client_select" value="">
+</div>
+
+<!-- نافذة اختيار العميل المنبثقة من الأسفل للجوال (Bottom Sheet) -->
+<div id="clientPickerModal" class="picker-overlay" onclick="closeClientPicker(event)">
+    <div class="picker-sheet" onclick="event.stopPropagation()">
+        <div class="picker-header">
+            <div class="picker-drag-handle"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <h3>اختر العميل</h3>
+                <button type="button" class="icon-btn" style="width:32px;height:32px;" onclick="closeClientPicker()">✕</button>
+            </div>
+<input id="pickerSearch" type="text" class="search-input" style="margin-top:12px; margin-bottom:0;" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango..." oninput="filterPickerList()">            
+        </div>
+        <div id="pickerList" class="picker-list">
+            <!-- تتعبأ بأسماء العملاء ديناميكياً -->
+        </div>
+    </div>
+</div>
+
+        <!-- مدخلات العملية المالية -->
+        <!-- مدخلات العملية المالية مع زر الآلة الحاسبة المدمجة -->
+<div class="form-group" style="display: flex; gap: 8px; align-items: stretch;">
+    <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any" min="0" style="flex: 1;">
+    <button type="button" class="icon-btn" onclick="openCalcModal('amount')" title="آلة حاسبة لجمع المبالغ" style="background: var(--primary-light); color: var(--primary); font-size: 1.25rem; width: 42px; height: 42px; flex-shrink: 0; ">🔢</button>
+</div>
+        <input type="hidden" id="type" value="debit">
+
+        <div class="form-group note-wrapper">
+            <input id="note" list="notesList" placeholder="البيان (تفاصيل العملية)">
+            <span class="paste-btn" onclick="pasteFromClipboard()" title="لصق من الحافظة">📋</span>
+            <datalist id="notesList"></datalist>
+        </div>
+
+<!-- أزرار الإضافة السريعة -->
+<div class="action-buttons">
+    <button type="button" id="btnCredit" class="trans-btn credit-btn" onclick="addTransType('credit')">
+        <span>⬇</span>
+        <span>إضافة له (دائن)</span>
+    </button>
+    <button type="button" id="btnDebit" class="trans-btn debit-btn" onclick="addTransType('debit')">
+        <span>⬆</span>
+        <span>إضافة عليه (مدين)</span>
+    </button>
+</div>
+
+        <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
+
+        <!-- ملخص رصيد العميل المختار -->
+        <div class="account-summary" style="margin-top: 20px;">
+            <div class="summary-item">
+                <span class="label">إجمالي العملاء</span>
+                <span class="value" id="stat_clients" style="color: var(--text-main);">0</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">رصيد العميل الحالي</span>
+                <span class="value" id="stat_total">اختر عميلاً</span>
+            </div>
+            <div class="summary-item">
+                <span class="label">آخر عملية</span>
+                <span class="value" id="stat_last" style="font-size: 0.9rem; color: var(--text-muted);">-</span>
+            </div>
+        </div>
+
+        <!-- أزرار العمليات -->
+        <div class="action-buttons">
+            <button type="button" class="trans-btn btn-secondary" onclick="showAllTransactions()">
+                <span>📋</span>
+                <span>عرض كل العمليات</span>
+            </button>
+            <button type="button" class="trans-btn btn-accent" onclick="printTransactions()">
+                <span>🖨️</span>
+                <span>طباعة كشف حساب</span>
+            </button>
+        </div>
+
+        <!-- جدول العمليات المالية -->
+        <div class="table-responsive">
+            <table id="transTable">
+                <thead>
+                    <tr>
+                        <th>المبلغ</th>
+                        <th>النوع</th>
+                        <th>البيان</th>
+                        <th>التاريخ</th>
+                        <th>إشعار</th>
+                    </tr>
+                </thead>
+                <tbody id="transBody">
+                    <tr><td colspan="5" style="color: var(--text-muted); padding: 20px;">اختر عميلاً لعرض عملياته فوراً</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- مودال [إضافة عميل جديد / تعديل عميل سابق] -->
+<div id="addClientModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h3 id="clientModalTitle">➕ إدارة بيانات العميل</h3>
+        <button class="modal-close" onclick="closeModal('addClientModal')">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+        <!-- شريط التبديل بين وضع الإضافة والتعديل -->
+        <div class="mode-tabs">
+            <button type="button" id="tabNewClient" class="mode-tab-btn active" onclick="setClientModalMode('new')">
+                ➕ عميل جديد
+            </button>
+            <button type="button" id="tabEditClient" class="mode-tab-btn" onclick="setClientModalMode('edit')">
+                ✏️ تعديل عميل سابق
+            </button>
+        </div>
+
+        <!-- قائمة اختيار العميل للتعديل -->
+        <div id="selectClientToEditBox" class="form-group" style="display: none;">
+            <label class="input-label" style="color: var(--primary); font-weight: bold;">اختر العميل المراد تعديل بياناته:</label>
+            <select id="modal_client_select" onchange="onSelectClientToEdit()">
+                <option value="">-- اختر عميلاً للتعديل --</option>
+            </select>
+        </div>
+
+        <input type="hidden" id="edit_client_id" value="">
+
+        <div class="form-group">
+            <label class="input-label">الاسم</label>
+            <input id="new_name" placeholder="اسم العميل الكامل">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">رقم الواتساب</label>
+            <div style="display: flex; gap: 6px;">
+                <input id="new_mobile" type="tel" placeholder="رقم الواتساب (مثال: 770000000)">
+                <button class="icon-btn" id="pickContact" type="button" title="استيراد من جهات الاتصال">📱</button>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">رقم الرسائل (SMS)</label>
+            <input id="new_mobile_sms" type="tel" placeholder="رقم SMS">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">اسم المستخدم</label>
+            <input id="new_username" placeholder="اسم المستخدم">
+        </div>
+        
+        <div class="form-group">
+            <label class="input-label">كلمة المرور</label>
+            <input id="new_password" type="text" placeholder="كلمة المرور">
+        </div>
+
+        <!-- حقل Mango User -->
+        <div class="form-group">
+            <label class="input-label">اسم المستخدم Mango User (اختياري)</label>
+            <input id="new_mango_user" placeholder="Mango User (مثال: user123)">
+        </div>
+        
+        <button class="trans-btn credit-btn" style="width:100%" id="saveClientBtn" onclick="saveClientData()">إضافة العميل</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال تعديل عملية مالية -->
+<div id="transModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+        <h3>✏️ تعديل العملية المالية</h3>
+        <button class="modal-close" onclick="closeModal('transModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="form-group">
+            <label class="input-label">المبلغ</label>
+            <div style="display: flex; gap: 8px; align-items: stretch;">
+                <input id="modal_amount" type="number" placeholder="المبلغ" step="any" min="0" style="flex: 1;">
+                <button type="button" class="icon-btn" onclick="openCalcModal('modal_amount')" title="آلة حاسبة لجمع المبالغ" style="background: var(--primary-light); color: var(--primary); font-size: 1.25rem; width: 42px; height: 42px; flex-shrink: 0;">🔢</button>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="input-label">النوع</label>
+            <select id="modal_type">
+                <option value="debit">عليه (مدين)</option>
+                <option value="credit">له (دائن)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="input-label">البيان</label>
+            <input id="modal_note" placeholder="البيان">
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="trans-btn credit-btn" onclick="saveTransModal()">حفظ التعديل</button>
+        <button class="trans-btn debit-btn" onclick="deleteTransModal()">حذف</button>
+        <button class="trans-btn btn-secondary" onclick="closeModal('transModal')">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال حسابات العملاء -->
+<div id="clientsModal" class="modal">
+  <div class="modal-content modal-large">
+    <div class="modal-header">
+        <h3>👥 حسابات العملاء وصافي الأرصدة</h3>
+        <button class="modal-close" onclick="closeModal('clientsModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+        <input id="search_client_list" class="search-input" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango User..." oninput="filterClientsTable()">
+        
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table id="clientsBalanceTable">
+                <thead>
+                    <tr>
+                        <th>الرقم</th>
+                        <th>العميل</th>
+                        <th>الجوال</th>
+                        <th>Mango User</th>
+                        <th>الرصيد الصافي</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsBalanceBody"></tbody>
+            </table>
+        </div>
+
+        <div id="clientsTotals" class="account-summary" style="margin-top: 15px;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="trans-btn btn-accent" onclick="printClientsList()">🖨️ طباعة القائمة</button>
+        <button class="trans-btn btn-secondary" onclick="closeModal('clientsModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال Mango Users -->
+<div id="mangoUsersModal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3>👤 أسماء Mango Users</h3>
+            <button class="modal-close" onclick="closeModal('mangoUsersModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input id="mangoSearch" class="search-input" type="text" placeholder="🔍 بحث باسم العميل أو Mango User..." oninput="filterMangoUsers()">
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto; margin-top: 10px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم العميل</th>
+                            <th>Mango User</th>
+                            <th>إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mangoUsersBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- نافذة اختيار الرقم المنبثقة للاتصال -->
+<div id="numberPopup" class="modal">
+    <div class="modal-content" style="max-width: 320px; text-align: center; padding: 20px;">
+        <h4 style="margin-bottom: 12px; color: var(--primary);">اختر الرقم المناسب</h4>
+        <div id="numbersList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+        <button class="trans-btn btn-secondary" onclick="closePopup()" style="margin-top: 12px; width: 100%;">إلغاء</button>
+    </div>
+</div>
+
+<!-- مودال الآلة الحاسبة لجمع المبالغ -->
+<div id="calcModal" class="modal">
+  <div class="modal-content modal-calc">
+    <div class="modal-header">
+        <h3>🧮 حاسبة المبالغ</h3>
+        <button class="modal-close" onclick="closeModal('calcModal')">&times;</button>
+    </div>
+    <div class="modal-body" style="padding: 16px;">
+        <!-- شاشة العرض -->
+        <div class="calc-display">
+            <div class="calc-expr" id="calcExprText">0</div>
+            <div class="calc-result" id="calcLiveResult">= 0</div>
+        </div>
+        <!-- لوحة الأزرار -->
+        <div class="calc-grid">
+            <button type="button" class="calc-btn clear" onclick="calcClear()">C</button>
+            <button type="button" class="calc-btn" onclick="calcBackspace()">⌫</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('÷')">÷</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('×')">×</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('7')">7</button>
+            <button type="button" class="calc-btn" onclick="calcInput('8')">8</button>
+            <button type="button" class="calc-btn" onclick="calcInput('9')">9</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('-')">-</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('4')">4</button>
+            <button type="button" class="calc-btn" onclick="calcInput('5')">5</button>
+            <button type="button" class="calc-btn" onclick="calcInput('6')">6</button>
+            <button type="button" class="calc-btn op" onclick="calcInput('+')">+</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('1')">1</button>
+            <button type="button" class="calc-btn" onclick="calcInput('2')">2</button>
+            <button type="button" class="calc-btn" onclick="calcInput('3')">3</button>
+            <button type="button" class="calc-btn op" onclick="calcEqual()">=</button>
+
+            <button type="button" class="calc-btn" onclick="calcInput('0')">0</button>
+            <button type="button" class="calc-btn" onclick="calcInput('.')">.</button>
+            <button type="button" class="calc-btn ok-btn" onclick="calcApplyResult()">✓ اعتماد (OK)</button>
+        </div>
+    </div>
+  </div>
+</div>
+<script>
+const API = "https://script.google.com/macros/s/AKfycby0MNbRU_JqajrNoNBP2FU5HOnXN1LFAOU_RJJxmWW5XSN0s5c1VELrcYIaGZ1ce7Jo/exec";
+
+// أيقونة واتساب SVG
+const waSvgIcon = `<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.698c.983.54 1.81.826 2.806.826 3.182 0 5.768-2.587 5.768-5.766-.001-3.187-2.575-5.77-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.115-.526-1.815-.752-2.983-2.59-3.074-2.711-.09-.12-1.229-1.636-1.229-3.12 0-1.485.765-2.217 1.036-2.518.271-.301.591-.376.787-.376.196 0 .393.002.564.01.181.01.425-.069.664.506.248.595.845 2.062.919 2.213.074.151.123.327.024.524-.098.197-.148.32-.294.493-.146.173-.308.386-.44.518-.146.146-.299.306-.129.598.17.292.755 1.246 1.62 2.015 1.111.989 2.049 1.296 2.341 1.442.292.146.463.123.634-.073.171-.196.732-.853.928-1.146.196-.293.391-.244.659-.146.268.098 1.708.805 2.001.951.293.146.488.22.561.342.073.122.073.708-.071 1.113z"/></svg>`;
+
+const qs = id => document.getElementById(id);
+let allClients = [], clientTransactions = [], currentClientId = "", currentTransId = null;
+let currentClientModalMode = 'new';
+let cachedBalancesList = [];
+
+// كاش محلي
+const transCache = {}; // { [clientId]: { list: [], total: number, isPartial: boolean } }
+
+// إشعارات Toast
+function showToast(message, type = "success") {
+    const container = qs("toastContainer");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<span>${type === 'success' ? '✓' : '⚠'}</span> <span>${message}</span>`;
+    container.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("show"));
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 300);
+    }, 2800);
+}
+
+// فتح وإغلاق النوافذ
+function openModal(id) { qs(id).style.display = "flex"; }
+function closeModal(id) { qs(id).style.display = "none"; }
+window.onclick = e => { if (e.target.classList.contains("modal")) e.target.style.display = "none"; }
+
+// تسجيل الخروج
+function logout() {
+    localStorage.clear();
+    window.location.href = "index.html";
+}
+
+// القائمة الجانبية
+function toggleMenu() {
+    qs("sideMenu").classList.toggle("open");
+    qs("menuOverlay").classList.toggle("show");
+}
+function closeMenu() {
+    qs("sideMenu").classList.remove("open");
+    qs("menuOverlay").classList.remove("show");
+}
+
+function formatDateSafe(d) {
+    if (!d) return "-";
+    const date = new Date(d);
+    return isNaN(date.getTime()) ? String(d) : date.toLocaleDateString('en-GB');
+}
+
+// تنسيق هاتف الواتساب دولياً لليمن 967
+function formatWhatsAppPhone(phone) {
+    if (!phone) return "";
+    let p = String(phone).replace(/[^0-9]/g, "");
+    if (p.startsWith("00967")) p = p.substring(2);
+    else if (p.startsWith("0")) p = "967" + p.substring(1);
+    else if (!p.startsWith("967")) p = "967" + p;
+    return p;
+}
+
+// ==========================================
+// التحميل الموحد للوحة التحكم
+// ==========================================
+async function loadDashboardData(forceRefresh = false) {
+    qs("loading").style.display = "block";
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getDashboardData", forceRefresh })
+        });
+        const data = await res.json();
+
+        if (data.status !== "success") throw new Error(data.message || "خطأ غير معروف");
+
+        // 1. العملاء
+        allClients = Array.isArray(data.clients) ? data.clients : [];
+        renderClientsDropdown();
+
+        // 2. الملخص الإجمالي العام
+        if (data.totals) {
+            qs("totalCredit").textContent = Number(data.totals.totalCredit || 0).toLocaleString() + " ر.ي";
+            qs("totalDebit").textContent = Number(data.totals.totalDebit || 0).toLocaleString() + " ر.ي";
+            const net = Number(data.totals.netBalance || 0);
+            qs("netBalance").textContent = net > 0 
+                ? `لكم ${net.toLocaleString()} ر.ي` 
+                : (net < 0 ? `عليكم ${Math.abs(net).toLocaleString()} ر.ي` : "0 ر.ي");
+        }
+
+        // 3. أرصدة العملاء
+        cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
+
+        // 4. تسخين الكاش لعمليات العملاء
+        if (data.recentMap && typeof data.recentMap === "object") {
+            Object.keys(data.recentMap).forEach(cid => {
+                const balObj = cachedBalancesList.find(b => String(b.client_id) === String(cid));
+                transCache[cid] = {
+                    list: data.recentMap[cid] || [],
+                    total: balObj ? balObj.total : 0,
+                    isPartial: true
+                };
+            });
+        }
+
+        updateStats();
+
+        // تحديث عمليات العميل المختار إن وجد
+        if (currentClientId) {
+            loadTransactions(false);
+        }
+
+    } catch (e) {
+        console.error("خطأ أثناء تحميل لوحة التحكم:", e);
+        showToast("تعذر تحميل البيانات، تأكد من الاتصال", "error");
+    } finally {
+        qs("loading").style.display = "none";
+    }
+}
+
+// تعبئة القائمة المنسدلة للعملاء
+// تعبئة القائمة المنسدلة للعملاء (يظهر اسم العميل فقط)
+function renderClientsDropdown() {
+    const select = qs("client_select");
+    const prevSelected = select.value;
+    select.innerHTML = `<option value="">-- اختر العميل --</option>`;
+
+    const frag = document.createDocumentFragment();
+    allClients.forEach(c => {
+        const op = document.createElement("option");
+        op.value = c.client_id;
+        
+        // التعديل هنا: اسم العميل فقط
+        op.textContent = c.name;
+
+        // الاحتفاظ ببيانات الهاتف والمانجو للبحث السريع في الخلفية
+        op.dataset.name = String(c.name || "").toLowerCase();
+        op.dataset.mobile = String(c.mobile || "");
+        op.dataset.mango = String(c.mango_user || "").toLowerCase();
+        frag.appendChild(op);
+    });
+    select.appendChild(frag);
+
+    if (prevSelected) select.value = prevSelected;
+    toggleEditSelectedBtn();
+}
+function toggleEditSelectedBtn() {
+    const hasClient = !!qs("client_select").value;
+    qs("editCurrentClientBtn").style.display = hasClient ? "flex" : "none";
+}
+
+function editCurrentlySelectedClient() {
+    const clientId = qs("client_select").value;
+    if (clientId) openEditClientModal(clientId);
+}
+
+// بحث متكامل وشامل بالاسم، الهاتف، و Mango User
+function filterClientSelect() {
+    const q = qs("client_search").value.trim().toLowerCase();
+    const select = qs("client_select");
+    let foundFirst = false;
+
+    Array.from(select.options).forEach((op, index) => {
+        if (index === 0) return;
+        const name = op.dataset.name || "";
+        const mobile = op.dataset.mobile || "";
+        const mango = op.dataset.mango || "";
+
+        const match = !q || name.includes(q) || mobile.includes(q) || mango.includes(q);
+        op.style.display = match ? "" : "none";
+
+        if (match && !foundFirst && q !== "") {
+            select.value = op.value;
+            foundFirst = true;
+        }
+    });
+
+    if (!q) {
+        // إذا مسح البحث أعد ضبط التحديد
+        toggleEditSelectedBtn();
+        return;
+    }
+
+    toggleEditSelectedBtn();
+    if (foundFirst) {
+        loadTransactions(false);
+    }
+}
+
+// ==========================================
+// إدارة نافذة العميل (إضافة / تعديل)
+// ==========================================
+function openNewClientModal() {
+    setClientModalMode('new');
+    openModal('addClientModal');
+}
+
+function openEditClientModal(clientId) {
+    setClientModalMode('edit', clientId);
+    openModal('addClientModal');
+}
+
+function setClientModalMode(mode, clientId = null) {
+    currentClientModalMode = mode;
+    const isEdit = (mode === 'edit');
+
+    qs("selectClientToEditBox").style.display = isEdit ? "block" : "none";
+    qs("clientModalTitle").textContent = isEdit ? "✏️ تعديل بيانات العميل" : "➕ إضافة عميل جديد";
+    qs("saveClientBtn").textContent = isEdit ? "حفظ التعديلات" : "إضافة العميل";
+
+    if (isEdit) {
+        qs("tabEditClient").classList.add("active");
+        qs("tabNewClient").classList.remove("active");
+    } else {
+        qs("tabNewClient").classList.add("active");
+        qs("tabEditClient").classList.remove("active");
+        clearClientForm();
+    }
+
+    const modalSelect = qs("modal_client_select");
+    modalSelect.innerHTML = `<option value="">-- اختر عميلاً للتعديل --</option>`;
+    allClients.forEach(c => {
+        const op = document.createElement("option");
+        op.value = c.client_id;
+        op.textContent = `${c.name} (${c.mobile || '-'}) ${c.mango_user ? '[Mango: ' + c.mango_user + ']' : ''}`;
+        modalSelect.appendChild(op);
+    });
+
+    if (clientId) {
+        modalSelect.value = clientId;
+        onSelectClientToEdit();
+    }
+}
+
+function clearClientForm() {
+    qs("edit_client_id").value = "";
+    qs("new_name").value = "";
+    qs("new_mobile").value = "";
+    qs("new_mobile_sms").value = "";
+    qs("new_username").value = "";
+    qs("new_password").value = "";
+    qs("new_mango_user").value = "";
+}
+
+function onSelectClientToEdit() {
+    const clientId = qs("modal_client_select").value;
+    if (!clientId) {
+        clearClientForm();
+        return;
+    }
+
+    const client = allClients.find(c => String(c.client_id) === String(clientId));
+    if (!client) return;
+
+    qs("edit_client_id").value = client.client_id;
+    qs("new_name").value = client.name || "";
+    qs("new_mobile").value = client.mobile || "";
+    qs("new_mobile_sms").value = client.mobile_sms || "";
+    qs("new_username").value = client.username || "";
+    qs("new_password").value = client.password || "";
+    qs("new_mango_user").value = client.mango_user || "";
+}
+
+// حفظ بيانات العميل
+async function saveClientData() {
+    const clientId = qs("edit_client_id").value;
+    const name = qs("new_name").value.trim();
+    const mobile = qs("new_mobile").value.trim();
+    const mobile_sms = qs("new_mobile_sms").value.trim();
+    const username = qs("new_username").value.trim();
+    const password = qs("new_password").value.trim();
+    const mango_user = qs("new_mango_user").value.trim();
+    const btn = qs("saveClientBtn");
+
+    if (!name || !mobile || !username || !password) {
+        showToast("يرجى تعبئة الحقول الأساسية: الاسم، الجوال، المستخدم، كلمة المرور", "error");
+        return;
+    }
+
+    const isEdit = (currentClientModalMode === 'edit' && clientId);
+    const action = isEdit ? "updateClient" : "addClient";
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "جاري الحفظ...";
+
+    const payload = {
+        action: action,
+        name,
+        mobile,
+        mobile_sms,
+        username,
+        password,
+        mango_user
+    };
+
+    if (isEdit) payload.client_id = clientId;
+
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            showToast(isEdit ? "تم تحديث بيانات العميل بنجاح" : "تمت إضافة العميل بنجاح");
+            closeModal("addClientModal");
+            clearClientForm();
+            if (clientId) delete transCache[clientId];
+            await loadDashboardData(true);
+        } else {
+            showToast(data.message || "حدث خطأ أثناء حفظ البيانات", "error");
+        }
+    } catch (err) {
+        showToast("تعذر الاتصال بالخادم", "error");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
+
+// ==========================================
+// جلب وعرض العمليات المالية
+// ==========================================
+async function loadTransactions(forceRefresh = false) {
+    currentClientId = qs("client_select").value;
+    toggleEditSelectedBtn();
+
+    if (!currentClientId) {
+        qs("transBody").innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">اختر عميلاً لعرض عملياته فوراً</td></tr>`;
+        updateStats();
+        return;
+    }
+
+    // 1. العرض الفوري من الكاش
+    const cached = transCache[currentClientId];
+    if (cached && !forceRefresh) {
+        clientTransactions = cached.list || [];
+        updateStats(cached.total);
+        renderTransactions(clientTransactions.slice(0, 5));
+        
+        // جلب العمليات كاملة في الخلفية بهدوء
+        if (cached.isPartial) {
+            fetchFullTransactionsBackground(currentClientId);
+        }
+        return;
+    }
+
+    // 2. جلب العمليات من السيرفر
+    qs("loading").style.display = "block";
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ 
+                action: "getClientAllTransactions", 
+                client_id: currentClientId,
+                forceRefresh: forceRefresh 
+            })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            clientTransactions = (data.list || []).sort((a, b) => 
+                (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0) || Number(b.trans_id) - Number(a.trans_id)
+            );
+            transCache[currentClientId] = {
+                list: clientTransactions,
+                total: data.total,
+                isPartial: false
+            };
+            updateStats(data.total);
+            renderTransactions(clientTransactions.slice(0, 5));
+        }
+    } catch (e) {
+        showToast("فشل تحميل عمليات العميل", "error");
+    } finally {
+        qs("loading").style.display = "none";
+    }
+}
+
+async function fetchFullTransactionsBackground(cid) {
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClientAllTransactions", client_id: cid })
+        });
+        const data = await res.json();
+        if (data.status === "success" && currentClientId === cid) {
+            clientTransactions = (data.list || []).sort((a, b) => 
+                (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0) || Number(b.trans_id) - Number(a.trans_id)
+            );
+            transCache[cid] = {
+                list: clientTransactions,
+                total: data.total,
+                isPartial: false
+            };
+            updateStats(data.total);
+        }
+    } catch (e) {}
+}
+
+async function showAllTransactions() {
+    if (!currentClientId) {
+        showToast("يرجى اختيار العميل أولاً", "error");
+        return;
+    }
+
+    const cached = transCache[currentClientId];
+    if (cached && !cached.isPartial) {
+        renderTransactions(cached.list);
+        return;
+    }
+
+    qs("loading").style.display = "block";
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClientAllTransactions", client_id: currentClientId })
+        });
+        const data = await res.json();
+        if (data.status === "success") {
+            clientTransactions = (data.list || []).sort((a, b) => 
+                (new Date(b.date).getTime() || 0) - (new Date(a.date).getTime() || 0) || Number(b.trans_id) - Number(a.trans_id)
+            );
+            transCache[currentClientId] = {
+                list: clientTransactions,
+                total: data.total,
+                isPartial: false
+            };
+            renderTransactions(clientTransactions);
+        }
+    } catch (e) {
+        showToast("تعذر جلب جميع العمليات", "error");
+    } finally {
+        qs("loading").style.display = "none";
+    }
+}
+
+// إضافة عملية مالية جديدة
+// ==========================================
+// إضافة عملية مالية مع حماية ضد النقر المزدوج والسريع (للجوال والكمبيوتر)
+// ==========================================
+let isSubmittingTrans = false;
+let lastTransSubmitTime = 0;
+
+function resetTransButtons() {
+    isSubmittingTrans = false;
+    const actionBox = document.querySelector(".action-buttons");
+    if (actionBox) {
+        actionBox.style.pointerEvents = "";
+        actionBox.style.opacity = "";
+    }
+    const btnCredit = qs("btnCredit");
+    const btnDebit = qs("btnDebit");
+    if (btnCredit) {
+        btnCredit.disabled = false;
+        btnCredit.innerHTML = `<span>⬇</span> <span>إضافة له (دائن)</span>`;
+    }
+    if (btnDebit) {
+        btnDebit.disabled = false;
+        btnDebit.innerHTML = `<span>⬆</span> <span>إضافة عليه (مدين)</span>`;
+    }
+}
+
+async function addTransType(type) {
+    const now = Date.now();
+    // 1. فحص القفل المزدوج: متغير الحالة + الفارق الزمني (يمنع أي نقرات متتالية خلال 2.5 ثانية)
+    if (isSubmittingTrans || (now - lastTransSubmitTime < 2500)) {
+        return;
+    }
+
+    const client_id = qs("client_select").value;
+    const amountVal = qs("amount").value;
+    const amount = Number(amountVal);
+    const note = qs("note").value.trim();
+
+    if (!client_id) { 
+        showToast("يرجى اختيار العميل أولاً", "error"); 
+        return; 
+    }
+    if (!amount || isNaN(amount) || amount <= 0) { 
+        showToast("يرجى إدخال مبلغ صحيح", "error"); 
+        return; 
+    }
+    if (!note) { 
+        showToast("يرجى كتابة البيان", "error"); 
+        return; 
+    }
+
+    // 2. تفعيل القفل فوراً وبشكل متزامن لمنع أي نقرات لاحقة
+    isSubmittingTrans = true;
+    lastTransSubmitTime = now;
+
+    // 3. تعطيل حاوية الأزرار بالكامل لمنع أحداث اللمس (Touch Events) في الهواتف
+    const actionBox = document.querySelector(".action-buttons");
+    if (actionBox) {
+        actionBox.style.pointerEvents = "none";
+        actionBox.style.opacity = "0.6";
+    }
+
+    const btnCredit = qs("btnCredit");
+    const btnDebit = qs("btnDebit");
+    if (btnCredit) btnCredit.disabled = true;
+    if (btnDebit) btnDebit.disabled = true;
+
+    // إظهار مؤشر التحميل على الزر المختار فوراً
+    const activeBtn = (type === 'credit') ? btnCredit : btnDebit;
+    if (activeBtn) {
+        activeBtn.innerHTML = `<span>⏳</span> <span>جاري الإرسال...</span>`;
+    }
+
+    qs("type").value = type;
+    saveNoteSuggestion();
+    qs("loading").style.display = "block";
+
+    try {
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "addTransaction", client_id, amount, type, note })
+        });
+        const data = await res.json();
+
+        if (data.status === "success") {
+            showToast("تم تسجيل العملية بنجاح");
+            qs("amount").value = "";
+            qs("note").value = "";
+            delete transCache[client_id];
+            
+            // تحديث العميل المختار واللوحة بالتوازي
+            await loadTransactions(true);
+            loadDashboardData(true); // تحديث إجمالي اللوحة بالخلفية
+        } else {
+            showToast(data.message || "حدث خطأ أثناء إضافة العملية", "error");
+        }
+    } catch (e) {
+        showToast("تعذر الاتصال بالخادم", "error");
+    } finally {
+        qs("loading").style.display = "none";
+        // مهلة حماية إضافية (1 ثانية) بعد استجابة الخادم لضمان تفريغ أي لمسات متراكمة في الجوال
+        setTimeout(() => {
+            resetTransButtons();
+        }, 1000);
+    }
+}
+
+// دالة متوافقة في حال تم استدعاء addTrans مباشرة من أي مكان
+async function addTrans() {
+    const type = qs("type").value || 'debit';
+    return addTransType(type);
+}
+// رسم جدول العمليات
+function renderTransactions(transactions) {
+    const tbody = qs("transBody");
+    tbody.innerHTML = "";
+
+    if (!transactions || !transactions.length) {
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted);padding:20px;">لا توجد عمليات مسجلة لهذا العميل</td></tr>`;
+        return;
+    }
+
+    const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
+    const clientName = client.name || "";
+    const clientMobile = client.mobile || "";
+    const clientSms = client.mobile_sms || "";
+
+    const frag = document.createDocumentFragment();
+
+    transactions.forEach(t => {
+        const tr = document.createElement("tr");
+        tr.style.cursor = "pointer";
+        tr.onclick = () => openTransModal(t.trans_id);
+
+        const isDebit = t.type === "debit";
+        const dateStr = formatDateSafe(t.date);
+
+        tr.innerHTML = `
+            <td class="${isDebit ? 'debit-text' : 'credit-text'}">${Math.abs(t.amount).toLocaleString()}</td>
+            <td><span class="badge ${isDebit ? 'badge-debit' : 'badge-credit'}">${isDebit ? 'عليه' : 'له'}</span></td>
+            <td>${escapeHtml(t.note)}</td>
+            <td>${dateStr}</td>
+            <td>
+                <div class="wa-sms-group">
+                    <button type="button" class="wa-btn" title="إرسال عبر واتساب">${waSvgIcon} واتساب</button>
+                    <button type="button" class="sms-btn" title="إرسال عبر SMS">SMS</button>
+                </div>
+            </td>
+        `;
+
+        const waBtn = tr.querySelector(".wa-btn");
+        const smsBtn = tr.querySelector(".sms-btn");
+
+        waBtn.onclick = e => {
+            e.stopPropagation();
+            sendWhatsAppMsg(t, clientName, clientMobile);
+        };
+
+        smsBtn.onclick = e => {
+            e.stopPropagation();
+            sendSmsMsg(t, clientName, clientSms);
+        };
+
+        frag.appendChild(tr);
+    });
+
+    tbody.appendChild(frag);
+}
+
+// رسائل الواتساب مع رقم دولي ورصيد دقيق 100%
+function sendWhatsAppMsg(t, clientName, clientMobile) {
+    const targetMobile = formatWhatsAppPhone(clientMobile);
+    if (!targetMobile) {
+        showToast("لا يوجد رقم جوال مسجل لهذا العميل", "error");
+        return;
+    }
+
+    // الاعتماد على الرصيد التراكمي الدقيق المحسوب من السيرفر
+    const bal = (t.balance_after !== undefined && t.balance_after !== null) 
+        ? Number(t.balance_after) 
+        : (transCache[currentClientId]?.total || 0);
+
+    const typeText = t.type === "debit" ? "عليك" : "لك";
+    const totalText = bal > 0 
+        ? `عليك ${bal.toLocaleString()} ريال` 
+        : (bal < 0 ? `لك ${Math.abs(bal).toLocaleString()} ريال` : "خالص (0 ريال)");
+
+    const msg = `👤 *الأخ:* ${clientName}\n💰 *قيد ${typeText} مبلغ:* ${Math.abs(t.amount).toLocaleString()} ريال\n📝 *البيان:* ${t.note}\n---------------\n📊 *رصيدك بعد هذه العملية:*\n       ${totalText}`;
+    window.open(`https://wa.me/${targetMobile}?text=${encodeURIComponent(msg)}`, "_blank");
+}
+
+// رسائل SMS بدقة تامة
+function sendSmsMsg(t, clientName, smsNumber) {
+    if (!smsNumber) {
+        showToast("لا يوجد رقم SMS مسجل لهذا العميل", "error");
+        return;
+    }
+
+    const bal = (t.balance_after !== undefined && t.balance_after !== null) 
+        ? Number(t.balance_after) 
+        : (transCache[currentClientId]?.total || 0);
+
+    const typeText = t.type === "debit" ? "عليك" : "لك";
+    const totalText = bal > 0 
+        ? `عليك ${bal.toLocaleString()}` 
+        : (bal < 0 ? `لك ${Math.abs(bal).toLocaleString()}` : "خالص");
+
+    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount)}\nالبيان: ${t.note}\nالإجمالي: ${totalText}`;
+    window.location.href = `sms:${encodeURIComponent(smsNumber)}?body=${encodeURIComponent(msg)}`;
+}
+
+// تعديل وحذف العملية
+function openTransModal(id) {
+    currentTransId = id;
+    const t = clientTransactions.find(x => String(x.trans_id) === String(id));
+    if (!t) return;
+    qs("modal_amount").value = Math.abs(t.amount);
+    qs("modal_type").value = t.type;
+    qs("modal_note").value = t.note;
+    openModal("transModal");
+}
+
+async function saveTransModal() {
+    if (!currentTransId) return;
+    let amount = Number(qs("modal_amount").value);
+    const type = qs("modal_type").value;
+    const note = qs("modal_note").value.trim();
+
+    if (!amount || isNaN(amount) || amount <= 0) {
+        showToast("يرجى إدخال مبلغ صحيح", "error");
+        return;
+    }
+
+    try {
+        await fetch(API, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "updateTransaction", trans_id: currentTransId, amount, type, note }) 
+        });
+        closeModal("transModal");
+        showToast("تم تحديث العملية بنجاح");
+        delete transCache[currentClientId];
+        await loadTransactions(true);
+        loadDashboardData(true);
+    } catch (e) {
+        showToast("فشل تحديث العملية", "error");
+    }
+}
+
+async function deleteTransModal() {
+    if (!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
+    try {
+        await fetch(API, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "deleteTransaction", trans_id: currentTransId }) 
+        });
+        closeModal("transModal");
+        showToast("تم حذف العملية");
+        delete transCache[currentClientId];
+        await loadTransactions(true);
+        loadDashboardData(true);
+    } catch (e) {
+        showToast("فشل حذف العملية", "error");
+    }
+}
+
+// طباعة كشف حساب مع ضمان تحميل كافة العمليات مسبقاً
+async function printTransactions() {
+    if (!currentClientId) {
+        showToast("يرجى اختيار العميل أولاً", "error");
+        return;
+    }
+
+    // التأكد من جلب كامل العمليات قبل الطباعة
+    const cached = transCache[currentClientId];
+    if (cached && cached.isPartial) {
+        showToast("جاري تجهيز كشف الحساب بالكامل...");
+        await showAllTransactions();
+    }
+
+    if (!clientTransactions.length) {
+        showToast("لا توجد عمليات لطباعتها", "error");
+        return;
+    }
+
+    const client = allClients.find(c => String(c.client_id) === String(currentClientId)) || {};
+    const clientName = client.name || "عميل غير محدد";
+    const total = clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
+    const today = new Date().toLocaleDateString('ar-EG');
+
+    // ترتيب العمليات تصاعدياً (من الأقدم للأحدث) لكشف الحساب المحاسبي
+    const sorted = [...clientTransactions].sort((a, b) => 
+        (new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0) || Number(a.trans_id) - Number(b.trans_id)
+    );
+
+    let runBalance = 0;
+    const rowsHtml = sorted.map(t => {
+        runBalance += Number(t.amount);
+        const isDebit = t.type === "debit";
+        const date = formatDateSafe(t.date);
+        return `
+            <tr>
+                <td style="color:${isDebit ? '#dc2626' : '#16a34a'}; font-weight:bold;">${Math.abs(t.amount).toLocaleString()}</td>
+                <td>${isDebit ? 'عليه' : 'له'}</td>
+                <td>${escapeHtml(t.note)}</td>
+                <td>${date}</td>
+                <td style="color:${runBalance >= 0 ? '#dc2626' : '#16a34a'}; font-weight:bold;">${runBalance > 0 ? `عليه ${runBalance.toLocaleString()}` : (runBalance < 0 ? `له ${Math.abs(runBalance).toLocaleString()}` : 'خالص')}</td>
+            </tr>
+        `;
+    }).join('');
+
+    const html = `
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>كشف حساب - ${escapeHtml(clientName)}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;800&display=swap" rel="stylesheet">
+        <style>
+            body { font-family: "Tajawal", sans-serif; margin: 20px; color: #0f172a; direction: rtl; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #047857; padding-bottom: 12px; margin-bottom: 20px; }
+            .company h2 { margin: 0; color: #047857; font-size: 1.4rem; }
+            .company p { margin: 2px 0 0; color: #64748b; font-size: 0.85rem; }
+            .client-card { background: #f8fafc; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 15px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.95rem; }
+            th, td { border: 1px solid #cbd5e1; padding: 10px; text-align: center; }
+            th { background: #047857; color: white; }
+            tr:nth-child(even) { background: #f8fafc; }
+            .footer { margin-top: 40px; display: flex; justify-content: space-between; border-top: 1px dashed #94a3b8; padding-top: 15px; font-size: 0.85rem; color: #64748b; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="company">
+                <h2>شركة يمن ستلايت</h2>
+                <p>هاتف: 738092209</p>
+            </div>
+            <div style="text-align: left;">
+                <h3>كشف حساب مالي</h3>
+                <p style="font-size:0.85rem; color:#64748b;">تاريخ التقرير: ${today}</p>
+            </div>
+        </div>
+
+        <div class="client-card">
+            <strong>اسم العميل:</strong> ${escapeHtml(clientName)} | <strong>رقم الهاتف:</strong> ${escapeHtml(client.mobile || '-')}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>المبلغ</th>
+                    <th>النوع</th>
+                    <th>البيان</th>
+                    <th>التاريخ</th>
+                    <th>الرصيد بعد العملية</th>
+                </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+            <tfoot>
+                <tr style="background:#f1f5f9; font-weight:bold;">
+                    <td colspan="2" style="text-align:right;">الرصيد الصافي النهائي:</td>
+                    <td colspan="3" style="color:${total >= 0 ? '#dc2626' : '#16a34a'}; font-size:1.1rem;">
+                        ${total > 0 ? `عليه ${total.toLocaleString()} ريال` : (total < 0 ? `له ${Math.abs(total).toLocaleString()} ريال` : 'خالص (0 ريال)')}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="footer">
+            <span>تم الاستخراج بواسطة نظام يمن ستلايت</span>
+            <span>توقيع المحاسب: ..........................</span>
+        </div>
+    </body>
+    </html>`;
+
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 350);
+}
+
+// عرض نافذة حسابات وأرصدة العملاء
+function showClientsBalances() {
+    const data = [...cachedBalancesList].sort((a, b) => b.total - a.total);
+
+    let totalDebit = 0, totalCredit = 0;
+    const tbody = qs("clientsBalanceBody");
+    tbody.innerHTML = "";
+    const frag = document.createDocumentFragment();
+
+    data.forEach(c => {
+        const tot = Number(c.total) || 0;
+        if (tot >= 0) totalDebit += tot;
+        else totalCredit += Math.abs(tot);
+
+        const tr = document.createElement("tr");
+        tr.dataset.mango = c.mango_user || "";
+        tr.innerHTML = `
+            <td>${c.client_id}</td>
+            <td><strong>${escapeHtml(c.name)}</strong></td>
+            <td>${escapeHtml(c.mobile || '-')}</td>
+            <td style="font-family:monospace; direction:ltr; font-weight:bold;">${escapeHtml(c.mango_user || '-')}</td>
+            <td style="font-weight:bold; color:${tot > 0 ? '#dc2626' : (tot < 0 ? '#16a34a' : 'inherit')}">
+                ${tot > 0 ? `عليه ${tot.toLocaleString()}` : (tot < 0 ? `له ${Math.abs(tot).toLocaleString()}` : 'خالص')}
+            </td>
+            <td>
+                <div style="display: flex; gap: 4px; justify-content: center;">
+                    <button type="button" class="trans-btn btn-accent edit-btn" style="padding: 4px 8px; font-size: 0.75rem;">تعديل</button>
+                    <button type="button" class="trans-btn debit-btn del-btn" style="padding: 4px 8px; font-size: 0.75rem;">حذف</button>
+                </div>
+            </td>
+        `;
+
+        tr.querySelector(".edit-btn").onclick = () => {
+            closeModal("clientsModal");
+            openEditClientModal(c.client_id);
+        };
+
+        tr.querySelector(".del-btn").onclick = async () => {
+            if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته بشكل نهائي؟`)) {
+                await fetch(API, { method: "POST", body: JSON.stringify({ action: "deleteClient", client_id: c.client_id }) });
+                showToast("تم حذف العميل بنجاح");
+                delete transCache[c.client_id];
+                await loadDashboardData(true);
+                showClientsBalances();
+            }
+        };
+
+        frag.appendChild(tr);
+    });
+
+    tbody.appendChild(frag);
+
+    const diff = totalDebit - totalCredit;
+    qs("clientsTotals").innerHTML = `
+        <div class="summary-item">
+            <span class="label">إجمالي لكم</span>
+            <span class="value debit-value">${totalDebit.toLocaleString()} ر.ي</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">إجمالي عليكم</span>
+            <span class="value credit-value">${totalCredit.toLocaleString()} ر.ي</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">الصافي</span>
+            <span class="value balance-value">${diff > 0 ? `لكم ${diff.toLocaleString()}` : (diff < 0 ? `عليكم ${Math.abs(diff).toLocaleString()}` : '0')} ر.ي</span>
+        </div>
+    `;
+
+    openModal("clientsModal");
+}
+
+function filterClientsTable() {
+    const q = qs("search_client_list").value.trim().toLowerCase();
+    document.querySelectorAll("#clientsBalanceBody tr").forEach(r => {
+        const name = r.children[1]?.textContent.toLowerCase() || "";
+        const mobile = r.children[2]?.textContent.toLowerCase() || "";
+        const mango = r.children[3]?.textContent.toLowerCase() || "";
+        r.style.display = (name.includes(q) || mobile.includes(q) || mango.includes(q)) ? "" : "none";
+    });
+}
+
+// تحديث الإحصائيات في الشاشة الرئيسية
+function updateStats(explicitTotal = null) {
+    qs("stat_clients").textContent = allClients.length;
+
+    if (!currentClientId) {
+        qs("stat_total").textContent = "اختر عميلاً";
+        qs("stat_total").className = "value";
+        qs("stat_last").textContent = "-";
+        return;
+    }
+
+    if (clientTransactions.length && clientTransactions[0].date) {
+        qs("stat_last").textContent = formatDateSafe(clientTransactions[0].date);
+    } else {
+        qs("stat_last").textContent = "لا توجد";
+    }
+
+    const sum = explicitTotal !== null ? explicitTotal : clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
+    const totalEl = qs("stat_total");
+    if (sum > 0) {
+        totalEl.textContent = `عليه ${sum.toLocaleString()} ر.ي`;
+        totalEl.className = "value debit-value";
+    } else if (sum < 0) {
+        totalEl.textContent = `له ${Math.abs(sum).toLocaleString()} ر.ي`;
+        totalEl.className = "value credit-value";
+    } else {
+        totalEl.textContent = "خالص (0 ر.ي)";
+        totalEl.className = "value balance-value";
+    }
+}
+
+// جهات الاتصال من الموبايل
+function closePopup() { qs("numberPopup").style.display = "none"; }
+
+qs("pickContact").addEventListener("click", async () => {
+    if (!("contacts" in navigator && "select" in navigator.contacts)) {
+        showToast("المتصفح لا يدعم استيراد جهات الاتصال", "error");
+        return;
+    }
+
+    try {
+        const contacts = await navigator.contacts.select(["tel"], { multiple: false });
+        if (!contacts.length || !contacts[0].tel || !contacts[0].tel.length) return;
+
+        let numbers = contacts[0].tel.map(n => {
+            return n.replace(/[\s\-\(\)]/g, "")
+                    .replace(/^(\+967|00967|967)/, "")
+                    .replace(/^0/, "");
+        });
+
+        if (numbers.length === 1) {
+            qs("new_mobile").value = numbers[0];
+            return;
+        }
+
+        const listDiv = qs("numbersList");
+        listDiv.innerHTML = "";
+        numbers.forEach(num => {
+            const btn = document.createElement("button");
+            btn.textContent = num;
+            btn.className = "trans-btn credit-btn";
+            btn.onclick = () => {
+                qs("new_mobile").value = num;
+                closePopup();
+            };
+            listDiv.appendChild(btn);
+        });
+
+        qs("numberPopup").style.display = "flex";
+    } catch (e) {
+        console.warn(e);
+    }
+});
+
+// التعامل مع الحافظة
+async function pasteFromClipboard() {
+    try {
+        const text = await navigator.clipboard.readText();
+        qs("note").value = text;
+        showToast("تم لصق النص");
+    } catch (err) {
+        showToast("تعذر الوصول للحافظة، يرجى اللصق يدوياً", "error");
+    }
+}
+
+// سجل البيانات المقترحة
+let savedNotes = JSON.parse(localStorage.getItem("savedNotes") || "[]");
+function refreshNotes() {
+    const list = qs("notesList");
+    list.innerHTML = "";
+    savedNotes.forEach(note => {
+        const op = document.createElement("option");
+        op.value = note;
+        list.appendChild(op);
+    });
+}
+refreshNotes();
+
+function saveNoteSuggestion() {
+    const value = qs("note").value.trim();
+    if (/^\d+$/.test(value) || !value) return;
+
+    if (!savedNotes.includes(value)) {
+        savedNotes.unshift(value);
+        savedNotes = savedNotes.slice(0, 50);
+        localStorage.setItem("savedNotes", JSON.stringify(savedNotes));
+        refreshNotes();
+    }
+}
+
+// عرض Mango Users
+function showMangoUsers() {
+    const tbody = qs("mangoUsersBody");
+    tbody.innerHTML = "";
+
+    const clients = allClients
+        .filter(c => c.mango_user && String(c.mango_user).trim())
+        .sort((a, b) => String(a.name || "").localeCompare(String(b.name || ""), "ar"));
+
+    if (!clients.length) {
+        tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-muted);padding:20px;">لا يوجد Mango User مسجل حتى الآن</td></tr>`;
+    } else {
+        const frag = document.createDocumentFragment();
+        clients.forEach(c => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${escapeHtml(c.name)}</strong></td>
+                <td style="direction:ltr; font-family:monospace; font-weight:bold;">${escapeHtml(c.mango_user)}</td>
+                <td>
+                    <div style="display:flex; gap:6px; justify-content:center;">
+                        <button type="button" class="trans-btn btn-accent copy-btn" style="padding:4px 8px; font-size:0.8rem;">📋 نسخ</button>
+                        <button type="button" class="trans-btn credit-btn edit-mango-btn" style="padding:4px 8px; font-size:0.8rem;">✏️ تعديل</button>
+                    </div>
+                </td>
+            `;
+
+            const copyBtn = tr.querySelector(".copy-btn");
+            copyBtn.onclick = () => copyMangoUser(c.mango_user, copyBtn);
+
+            const editBtn = tr.querySelector(".edit-mango-btn");
+            editBtn.onclick = () => {
+                closeModal("mangoUsersModal");
+                openEditClientModal(c.client_id);
+            };
+
+            frag.appendChild(tr);
+        });
+        tbody.appendChild(frag);
+    }
+
+    qs("mangoSearch").value = "";
+    openModal("mangoUsersModal");
+}
+
+async function copyMangoUser(value, button) {
+    if (!value) return;
+    try {
+        await navigator.clipboard.writeText(String(value));
+        button.textContent = "✓ تم";
+        button.style.background = "#059669";
+        setTimeout(() => {
+            button.textContent = "📋 نسخ";
+            button.style.background = "";
+        }, 1200);
+        showToast("تم نسخ اسم المستخدم");
+    } catch {
+        showToast("تعذر النسخ التلقائي", "error");
+    }
+}
+
+function filterMangoUsers() {
+    const q = qs("mangoSearch").value.trim().toLowerCase();
+    document.querySelectorAll("#mangoUsersBody tr").forEach(row => {
+        const name = row.children[0]?.textContent.toLowerCase() || "";
+        const mango = row.children[1]?.textContent.toLowerCase() || "";
+        row.style.display = (name.includes(q) || mango.includes(q)) ? "" : "none";
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return "";
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function printClientsList() {
+    const rows = Array.from(document.querySelectorAll("#clientsBalanceBody tr"))
+                      .filter(r => r.style.display !== "none");
+
+    if (!rows.length) {
+        showToast("لا توجد بيانات للطباعة", "error");
+        return;
+    }
+
+    const today = new Date().toLocaleDateString('ar-EG');
+    let totalSumDebit = 0, totalSumCredit = 0;
+
+    const tableRows = rows.map(r => {
+        const name = r.children[1]?.textContent || "";
+        const mobile = r.children[2]?.textContent || "";
+        const mango = r.children[3]?.textContent || "";
+        const total = r.children[4]?.textContent || "";
+        const isDebit = total.includes("عليه");
+        const isCredit = total.includes("له");
+
+        return `
+            <tr>
+                <td>${name}</td>
+                <td>${mobile}</td>
+                <td style="direction:ltr; font-family:monospace;">${mango}</td>
+                <td style="color:${isDebit ? '#dc2626' : (isCredit ? '#16a34a' : '#0f172a')}; font-weight:bold;">${total}</td>
+            </tr>
+        `;
+    }).join('');
+
+    const html = `
+    <!DOCTYPE html>
+    <html lang="ar" dir="rtl">
+    <head>
+        <meta charset="UTF-8">
+        <title>قائمة العملاء وصافي الأرصدة</title>
+        <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700&display=swap" rel="stylesheet">
+        <style>
+            body { font-family: "Tajawal", sans-serif; margin: 20px; direction: rtl; color: #0f172a; }
+            .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #047857; padding-bottom: 10px; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.95rem; }
+            th, td { border: 1px solid #cbd5e1; padding: 8px; text-align: center; }
+            th { background: #047857; color: white; }
+            tr:nth-child(even) { background: #f8fafc; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <div>
+                <h2>شركة يمن ستلايت</h2>
+                <p>كشف إجمالي أرصدة العملاء</p>
+            </div>
+            <div>تاريخ التقرير: ${today}</div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>العميل</th>
+                    <th>الجوال</th>
+                    <th>Mango User</th>
+                    <th>الرصيد الصافي</th>
+                </tr>
+            </thead>
+            <tbody>${tableRows}</tbody>
+        </table>
+    </body>
+    </html>`;
+
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => win.print(), 350);
+}
+
+// بدء التشغيل
+loadDashboardData();
+qs("client_select").addEventListener("change", () => loadTransactions(false));
+
+// فتح وإغلاق قائمة اختيار العميل
+// فتح قائمة اختيار العميل بدون فتح الكيبورد تلقائياً
+function openClientPicker() {
+    renderPickerList(allClients);
+    const searchInput = qs("pickerSearch");
+    searchInput.value = "";
+    
+    // إزالة التركيز عن حقل البحث لضمان عدم ظهور الكيبورد في الجوال
+    searchInput.blur(); 
+    
+    qs("clientPickerModal").classList.add("show");
+}
+
+function closeClientPicker() {
+    qs("clientPickerModal").classList.remove("show");
+}
+
+// رسم عناصر القائمة في النافذة المنبثقة
+function renderPickerList(clients) {
+    const container = qs("pickerList");
+    container.innerHTML = "";
+
+    if (!clients.length) {
+        container.innerHTML = `<div style="text-align:center; padding:24px; color:var(--text-muted);">لا توجد نتائج مطابقة</div>`;
+        return;
+    }
+
+    const currentVal = qs("client_select").value;
+    const frag = document.createDocumentFragment();
+
+    clients.forEach(c => {
+        const item = document.createElement("div");
+        item.className = `picker-item ${String(c.client_id) === String(currentVal) ? 'selected' : ''}`;
+        
+        // عرض اسم العميل
+        item.innerHTML = `
+            <span>${escapeHtml(c.name)}</span>
+            <span style="font-size:0.8rem; font-weight:normal; opacity:0.75;">${c.mobile ? c.mobile : ''}</span>
+        `;
+
+        item.onclick = () => {
+            selectClient(c);
+            closeClientPicker();
+        };
+
+        frag.appendChild(item);
+    });
+
+    container.appendChild(frag);
+}
+
+// عند اختيار عميل
+function selectClient(client) {
+    qs("client_select").value = client.client_id;
+    qs("selectedClientText").textContent = client.name;
+    toggleEditSelectedBtn();
+    loadTransactions(false);
+}
+
+// بحث سريع داخل النافذة المنبثقة
+function filterPickerList() {
+    const q = qs("pickerSearch").value.trim().toLowerCase();
+    const filtered = allClients.filter(c => {
+        const name = String(c.name || "").toLowerCase();
+        const mobile = String(c.mobile || "");
+        const mango = String(c.mango_user || "").toLowerCase();
+        return name.includes(q) || mobile.includes(q) || mango.includes(q);
+    });
+    renderPickerList(filtered);
+}
+
+// دالة renderClientsDropdown الأصلية تصبح مجرد تحديث للنص إن وُجد
+function renderClientsDropdown() {
+    const currentId = qs("client_select").value;
+    if (currentId) {
+        const client = allClients.find(c => String(c.client_id) === String(currentId));
+        if (client) qs("selectedClientText").textContent = client.name;
+    } else {
+        qs("selectedClientText").textContent = "👤 اضغط هنا لاختيار العميل...";
+    }
+    toggleEditSelectedBtn();
+}
+// ==========================================
+// نظام الآلة الحاسبة لجمع واعتماد المبالغ
+// ==========================================
+let calcExpr = "";
+let calcTargetId = "amount";
+
+function openCalcModal(targetId = 'amount') {
+    calcTargetId = targetId;
+    const currentVal = qs(targetId) ? qs(targetId).value.trim() : "";
+    if (currentVal && !isNaN(Number(currentVal)) && Number(currentVal) > 0) {
+        calcExpr = currentVal;
+    } else {
+        calcExpr = "";
+    }
+    updateCalcDisplay();
+    openModal("calcModal");
+}
+
+function calcInput(char) {
+    const isOp = ['+', '-', '×', '÷'].includes(char);
+    if (isOp) {
+        if (!calcExpr) {
+            if (char === '-') calcExpr = '-';
+            updateCalcDisplay();
+            return;
+        }
+        const lastChar = calcExpr.trim().slice(-1);
+        if (['+', '-', '×', '÷'].includes(lastChar)) {
+            calcExpr = calcExpr.trim().slice(0, -1) + ' ' + char + ' ';
+            updateCalcDisplay();
+            return;
+        }
+        calcExpr += ' ' + char + ' ';
+    } else if (char === '.') {
+        const parts = calcExpr.split(/[+\-×÷]/);
+        const lastPart = parts[parts.length - 1];
+        if (lastPart.includes('.')) return;
+        calcExpr += '.';
+    } else {
+        calcExpr += char;
+    }
+    updateCalcDisplay();
+}
+
+function calcBackspace() {
+    calcExpr = calcExpr.trimEnd();
+    if (calcExpr.length > 0) {
+        calcExpr = calcExpr.slice(0, -1).trimEnd();
+    }
+    updateCalcDisplay();
+}
+
+function calcClear() {
+    calcExpr = "";
+    updateCalcDisplay();
+}
+
+function getCalcResult() {
+    if (!calcExpr.trim()) return 0;
+    let clean = calcExpr.replace(/×/g, '*').replace(/÷/g, '/');
+    clean = clean.trim().replace(/[+\-*/]+$/, '');
+    if (!clean) return 0;
+    if (!/^[0-9+\-*/.\s()]+$/.test(clean)) return null;
+    try {
+        const fn = new Function(`'use strict'; return (${clean})`);
+        const res = fn();
+        if (typeof res === 'number' && !isNaN(res) && isFinite(res)) {
+            return Math.round((res + Number.EPSILON) * 100) / 100;
+        }
+        return null;
+    } catch (e) {
+        return null;
+    }
+}
+
+function updateCalcDisplay() {
+    const exprEl = qs("calcExprText");
+    const resultEl = qs("calcLiveResult");
+    if (!exprEl || !resultEl) return;
+    
+    exprEl.textContent = calcExpr || "0";
+    const res = getCalcResult();
+    if (res !== null) {
+        resultEl.textContent = "" + res.toLocaleString();
+        resultEl.style.color = "#34d399";
+    } else {
+        resultEl.textContent = "خطأ في الصيغة";
+        resultEl.style.color = "#f87171";
+    }
+}
+
+function calcEqual() {
+    const res = getCalcResult();
+    if (res !== null) {
+        calcExpr = String(res);
+        updateCalcDisplay();
+    }
+}
+
+function calcApplyResult() {
+    const res = getCalcResult();
+    if (res !== null && !isNaN(res) && res > 0) {
+        const target = qs(calcTargetId) || qs("amount");
+        if (target) {
+            target.value = res;
+            target.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        closeModal("calcModal");
+        showToast(`تم إدراج المبلغ: ${res.toLocaleString()} ر.ي`);
+    } else if (res === 0) {
+        showToast("يرجى إدخال مبلغ أكبر من صفر", "error");
+    } else {
+        showToast("يرجى إدخال أرقام صحيحة", "error");
+    }
+}
+
+// دعم لوحة المفاتيح
+window.addEventListener("keydown", (e) => {
+    const modal = qs("calcModal");
+    if (!modal || modal.style.display !== "flex") return;
+
+    if (e.key >= '0' && e.key <= '9') {
+        calcInput(e.key);
+    } else if (e.key === '+') {
+        calcInput('+');
+    } else if (e.key === '-') {
+        calcInput('-');
+    } else if (e.key === '*') {
+        calcInput('×');
+    } else if (e.key === '/') {
+        e.preventDefault();
+        calcInput('÷');
+    } else if (e.key === '.') {
+        calcInput('.');
+    } else if (e.key === 'Backspace') {
+        calcBackspace();
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        calcApplyResult();
+    } else if (e.key === 'Escape') {
+        closeModal('calcModal');
+    } else if (e.key === 'c' || e.key === 'C') {
+        calcClear();
+    }
+});
+</script>
+</body>
+</html>
