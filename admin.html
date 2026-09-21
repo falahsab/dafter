@@ -289,11 +289,12 @@ input:focus, select:focus {
 }
 
 /* الأزرار */
+
 .action-buttons {
     display: flex;
     gap: 10px;
     margin-top: 14px;
-    touch-action: manipulation;
+    touch-action: manipulation; /* يمنع تأخير وتكرار نقرات اللمس في الجوال */
 }
 
 .trans-btn {
@@ -617,7 +618,7 @@ tbody tr:hover {
     backdrop-filter: blur(4px);
     z-index: 3000;
     display: none;
-    align-items: flex-end;
+    align-items: flex-end; /* تفتح من الأسفل في الجوال */
     justify-content: center;
 }
 .picker-overlay.show {
@@ -697,7 +698,7 @@ tbody tr:hover {
 
 /* تصميم الآلة الحاسبة المدمجة */
 #calcModal {
-    z-index: 2500;
+    z-index: 2500; /* تفتح فوق نافذة التعديل */
 }
 
 .modal-calc {
@@ -739,7 +740,7 @@ tbody tr:hover {
 }
 
 .calc-grid {
-    direction: ltr;
+    direction: ltr; /* ترتيب الأزرار من اليسار لليمين */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 8px;
@@ -797,6 +798,7 @@ tbody tr:hover {
     transform: scale(0.96);
 }
 
+/* تعطيل النقر ومؤشر الماوس عند الإرسال */
 .trans-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -808,6 +810,8 @@ tbody tr:hover {
 </head>
 
 <body>
+
+
 
 <div class="toast-container" id="toastContainer"></div>
 
@@ -854,38 +858,42 @@ tbody tr:hover {
             </div>
         </div>
 
-        <!-- زر اختيار العميل -->
-        <div class="search-select-box">
-            <div style="display: flex; gap: 8px;">
-                <div id="customSelectTrigger" class="custom-select-btn" onclick="openClientPicker()">
-                    <span id="selectedClientText">👤 اضغط هنا لاختيار العميل...</span>
-                    <span class="dropdown-arrow">▼</span>
-                </div>
-                <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
-            </div>
-            <input type="hidden" id="client_select" value="">
+<!-- زر اختيار العميل العصري (بديل القائمة القديمة) -->
+<div class="search-select-box">
+    <div style="display: flex; gap: 8px;">
+        <div id="customSelectTrigger" class="custom-select-btn" onclick="openClientPicker()">
+            <span id="selectedClientText">👤 اضغط هنا لاختيار العميل...</span>
+            <span class="dropdown-arrow">▼</span>
         </div>
+        <button type="button" class="icon-btn" id="editCurrentClientBtn" onclick="editCurrentlySelectedClient()" title="تعديل بيانات العميل المختار" style="display: none; background: var(--primary-light); color: var(--primary);">✏️</button>
+    </div>
+    <!-- عنصر مخفي للاحتفاظ بالقيمة المختارة -->
+    <input type="hidden" id="client_select" value="">
+</div>
 
-        <!-- نافذة اختيار العميل المنبثقة من الأسفل للجوال -->
-        <div id="clientPickerModal" class="picker-overlay" onclick="closeClientPicker(event)">
-            <div class="picker-sheet" onclick="event.stopPropagation()">
-                <div class="picker-header">
-                    <div class="picker-drag-handle"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                        <h3>اختر العميل</h3>
-                        <button type="button" class="icon-btn" style="width:32px;height:32px;" onclick="closeClientPicker()">✕</button>
-                    </div>
-                    <input id="pickerSearch" type="text" class="search-input" style="margin-top:12px; margin-bottom:0;" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango..." oninput="filterPickerList()">            
-                </div>
-                <div id="pickerList" class="picker-list"></div>
+<!-- نافذة اختيار العميل المنبثقة من الأسفل للجوال (Bottom Sheet) -->
+<div id="clientPickerModal" class="picker-overlay" onclick="closeClientPicker(event)">
+    <div class="picker-sheet" onclick="event.stopPropagation()">
+        <div class="picker-header">
+            <div class="picker-drag-handle"></div>
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <h3>اختر العميل</h3>
+                <button type="button" class="icon-btn" style="width:32px;height:32px;" onclick="closeClientPicker()">✕</button>
             </div>
+<input id="pickerSearch" type="text" class="search-input" style="margin-top:12px; margin-bottom:0;" placeholder="🔍 ابحث بالاسم، الهاتف، أو Mango..." oninput="filterPickerList()">            
         </div>
+        <div id="pickerList" class="picker-list">
+            <!-- تتعبأ بأسماء العملاء ديناميكياً -->
+        </div>
+    </div>
+</div>
 
+        <!-- مدخلات العملية المالية -->
         <!-- مدخلات العملية المالية مع زر الآلة الحاسبة المدمجة -->
-        <div class="form-group" style="display: flex; gap: 8px; align-items: stretch;">
-            <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any" min="0" style="flex: 1;">
-            <button type="button" class="icon-btn" onclick="openCalcModal('amount')" title="آلة حاسبة لجمع المبالغ" style="background: var(--primary-light); color: var(--primary); font-size: 1.25rem; width: 42px; height: 42px; flex-shrink: 0;">🔢</button>
-        </div>
+<div class="form-group" style="display: flex; gap: 8px; align-items: stretch;">
+    <input id="amount" type="number" placeholder="المبلغ (ر.ي)" step="any" min="0" style="flex: 1;">
+    <button type="button" class="icon-btn" onclick="openCalcModal('amount')" title="آلة حاسبة لجمع المبالغ" style="background: var(--primary-light); color: var(--primary); font-size: 1.25rem; width: 42px; height: 42px; flex-shrink: 0; ">🔢</button>
+</div>
         <input type="hidden" id="type" value="debit">
 
         <div class="form-group note-wrapper">
@@ -894,17 +902,17 @@ tbody tr:hover {
             <datalist id="notesList"></datalist>
         </div>
 
-        <!-- أزرار الإضافة السريعة -->
-        <div class="action-buttons">
-            <button type="button" id="btnCredit" class="trans-btn credit-btn" onclick="addTransType('credit')">
-                <span>⬇</span>
-                <span>إضافة له (دائن)</span>
-            </button>
-            <button type="button" id="btnDebit" class="trans-btn debit-btn" onclick="addTransType('debit')">
-                <span>⬆</span>
-                <span>إضافة عليه (مدين)</span>
-            </button>
-        </div>
+<!-- أزرار الإضافة السريعة -->
+<div class="action-buttons">
+    <button type="button" id="btnCredit" class="trans-btn credit-btn" onclick="addTransType('credit')">
+        <span>⬇</span>
+        <span>إضافة له (دائن)</span>
+    </button>
+    <button type="button" id="btnDebit" class="trans-btn debit-btn" onclick="addTransType('debit')">
+        <span>⬆</span>
+        <span>إضافة عليه (مدين)</span>
+    </button>
+</div>
 
         <div id="loading" class="loading-indicator">جاري معالجة البيانات...</div>
 
@@ -965,6 +973,7 @@ tbody tr:hover {
     </div>
     
     <div class="modal-body">
+        <!-- شريط التبديل بين وضع الإضافة والتعديل -->
         <div class="mode-tabs">
             <button type="button" id="tabNewClient" class="mode-tab-btn active" onclick="setClientModalMode('new')">
                 ➕ عميل جديد
@@ -974,6 +983,7 @@ tbody tr:hover {
             </button>
         </div>
 
+        <!-- قائمة اختيار العميل للتعديل -->
         <div id="selectClientToEditBox" class="form-group" style="display: none;">
             <label class="input-label" style="color: var(--primary); font-weight: bold;">اختر العميل المراد تعديل بياناته:</label>
             <select id="modal_client_select" onchange="onSelectClientToEdit()">
@@ -1011,6 +1021,7 @@ tbody tr:hover {
             <input id="new_password" type="text" placeholder="كلمة المرور">
         </div>
 
+        <!-- حقل Mango User -->
         <div class="form-group">
             <label class="input-label">اسم المستخدم Mango User (اختياري)</label>
             <input id="new_mango_user" placeholder="Mango User (مثال: user123)">
@@ -1133,10 +1144,12 @@ tbody tr:hover {
         <button class="modal-close" onclick="closeModal('calcModal')">&times;</button>
     </div>
     <div class="modal-body" style="padding: 16px;">
+        <!-- شاشة العرض -->
         <div class="calc-display">
             <div class="calc-expr" id="calcExprText">0</div>
             <div class="calc-result" id="calcLiveResult">= 0</div>
         </div>
+        <!-- لوحة الأزرار -->
         <div class="calc-grid">
             <button type="button" class="calc-btn clear" onclick="calcClear()">C</button>
             <button type="button" class="calc-btn" onclick="calcBackspace()">⌫</button>
@@ -1165,25 +1178,8 @@ tbody tr:hover {
     </div>
   </div>
 </div>
-
 <script>
-// ==========================================
-// إعدادات الربط الآمن عبر Cloudflare Worker
-// ==========================================
-const API = "https://polished-breeze-8a80.falahsab.workers.dev/";
-const APP_KEY = "YEMEN_SAT_SECRET_KEY_1527";
-
-// دالة موحدة لإرسال كل الطلبات مصحوبة بالمفتاح السري تلقائياً
-async function apiRequest(payload) {
-    return fetch(API, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-App-Key": APP_KEY
-        },
-        body: JSON.stringify(payload)
-    });
-}
+const API = "https://script.google.com/macros/s/AKfycby0MNbRU_JqajrNoNBP2FU5HOnXN1LFAOU_RJJxmWW5XSN0s5c1VELrcYIaGZ1ce7Jo/exec";
 
 // أيقونة واتساب SVG
 const waSvgIcon = `<svg style="width:15px;height:15px;fill:currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.698c.983.54 1.81.826 2.806.826 3.182 0 5.768-2.587 5.768-5.766-.001-3.187-2.575-5.77-5.768-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.312.045-.694.062-2.115-.526-1.815-.752-2.983-2.59-3.074-2.711-.09-.12-1.229-1.636-1.229-3.12 0-1.485.765-2.217 1.036-2.518.271-.301.591-.376.787-.376.196 0 .393.002.564.01.181.01.425-.069.664.506.248.595.845 2.062.919 2.213.074.151.123.327.024.524-.098.197-.148.32-.294.493-.146.173-.308.386-.44.518-.146.146-.299.306-.129.598.17.292.755 1.246 1.62 2.015 1.111.989 2.049 1.296 2.341 1.442.292.146.463.123.634-.073.171-.196.732-.853.928-1.146.196-.293.391-.244.659-.146.268.098 1.708.805 2.001.951.293.146.488.22.561.342.073.122.073.708-.071 1.113z"/></svg>`;
@@ -1194,7 +1190,7 @@ let currentClientModalMode = 'new';
 let cachedBalancesList = [];
 
 // كاش محلي
-const transCache = {};
+const transCache = {}; // { [clientId]: { list: [], total: number, isPartial: boolean } }
 
 // إشعارات Toast
 function showToast(message, type = "success") {
@@ -1238,6 +1234,7 @@ function formatDateSafe(d) {
     return isNaN(date.getTime()) ? String(d) : date.toLocaleDateString('en-GB');
 }
 
+// تنسيق هاتف الواتساب دولياً لليمن 967
 function formatWhatsAppPhone(phone) {
     if (!phone) return "";
     let p = String(phone).replace(/[^0-9]/g, "");
@@ -1253,14 +1250,19 @@ function formatWhatsAppPhone(phone) {
 async function loadDashboardData(forceRefresh = false) {
     qs("loading").style.display = "block";
     try {
-        const res = await apiRequest({ action: "getDashboardData", forceRefresh });
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getDashboardData", forceRefresh })
+        });
         const data = await res.json();
 
         if (data.status !== "success") throw new Error(data.message || "خطأ غير معروف");
 
+        // 1. العملاء
         allClients = Array.isArray(data.clients) ? data.clients : [];
         renderClientsDropdown();
 
+        // 2. الملخص الإجمالي العام
         if (data.totals) {
             qs("totalCredit").textContent = Number(data.totals.totalCredit || 0).toLocaleString() + " ر.ي";
             qs("totalDebit").textContent = Number(data.totals.totalDebit || 0).toLocaleString() + " ر.ي";
@@ -1270,8 +1272,10 @@ async function loadDashboardData(forceRefresh = false) {
                 : (net < 0 ? `عليكم ${Math.abs(net).toLocaleString()} ر.ي` : "0 ر.ي");
         }
 
+        // 3. أرصدة العملاء
         cachedBalancesList = Array.isArray(data.balances) ? data.balances : [];
 
+        // 4. تسخين الكاش لعمليات العملاء
         if (data.recentMap && typeof data.recentMap === "object") {
             Object.keys(data.recentMap).forEach(cid => {
                 const balObj = cachedBalancesList.find(b => String(b.client_id) === String(cid));
@@ -1285,6 +1289,7 @@ async function loadDashboardData(forceRefresh = false) {
 
         updateStats();
 
+        // تحديث عمليات العميل المختار إن وجد
         if (currentClientId) {
             loadTransactions(false);
         }
@@ -1297,17 +1302,32 @@ async function loadDashboardData(forceRefresh = false) {
     }
 }
 
+// تعبئة القائمة المنسدلة للعملاء
+// تعبئة القائمة المنسدلة للعملاء (يظهر اسم العميل فقط)
 function renderClientsDropdown() {
-    const currentId = qs("client_select").value;
-    if (currentId) {
-        const client = allClients.find(c => String(c.client_id) === String(currentId));
-        if (client) qs("selectedClientText").textContent = client.name;
-    } else {
-        qs("selectedClientText").textContent = "👤 اضغط هنا لاختيار العميل...";
-    }
+    const select = qs("client_select");
+    const prevSelected = select.value;
+    select.innerHTML = `<option value="">-- اختر العميل --</option>`;
+
+    const frag = document.createDocumentFragment();
+    allClients.forEach(c => {
+        const op = document.createElement("option");
+        op.value = c.client_id;
+        
+        // التعديل هنا: اسم العميل فقط
+        op.textContent = c.name;
+
+        // الاحتفاظ ببيانات الهاتف والمانجو للبحث السريع في الخلفية
+        op.dataset.name = String(c.name || "").toLowerCase();
+        op.dataset.mobile = String(c.mobile || "");
+        op.dataset.mango = String(c.mango_user || "").toLowerCase();
+        frag.appendChild(op);
+    });
+    select.appendChild(frag);
+
+    if (prevSelected) select.value = prevSelected;
     toggleEditSelectedBtn();
 }
-
 function toggleEditSelectedBtn() {
     const hasClient = !!qs("client_select").value;
     qs("editCurrentClientBtn").style.display = hasClient ? "flex" : "none";
@@ -1316,6 +1336,39 @@ function toggleEditSelectedBtn() {
 function editCurrentlySelectedClient() {
     const clientId = qs("client_select").value;
     if (clientId) openEditClientModal(clientId);
+}
+
+// بحث متكامل وشامل بالاسم، الهاتف، و Mango User
+function filterClientSelect() {
+    const q = qs("client_search").value.trim().toLowerCase();
+    const select = qs("client_select");
+    let foundFirst = false;
+
+    Array.from(select.options).forEach((op, index) => {
+        if (index === 0) return;
+        const name = op.dataset.name || "";
+        const mobile = op.dataset.mobile || "";
+        const mango = op.dataset.mango || "";
+
+        const match = !q || name.includes(q) || mobile.includes(q) || mango.includes(q);
+        op.style.display = match ? "" : "none";
+
+        if (match && !foundFirst && q !== "") {
+            select.value = op.value;
+            foundFirst = true;
+        }
+    });
+
+    if (!q) {
+        // إذا مسح البحث أعد ضبط التحديد
+        toggleEditSelectedBtn();
+        return;
+    }
+
+    toggleEditSelectedBtn();
+    if (foundFirst) {
+        loadTransactions(false);
+    }
 }
 
 // ==========================================
@@ -1392,6 +1445,7 @@ function onSelectClientToEdit() {
     qs("new_mango_user").value = client.mango_user || "";
 }
 
+// حفظ بيانات العميل
 async function saveClientData() {
     const clientId = qs("edit_client_id").value;
     const name = qs("new_name").value.trim();
@@ -1427,7 +1481,10 @@ async function saveClientData() {
     if (isEdit) payload.client_id = clientId;
 
     try {
-        const res = await apiRequest(payload);
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify(payload)
+        });
         const data = await res.json();
 
         if (data.status === "success") {
@@ -1460,24 +1517,30 @@ async function loadTransactions(forceRefresh = false) {
         return;
     }
 
+    // 1. العرض الفوري من الكاش
     const cached = transCache[currentClientId];
     if (cached && !forceRefresh) {
         clientTransactions = cached.list || [];
         updateStats(cached.total);
         renderTransactions(clientTransactions.slice(0, 5));
         
+        // جلب العمليات كاملة في الخلفية بهدوء
         if (cached.isPartial) {
             fetchFullTransactionsBackground(currentClientId);
         }
         return;
     }
 
+    // 2. جلب العمليات من السيرفر
     qs("loading").style.display = "block";
     try {
-        const res = await apiRequest({ 
-            action: "getClientAllTransactions", 
-            client_id: currentClientId,
-            forceRefresh: forceRefresh 
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ 
+                action: "getClientAllTransactions", 
+                client_id: currentClientId,
+                forceRefresh: forceRefresh 
+            })
         });
         const data = await res.json();
 
@@ -1502,7 +1565,10 @@ async function loadTransactions(forceRefresh = false) {
 
 async function fetchFullTransactionsBackground(cid) {
     try {
-        const res = await apiRequest({ action: "getClientAllTransactions", client_id: cid });
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClientAllTransactions", client_id: cid })
+        });
         const data = await res.json();
         if (data.status === "success" && currentClientId === cid) {
             clientTransactions = (data.list || []).sort((a, b) => 
@@ -1532,7 +1598,10 @@ async function showAllTransactions() {
 
     qs("loading").style.display = "block";
     try {
-        const res = await apiRequest({ action: "getClientAllTransactions", client_id: currentClientId });
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "getClientAllTransactions", client_id: currentClientId })
+        });
         const data = await res.json();
         if (data.status === "success") {
             clientTransactions = (data.list || []).sort((a, b) => 
@@ -1553,6 +1622,9 @@ async function showAllTransactions() {
 }
 
 // إضافة عملية مالية جديدة
+// ==========================================
+// إضافة عملية مالية مع حماية ضد النقر المزدوج والسريع (للجوال والكمبيوتر)
+// ==========================================
 let isSubmittingTrans = false;
 let lastTransSubmitTime = 0;
 
@@ -1577,20 +1649,34 @@ function resetTransButtons() {
 
 async function addTransType(type) {
     const now = Date.now();
-    if (isSubmittingTrans || (now - lastTransSubmitTime < 2500)) return;
+    // 1. فحص القفل المزدوج: متغير الحالة + الفارق الزمني (يمنع أي نقرات متتالية خلال 2.5 ثانية)
+    if (isSubmittingTrans || (now - lastTransSubmitTime < 2500)) {
+        return;
+    }
 
     const client_id = qs("client_select").value;
     const amountVal = qs("amount").value;
     const amount = Number(amountVal);
     const note = qs("note").value.trim();
 
-    if (!client_id) { showToast("يرجى اختيار العميل أولاً", "error"); return; }
-    if (!amount || isNaN(amount) || amount <= 0) { showToast("يرجى إدخال مبلغ صحيح", "error"); return; }
-    if (!note) { showToast("يرجى كتابة البيان", "error"); return; }
+    if (!client_id) { 
+        showToast("يرجى اختيار العميل أولاً", "error"); 
+        return; 
+    }
+    if (!amount || isNaN(amount) || amount <= 0) { 
+        showToast("يرجى إدخال مبلغ صحيح", "error"); 
+        return; 
+    }
+    if (!note) { 
+        showToast("يرجى كتابة البيان", "error"); 
+        return; 
+    }
 
+    // 2. تفعيل القفل فوراً وبشكل متزامن لمنع أي نقرات لاحقة
     isSubmittingTrans = true;
     lastTransSubmitTime = now;
 
+    // 3. تعطيل حاوية الأزرار بالكامل لمنع أحداث اللمس (Touch Events) في الهواتف
     const actionBox = document.querySelector(".action-buttons");
     if (actionBox) {
         actionBox.style.pointerEvents = "none";
@@ -1602,15 +1688,21 @@ async function addTransType(type) {
     if (btnCredit) btnCredit.disabled = true;
     if (btnDebit) btnDebit.disabled = true;
 
+    // إظهار مؤشر التحميل على الزر المختار فوراً
     const activeBtn = (type === 'credit') ? btnCredit : btnDebit;
-    if (activeBtn) activeBtn.innerHTML = `<span>⏳</span> <span>جاري الإرسال...</span>`;
+    if (activeBtn) {
+        activeBtn.innerHTML = `<span>⏳</span> <span>جاري الإرسال...</span>`;
+    }
 
     qs("type").value = type;
     saveNoteSuggestion();
     qs("loading").style.display = "block";
 
     try {
-        const res = await apiRequest({ action: "addTransaction", client_id, amount, type, note });
+        const res = await fetch(API, {
+            method: "POST",
+            body: JSON.stringify({ action: "addTransaction", client_id, amount, type, note })
+        });
         const data = await res.json();
 
         if (data.status === "success") {
@@ -1619,8 +1711,9 @@ async function addTransType(type) {
             qs("note").value = "";
             delete transCache[client_id];
             
+            // تحديث العميل المختار واللوحة بالتوازي
             await loadTransactions(true);
-            loadDashboardData(true);
+            loadDashboardData(true); // تحديث إجمالي اللوحة بالخلفية
         } else {
             showToast(data.message || "حدث خطأ أثناء إضافة العملية", "error");
         }
@@ -1628,10 +1721,19 @@ async function addTransType(type) {
         showToast("تعذر الاتصال بالخادم", "error");
     } finally {
         qs("loading").style.display = "none";
-        setTimeout(() => resetTransButtons(), 1000);
+        // مهلة حماية إضافية (1 ثانية) بعد استجابة الخادم لضمان تفريغ أي لمسات متراكمة في الجوال
+        setTimeout(() => {
+            resetTransButtons();
+        }, 1000);
     }
 }
 
+// دالة متوافقة في حال تم استدعاء addTrans مباشرة من أي مكان
+async function addTrans() {
+    const type = qs("type").value || 'debit';
+    return addTransType(type);
+}
+// رسم جدول العمليات
 function renderTransactions(transactions) {
     const tbody = qs("transBody");
     tbody.innerHTML = "";
@@ -1688,6 +1790,7 @@ function renderTransactions(transactions) {
     tbody.appendChild(frag);
 }
 
+// رسائل الواتساب مع رقم دولي ورصيد دقيق 100%
 function sendWhatsAppMsg(t, clientName, clientMobile) {
     const targetMobile = formatWhatsAppPhone(clientMobile);
     if (!targetMobile) {
@@ -1695,6 +1798,7 @@ function sendWhatsAppMsg(t, clientName, clientMobile) {
         return;
     }
 
+    // الاعتماد على الرصيد التراكمي الدقيق المحسوب من السيرفر
     const bal = (t.balance_after !== undefined && t.balance_after !== null) 
         ? Number(t.balance_after) 
         : (transCache[currentClientId]?.total || 0);
@@ -1708,6 +1812,7 @@ function sendWhatsAppMsg(t, clientName, clientMobile) {
     window.open(`https://wa.me/${targetMobile}?text=${encodeURIComponent(msg)}`, "_blank");
 }
 
+// رسائل SMS بدقة تامة
 function sendSmsMsg(t, clientName, smsNumber) {
     if (!smsNumber) {
         showToast("لا يوجد رقم SMS مسجل لهذا العميل", "error");
@@ -1727,6 +1832,7 @@ function sendSmsMsg(t, clientName, smsNumber) {
     window.location.href = `sms:${encodeURIComponent(smsNumber)}?body=${encodeURIComponent(msg)}`;
 }
 
+// تعديل وحذف العملية
 function openTransModal(id) {
     currentTransId = id;
     const t = clientTransactions.find(x => String(x.trans_id) === String(id));
@@ -1749,7 +1855,10 @@ async function saveTransModal() {
     }
 
     try {
-        await apiRequest({ action: "updateTransaction", trans_id: currentTransId, amount, type, note });
+        await fetch(API, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "updateTransaction", trans_id: currentTransId, amount, type, note }) 
+        });
         closeModal("transModal");
         showToast("تم تحديث العملية بنجاح");
         delete transCache[currentClientId];
@@ -1763,7 +1872,10 @@ async function saveTransModal() {
 async function deleteTransModal() {
     if (!confirm("هل أنت متأكد من حذف هذه العملية؟")) return;
     try {
-        await apiRequest({ action: "deleteTransaction", trans_id: currentTransId });
+        await fetch(API, { 
+            method: "POST", 
+            body: JSON.stringify({ action: "deleteTransaction", trans_id: currentTransId }) 
+        });
         closeModal("transModal");
         showToast("تم حذف العملية");
         delete transCache[currentClientId];
@@ -1774,12 +1886,14 @@ async function deleteTransModal() {
     }
 }
 
+// طباعة كشف حساب مع ضمان تحميل كافة العمليات مسبقاً
 async function printTransactions() {
     if (!currentClientId) {
         showToast("يرجى اختيار العميل أولاً", "error");
         return;
     }
 
+    // التأكد من جلب كامل العمليات قبل الطباعة
     const cached = transCache[currentClientId];
     if (cached && cached.isPartial) {
         showToast("جاري تجهيز كشف الحساب بالكامل...");
@@ -1796,6 +1910,7 @@ async function printTransactions() {
     const total = clientTransactions.reduce((s, x) => s + Number(x.amount), 0);
     const today = new Date().toLocaleDateString('ar-EG');
 
+    // ترتيب العمليات تصاعدياً (من الأقدم للأحدث) لكشف الحساب المحاسبي
     const sorted = [...clientTransactions].sort((a, b) => 
         (new Date(a.date).getTime() || 0) - (new Date(b.date).getTime() || 0) || Number(a.trans_id) - Number(b.trans_id)
     );
@@ -1886,6 +2001,7 @@ async function printTransactions() {
     setTimeout(() => win.print(), 350);
 }
 
+// عرض نافذة حسابات وأرصدة العملاء
 function showClientsBalances() {
     const data = [...cachedBalancesList].sort((a, b) => b.total - a.total);
 
@@ -1924,7 +2040,7 @@ function showClientsBalances() {
 
         tr.querySelector(".del-btn").onclick = async () => {
             if (confirm(`هل أنت متأكد من حذف العميل "${c.name}" وجميع عملياته بشكل نهائي؟`)) {
-                await apiRequest({ action: "deleteClient", client_id: c.client_id });
+                await fetch(API, { method: "POST", body: JSON.stringify({ action: "deleteClient", client_id: c.client_id }) });
                 showToast("تم حذف العميل بنجاح");
                 delete transCache[c.client_id];
                 await loadDashboardData(true);
@@ -1966,6 +2082,7 @@ function filterClientsTable() {
     });
 }
 
+// تحديث الإحصائيات في الشاشة الرئيسية
 function updateStats(explicitTotal = null) {
     qs("stat_clients").textContent = allClients.length;
 
@@ -1996,6 +2113,7 @@ function updateStats(explicitTotal = null) {
     }
 }
 
+// جهات الاتصال من الموبايل
 function closePopup() { qs("numberPopup").style.display = "none"; }
 
 qs("pickContact").addEventListener("click", async () => {
@@ -2038,6 +2156,7 @@ qs("pickContact").addEventListener("click", async () => {
     }
 });
 
+// التعامل مع الحافظة
 async function pasteFromClipboard() {
     try {
         const text = await navigator.clipboard.readText();
@@ -2048,6 +2167,7 @@ async function pasteFromClipboard() {
     }
 }
 
+// سجل البيانات المقترحة
 let savedNotes = JSON.parse(localStorage.getItem("savedNotes") || "[]");
 function refreshNotes() {
     const list = qs("notesList");
@@ -2072,6 +2192,7 @@ function saveNoteSuggestion() {
     }
 }
 
+// عرض Mango Users
 function showMangoUsers() {
     const tbody = qs("mangoUsersBody");
     tbody.innerHTML = "";
@@ -2160,6 +2281,7 @@ function printClientsList() {
     }
 
     const today = new Date().toLocaleDateString('ar-EG');
+    let totalSumDebit = 0, totalSumCredit = 0;
 
     const tableRows = rows.map(r => {
         const name = r.children[1]?.textContent || "";
@@ -2223,14 +2345,20 @@ function printClientsList() {
     setTimeout(() => win.print(), 350);
 }
 
+// بدء التشغيل
 loadDashboardData();
 qs("client_select").addEventListener("change", () => loadTransactions(false));
 
+// فتح وإغلاق قائمة اختيار العميل
+// فتح قائمة اختيار العميل بدون فتح الكيبورد تلقائياً
 function openClientPicker() {
     renderPickerList(allClients);
     const searchInput = qs("pickerSearch");
     searchInput.value = "";
+    
+    // إزالة التركيز عن حقل البحث لضمان عدم ظهور الكيبورد في الجوال
     searchInput.blur(); 
+    
     qs("clientPickerModal").classList.add("show");
 }
 
@@ -2238,6 +2366,7 @@ function closeClientPicker() {
     qs("clientPickerModal").classList.remove("show");
 }
 
+// رسم عناصر القائمة في النافذة المنبثقة
 function renderPickerList(clients) {
     const container = qs("pickerList");
     container.innerHTML = "";
@@ -2254,6 +2383,7 @@ function renderPickerList(clients) {
         const item = document.createElement("div");
         item.className = `picker-item ${String(c.client_id) === String(currentVal) ? 'selected' : ''}`;
         
+        // عرض اسم العميل
         item.innerHTML = `
             <span>${escapeHtml(c.name)}</span>
             <span style="font-size:0.8rem; font-weight:normal; opacity:0.75;">${c.mobile ? c.mobile : ''}</span>
@@ -2270,6 +2400,7 @@ function renderPickerList(clients) {
     container.appendChild(frag);
 }
 
+// عند اختيار عميل
 function selectClient(client) {
     qs("client_select").value = client.client_id;
     qs("selectedClientText").textContent = client.name;
@@ -2277,6 +2408,7 @@ function selectClient(client) {
     loadTransactions(false);
 }
 
+// بحث سريع داخل النافذة المنبثقة
 function filterPickerList() {
     const q = qs("pickerSearch").value.trim().toLowerCase();
     const filtered = allClients.filter(c => {
@@ -2288,7 +2420,20 @@ function filterPickerList() {
     renderPickerList(filtered);
 }
 
-// الآلة الحاسبة
+// دالة renderClientsDropdown الأصلية تصبح مجرد تحديث للنص إن وُجد
+function renderClientsDropdown() {
+    const currentId = qs("client_select").value;
+    if (currentId) {
+        const client = allClients.find(c => String(c.client_id) === String(currentId));
+        if (client) qs("selectedClientText").textContent = client.name;
+    } else {
+        qs("selectedClientText").textContent = "👤 اضغط هنا لاختيار العميل...";
+    }
+    toggleEditSelectedBtn();
+}
+// ==========================================
+// نظام الآلة الحاسبة لجمع واعتماد المبالغ
+// ==========================================
 let calcExpr = "";
 let calcTargetId = "amount";
 
@@ -2402,6 +2547,7 @@ function calcApplyResult() {
     }
 }
 
+// دعم لوحة المفاتيح
 window.addEventListener("keydown", (e) => {
     const modal = qs("calcModal");
     if (!modal || modal.style.display !== "flex") return;
