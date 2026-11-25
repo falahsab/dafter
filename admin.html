@@ -1828,7 +1828,7 @@ function sendSmsMsg(t, clientName, smsNumber) {
         ? `عليك ${bal.toLocaleString()}` 
         : (bal < 0 ? `لك ${Math.abs(bal).toLocaleString()}` : "خالص");
 
-    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount)}\nالبيان: ${t.note}\nالإجمالي: ${totalText}`;
+    const msg = `الأخ: ${clientName}\nقيد ${typeText}: ${Math.abs(t.amount)}\nالإجمالي: ${totalText}`;
     window.location.href = `sms:${encodeURIComponent(smsNumber)}?body=${encodeURIComponent(msg)}`;
 }
 
@@ -2108,7 +2108,7 @@ function updateStats(explicitTotal = null) {
         totalEl.textContent = `له ${Math.abs(sum).toLocaleString()} ر.ي`;
         totalEl.className = "value credit-value";
     } else {
-        totalEl.textContent = "خالص (0 ر.ي)";
+        totalEl.textContent = "صافي (0 ر.ي)";
         totalEl.className = "value balance-value";
     }
 }
